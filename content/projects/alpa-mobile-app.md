@@ -34,4 +34,7 @@ regulation-heavy information design made to feel calm at 5am in a crew room.
 - [ ] Shipped vs in progress
 - [ ] Confirmed cleared for public portfolio
 - [ ] Case-study depth vs beauty-shots treatment
-- [ ] Original image files (upload to repo)
+
+**Note on imagery:** current screens are placeholders. Final presentation format (device
+frames, flat screens, composed spreads, crops) gets decided by the site design in Phase 2 —
+asset prep happens after a direction is chosen, not before.
