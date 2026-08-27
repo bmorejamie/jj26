@@ -16,7 +16,7 @@
   .rv { opacity:0; }
   .in .rv, .rv.in { opacity:1; }
   @media (prefers-reduced-motion: reduce) {
-    .rv { opacity:1 !important; transform:none !important; transition:none !important; }
+    .rv { opacity:1 !important; transform:none !important; clip-path:none !important; transition:none !important; }
     * { animation:none !important; }
   }
 
@@ -389,6 +389,8 @@
       el.style.transitionDelay = (Math.min(i, 6) * 60) + 'ms';
       io.observe(el);
     });
+    // fail-open: nothing stays hidden longer than a beat, no matter what
+    setTimeout(() => dir.querySelectorAll('.rv:not(.in)').forEach(el => el.classList.add('in')), 900);
   }
 
   const dirs = ['d1','d2','d3'].map(id => document.getElementById(id));
