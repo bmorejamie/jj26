@@ -1,0 +1,296 @@
+<title>Curve Studies</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:#101012; color:#EDECE8; font-family:'Archivo','Helvetica Neue',Arial,sans-serif; }
+  .mono { font-family:'IBM Plex Mono',ui-monospace,monospace; font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:#8A8884; }
+  .wrap { max-width:1180px; margin:0 auto; padding:0 28px; }
+  header { padding:56px 0 40px; border-bottom:1px solid #26262A; }
+  header h1 { font-variation-settings:'wdth' 62; font-weight:800; text-transform:uppercase; font-size:clamp(40px,7vw,84px); line-height:.9; letter-spacing:-.01em; }
+  header .sub { display:flex; justify-content:space-between; align-items:baseline; gap:16px; margin-top:18px; flex-wrap:wrap; }
+  header p { max-width:56ch; font-size:14.5px; line-height:1.6; color:#B9B7B2; }
+  .grid { display:grid; grid-template-columns:repeat(2,1fr); gap:22px; padding:42px 0 90px; }
+  @media (max-width:860px){ .grid { grid-template-columns:1fr; } }
+  .card { border:1px solid #26262A; padding:22px 22px 18px; display:flex; flex-direction:column; gap:14px; min-height:340px; background:#101012; }
+  .card:hover { border-color:#3A3A40; }
+  .card .head { display:flex; justify-content:space-between; align-items:baseline; gap:12px; }
+  .card .head b { font-weight:600; font-size:15px; }
+  .card .stage { flex:1; display:flex; align-items:center; justify-content:center; position:relative; min-height:220px; }
+  .card .note { font-size:12.5px; line-height:1.55; color:#8A8884; }
+  svg { overflow:visible; display:block; }
+  .curve { fill:none; stroke:#EDECE8; stroke-width:2.5; stroke-linecap:round; }
+  .ghost { fill:none; stroke:#26262A; stroke-width:1; }
+  .axis  { stroke:#26262A; stroke-width:1; }
+  .handleline { stroke:#5A9E6F; stroke-width:1; opacity:0; transition:opacity .3s ease; }
+  .handlept { fill:#101012; stroke:#5A9E6F; stroke-width:1.5; opacity:0; transition:opacity .3s ease; }
+  .kf { fill:#EDECE8; }
+  .show .handleline, .show .handlept { opacity:1; }
+  .dot { fill:#EDECE8; }
+  .dim { fill:#8A8884; }
+  footer { border-top:1px solid #26262A; padding:26px 0 80px; }
+  @media (prefers-reduced-motion: reduce) {
+    .rm-note { display:block !important; }
+  }
+  .rm-note { display:none; padding:10px 0 0; }
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>Curve<br>Studies</h1>
+    <div class="sub">
+      <p>Six motion studies for the mark — one easing curve, drawn different ways. All rendered
+      in the medium it will ship in. Hover, click, and loiter; some of them notice.</p>
+      <span class="mono">cubic-bezier(0.22, 1.00, 0.36, 1.00)</span>
+    </div>
+    <span class="mono rm-note">Reduce Motion is on — studies are shown in their resting state.</span>
+  </header>
+
+  <div class="grid">
+    <div class="card" id="stA">
+      <div class="head"><b>A — Signature</b><span class="mono">draw-on</span></div>
+      <div class="stage"></div>
+      <div class="note">The mark draws itself using its own timing — the curve is both the path and
+      the easing. Click to sign again.</div>
+    </div>
+
+    <div class="card" id="stB">
+      <div class="head"><b>B — Handles</b><span class="mono">hover</span></div>
+      <div class="stage"></div>
+      <div class="note">Hover: the mark reveals its control handles, like a bezier selected in a
+      motion editor. The autograph shows its construction — only to people who lean in.</div>
+    </div>
+
+    <div class="card" id="stC">
+      <div class="head"><b>C — Proof</b><span class="mono">loop</span></div>
+      <div class="stage"></div>
+      <div class="note">The curve explaining itself: one dot climbs the graph as time passes, the
+      dot below moves with the easing it produces. The mark is a working diagram.</div>
+    </div>
+
+    <div class="card" id="stD">
+      <div class="head"><b>D — Argument</b><span class="mono">morph</span></div>
+      <div class="stage"></div>
+      <div class="note">Linear, then the browser default, then ours — the mark morphs through the
+      wrong answers and settles on the right one.</div>
+    </div>
+
+    <div class="card" id="stE">
+      <div class="head"><b>E — Alive</b><span class="mono">cursor</span></div>
+      <div class="stage"></div>
+      <div class="note">The curve bends toward your cursor and springs back when you leave —
+      overshoot and settle, tuned like a good keyframe. A toy, and maybe a 404 page.</div>
+    </div>
+
+    <div class="card" id="stF">
+      <div class="head"><b>F — Survival</b><span class="mono">16 / 24 / 48 px</span></div>
+      <div class="stage" style="gap:36px"></div>
+      <div class="note">The truth test: the mark at favicon and UI sizes, still drawing on. If it
+      reads at 16px, it's a mark. If not, it's an illustration.</div>
+    </div>
+  </div>
+
+  <footer>
+    <span class="mono">Study for the jj26 mark · dark ground shown; the curve inverts politely on paper</span>
+  </footer>
+</div>
+
+<script>
+(() => {
+  const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const CP = { x1:22, y1:0, x2:36, y2:0 }; // control points in 100x100, y already flipped for SVG
+  const NS = 'http://www.w3.org/2000/svg';
+
+  function el(name, attrs, parent) {
+    const n = document.createElementNS(NS, name);
+    for (const k in attrs) n.setAttribute(k, attrs[k]);
+    if (parent) parent.appendChild(n);
+    return n;
+  }
+  function svg(stage, w = 240, h = 200, vb = '-10 -10 120 120') {
+    const s = el('svg', { viewBox: vb, width: w, height: h });
+    stage.appendChild(s);
+    return s;
+  }
+  function curvePath(p, cp) {
+    return `M 0 100 C ${cp.x1} ${cp.y1}, ${cp.x2} ${cp.y2}, 100 0`;
+  }
+  // solve eased progress for time t on cubic-bezier(x1,1-y?)... we work in graph space:
+  // param s -> x(s) horizontal (time), y(s) vertical (progress, flipped later)
+  // x runs 0->100 (time); y runs 100->0 in SVG space (progress, flipped)
+  function bezX(s, a, b) { const i = 1 - s; return 3*i*i*s*a + 3*i*s*s*b + s*s*s*100; }
+  function bezY(s, a, b) { const i = 1 - s; return i*i*i*100 + 3*i*i*s*a + 3*i*s*s*b; }
+  function easedAt(t, cp) { // t in 0..1 of time (x axis); returns progress 0..1
+    let lo = 0, hi = 1, s = t;
+    for (let k = 0; k < 24; k++) {
+      s = (lo + hi) / 2;
+      (bezX(s, cp.x1, cp.x2) / 100 < t) ? lo = s : hi = s;
+    }
+    return 1 - bezY(s, cp.y1, cp.y2) / 100;
+  }
+  function axes(s) {
+    el('path', { class:'axis', d:'M 0 0 L 0 100 L 100 100' }, s);
+    el('path', { class:'ghost', d:'M 0 100 L 100 0' }, s);
+  }
+
+  /* A — Signature: draw-on using its own easing */
+  {
+    const stage = document.querySelector('#stA .stage');
+    const s = svg(stage);
+    axes(s);
+    const path = el('path', { class:'curve', d:curvePath(0, CP) }, s);
+    el('rect', { class:'kf', x:-3, y:97, width:6, height:6, transform:'rotate(45 0 100)' }, s);
+    el('rect', { class:'kf', x:97, y:-3, width:6, height:6, transform:'rotate(45 100 0)' }, s);
+    const L = path.getTotalLength();
+    path.style.strokeDasharray = L;
+    function sign() {
+      if (RM) return;
+      path.style.transition = 'none';
+      path.style.strokeDashoffset = L;
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        path.style.transition = 'stroke-dashoffset 1.1s cubic-bezier(0.22,1,0.36,1)';
+        path.style.strokeDashoffset = 0;
+      }));
+    }
+    stage.closest('.card').addEventListener('click', sign);
+    setTimeout(sign, 300);
+  }
+
+  /* B — Handles on hover */
+  {
+    const stage = document.querySelector('#stB .stage');
+    const s = svg(stage);
+    axes(s);
+    el('path', { class:'curve', d:curvePath(0, CP) }, s);
+    el('line', { class:'handleline', x1:0, y1:100, x2:CP.x1, y2:CP.y1 }, s);
+    el('line', { class:'handleline', x1:100, y1:0, x2:CP.x2, y2:CP.y2 }, s);
+    el('circle', { class:'handlept', cx:CP.x1, cy:CP.y1, r:3.4 }, s);
+    el('circle', { class:'handlept', cx:CP.x2, cy:CP.y2, r:3.4 }, s);
+    el('rect', { class:'kf', x:-3, y:97, width:6, height:6, transform:'rotate(45 0 100)' }, s);
+    el('rect', { class:'kf', x:97, y:-3, width:6, height:6, transform:'rotate(45 100 0)' }, s);
+    const card = stage.closest('.card');
+    card.addEventListener('mouseenter', () => s.classList.add('show'));
+    card.addEventListener('mouseleave', () => s.classList.remove('show'));
+  }
+
+  /* C — Proof: graph dot + driven dot */
+  {
+    const stage = document.querySelector('#stC .stage');
+    const s = svg(stage, 240, 230, '-10 -10 120 150');
+    axes(s);
+    el('path', { class:'curve', d:curvePath(0, CP), 'stroke-width':1.5, stroke:'#8A8884' }, s);
+    el('line', { class:'axis', x1:0, y1:126, x2:100, y2:126 }, s);
+    const gdot = el('circle', { class:'dot', r:3.2, cx:0, cy:100 }, s);
+    const ddot = el('circle', { class:'dot', r:4.2, cx:0, cy:126 }, s);
+    const tline = el('line', { class:'ghost', x1:0, y1:0, x2:0, y2:100 }, s);
+    if (!RM) {
+      const DUR = 1400, HOLD = 700;
+      let start = performance.now();
+      (function loop(now) {
+        let t = (now - start) / DUR;
+        if (t > 1 + HOLD / DUR) { start = now; t = 0; }
+        t = Math.min(t, 1);
+        const p = easedAt(t, CP);
+        gdot.setAttribute('cx', t * 100);
+        gdot.setAttribute('cy', 100 - p * 100);
+        tline.setAttribute('x1', t * 100); tline.setAttribute('x2', t * 100);
+        ddot.setAttribute('cx', p * 100);
+        requestAnimationFrame(loop);
+      })(start);
+    } else { gdot.setAttribute('cx',100); gdot.setAttribute('cy',0); ddot.setAttribute('cx',100); }
+  }
+
+  /* D — Argument: morph linear -> ease -> ours */
+  {
+    const stage = document.querySelector('#stD .stage');
+    const s = svg(stage);
+    axes(s);
+    const path = el('path', { class:'curve', d:curvePath(0, CP) }, s);
+    const label = document.createElementNS(NS,'text');
+    label.setAttribute('x','50'); label.setAttribute('y','118'); label.setAttribute('text-anchor','middle');
+    label.setAttribute('style','font:10px "IBM Plex Mono",monospace; fill:#8A8884; letter-spacing:.08em;');
+    s.appendChild(label);
+    const forms = [
+      { cp:{x1:33.3,y1:66.6,x2:66.6,y2:33.3}, name:'linear' },
+      { cp:{x1:25,y1:90,x2:25,y2:0},          name:'ease (default)' },
+      { cp:CP,                                 name:'ours' },
+    ];
+    if (!RM) {
+      let idx = 0, from = forms[0].cp, to = forms[0].cp, t0 = performance.now();
+      const MORPH = 700, HOLD = 1100, HOLD_OURS = 2400;
+      label.textContent = forms[0].name;
+      (function loop(now) {
+        const hold = (idx === forms.length - 1) ? HOLD_OURS : HOLD;
+        let t = (now - t0) / MORPH;
+        if (t >= 1) {
+          if (now - t0 > MORPH + hold) {
+            idx = (idx + 1) % forms.length;
+            from = to; to = forms[idx].cp; t0 = now; t = 0;
+            label.textContent = forms[idx].name;
+          } else t = 1;
+        }
+        const e = easedAt(Math.min(t,1), CP);
+        const cp = {
+          x1: from.x1 + (to.x1 - from.x1) * e, y1: from.y1 + (to.y1 - from.y1) * e,
+          x2: from.x2 + (to.x2 - from.x2) * e, y2: from.y2 + (to.y2 - from.y2) * e,
+        };
+        path.setAttribute('d', curvePath(0, cp));
+        requestAnimationFrame(loop);
+      })(t0);
+      to = forms[0].cp;
+    } else label.textContent = 'ours';
+  }
+
+  /* E — Alive: cursor bends, spring back */
+  {
+    const stage = document.querySelector('#stE .stage');
+    const s = svg(stage);
+    axes(s);
+    const path = el('path', { class:'curve', d:curvePath(0, CP) }, s);
+    const pts = [ { bx:CP.x1, by:CP.y1, x:CP.x1, y:CP.y1, vx:0, vy:0 },
+                  { bx:CP.x2, by:CP.y2, x:CP.x2, y:CP.y2, vx:0, vy:0 } ];
+    let mouse = null;
+    if (!RM) {
+      s.addEventListener('mousemove', e => {
+        const r = s.getBoundingClientRect();
+        mouse = { x: (e.clientX - r.left) / r.width * 120 - 10, y: (e.clientY - r.top) / r.height * 120 - 10 };
+      });
+      s.addEventListener('mouseleave', () => mouse = null);
+      const K = .12, D = .82, PULL = .16, RADIUS = 46;
+      (function loop() {
+        for (const p of pts) {
+          let tx = p.bx, ty = p.by;
+          if (mouse) {
+            const dx = mouse.x - p.bx, dy = mouse.y - p.by, d = Math.hypot(dx, dy);
+            if (d < RADIUS) { tx = p.bx + dx * PULL * (1 - d / RADIUS) * 4; ty = p.by + dy * PULL * (1 - d / RADIUS) * 4; }
+          }
+          p.vx = (p.vx + (tx - p.x) * K) * D; p.vy = (p.vy + (ty - p.y) * K) * D;
+          p.x += p.vx; p.y += p.vy;
+        }
+        path.setAttribute('d', `M 0 100 C ${pts[0].x} ${pts[0].y}, ${pts[1].x} ${pts[1].y}, 100 0`);
+        requestAnimationFrame(loop);
+      })();
+    }
+  }
+
+  /* F — Survival: tiny sizes */
+  {
+    const stage = document.querySelector('#stF .stage');
+    [16, 24, 48].forEach(size => {
+      const s = svg(stage, size, size, '-14 -14 128 128');
+      const p = el('path', { class:'curve', d:curvePath(0, CP), 'stroke-width':14 }, s);
+      const L = p.getTotalLength();
+      p.style.strokeDasharray = L;
+      if (!RM) {
+        let t0 = performance.now();
+        (function loop(now) {
+          const cyc = ((now - t0) % 2600) / 2600;
+          const draw = cyc < .5 ? easedAt(Math.min(cyc / .42, 1), CP) : 1 - easedAt(Math.min((cyc - .5) / .42, 1), CP);
+          p.style.strokeDashoffset = L * (1 - draw);
+          requestAnimationFrame(loop);
+        })(t0);
+      } else p.style.strokeDashoffset = 0;
+    });
+  }
+})();
+</script>
