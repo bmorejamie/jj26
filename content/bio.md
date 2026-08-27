@@ -41,6 +41,9 @@ sometime.
 
 ## Facts bank
 
+- **The headline (2026): design system product owner; leads design-to-code agentic AI
+  workflow work — his most important current work. This positions everything else.**
+  (Public rule: name the capability, never employer internals.)
 - 18+ years design experience; senior digital designer (motion / UI / UX)
 - Skateboard industry origins; agencies incl. Ketchum
 - Nonprofit digital + fundraising: The Wilderness Society, Defenders of Wildlife, ALA, AAH
