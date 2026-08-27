@@ -3,8 +3,9 @@
 **Live:** https://www.actionagainsthunger.org/
 **Status:** intake in progress — screenshots captured by Claude from the live site, blurb
 drafted from what's on the page, awaiting Jamie's corrections
-**Assets:** `action-against-hunger/` — desktop 1440 + mobile 390, viewport and full-page each
-(captured 2026-08-26)
+**Assets:** `action-against-hunger/` — homepage, desktop 1440 + mobile 390, viewport and
+full-page each. Plus `action-against-hunger/interiors/` — three interior templates, same
+four captures each (captured 2026-08-26)
 
 ## Blurb (draft — correct me)
 
@@ -39,8 +40,25 @@ the headline instead of a nag layered over it.
 - [ ] Year, and full site vs homepage/templates vs redesign of an existing thing
 - [ ] Confirmed cleared for public portfolio
 - [ ] Story or shots? (the donate-vs-dignity tension is the case study here if you want one)
-- [ ] Are there interior templates worth capturing too — country pages, story pages, the
-      donation flow? Say the word and I'll grab them.
+- [ ] Which of the interior templates are yours? (captured three — see below)
+- [ ] Want the donation flow captured too? It's the most interesting conversion problem on
+      the site and I skipped it this pass.
+
+## Interior templates captured (`interiors/`)
+
+Three distinct page types, to show the system holds up past the homepage:
+
+1. **`country-sudan-*`** — location/crisis template (`/location/africa/sudan/`). Country name
+   set enormous in Futura, centered, alone on white, then a full-bleed photo beneath it. The
+   restraint is the whole move — no hero copy competing, just the name and the place.
+2. **`story-haiti-*`** — editorial/article template (`/story/supporting-survivors-of-gender-
+   based-violence-in-haiti/`). Full-bleed documentary lead image, floating share affordance.
+3. **`solutions-nutrition-*`** — programme/service template (`/our-solutions/nutrition-health/`).
+   The longest of the three; explanatory content with the stat and bracket devices reused.
+
+Worth noting for the case study: the homepage is loud (two bars, big type, donation module)
+and the interiors are quiet. That's a deliberate gradient, and it's the kind of thing a
+portfolio piece should point at.
 
 ## Capture notes
 
