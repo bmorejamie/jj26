@@ -61,9 +61,11 @@
     const a = 2 * Math.PI * u;
     return {
       p1: { x: BASE1.x + 7.5*Math.sin(2*a+.6) + 2.5*Math.sin(5*a),
-            y: BASE1.y + 10 *Math.sin(3*a+1.7) + 3*Math.sin(7*a+.4) },
+            y: BASE1.y + 10 *Math.sin(3*a+1.7) + 3*Math.sin(7*a+.4),
+            z: 10*Math.sin(2*a+2.2) + 3.5*Math.sin(5*a+1.0) },
       p2: { x: BASE2.x + 9  *Math.sin(3*a+3.1) + 2.5*Math.sin(4*a+2),
-            y: BASE2.y + 8  *Math.sin(2*a+4.4) + 3*Math.sin(6*a+1.1) },
+            y: BASE2.y + 8  *Math.sin(2*a+4.4) + 3*Math.sin(6*a+1.1),
+            z: -12*Math.sin(3*a+.9) - 4*Math.sin(4*a+2.6) },
     };
   }
   // svg-space (0..100, y down) -> world (centered, y up, z=0 plane)
@@ -72,7 +74,8 @@
     const i = 1-t;
     const bx = i*i*i*0 + 3*i*i*t*c.p1.x + 3*i*t*t*c.p2.x + t*t*t*100;
     const by = i*i*i*100 + 3*i*i*t*c.p1.y + 3*i*t*t*c.p2.y + t*t*t*0;
-    return w3(bx, by);
+    const bz = 3*i*i*t*c.p1.z + 3*i*t*t*c.p2.z; // endpoints pinned to the plane
+    return w3(bx, by, bz);
   }
 
   function easeOurs(t) {
@@ -113,8 +116,8 @@
   let track = 'A';
 
   function anchorPos(name, pk, c) {
-    if (name === 'p1') return w3(c.p1.x, c.p1.y);
-    if (name === 'p2') return w3(c.p2.x, c.p2.y);
+    if (name === 'p1') return w3(c.p1.x, c.p1.y, c.p1.z);
+    if (name === 'p2') return w3(c.p2.x, c.p2.y, c.p2.z);
     if (name === 'path') return bezPt(pk ?? .5, c);
     if (name === 'wall') return { x:0, y:0, z:-12 };
     return { x:0, y:2, z:0 };
@@ -181,9 +184,11 @@
     const N=64; let prev=bezPt(0,c);
     for (let i=1;i<=N;i++){ const pt=bezPt(i/N,c); add(prev,pt,.42,'#D8D6D0'); prev=pt; }
     // handle lines — grey dashes
-    const e0=w3(0,100), e1=w3(100,0), h1=w3(c.p1.x,c.p1.y), h2=w3(c.p2.x,c.p2.y);
-    const dsub=(a,b)=>{ for(let i=0;i<10;i++){ const q1={x:lerp(a.x,b.x,i/10),y:lerp(a.y,b.y,i/10),z:0},
-      q2={x:lerp(a.x,b.x,(i+.55)/10),y:lerp(a.y,b.y,(i+.55)/10),z:0}; add(q1,q2,.2,'rgba(138,136,132,.55)'); } };
+    const e0=w3(0,100), e1=w3(100,0), h1=w3(c.p1.x,c.p1.y,c.p1.z), h2=w3(c.p2.x,c.p2.y,c.p2.z);
+    const dsub=(a,b)=>{ for(let i=0;i<10;i++){
+      const q1={x:lerp(a.x,b.x,i/10),y:lerp(a.y,b.y,i/10),z:lerp(a.z,b.z,i/10)},
+            q2={x:lerp(a.x,b.x,(i+.55)/10),y:lerp(a.y,b.y,(i+.55)/10),z:lerp(a.z,b.z,(i+.55)/10)};
+      add(q1,q2,.2,'rgba(138,136,132,.55)'); } };
     dsub(e0,h1); dsub(e1,h2);
     // points
     const pts = [
