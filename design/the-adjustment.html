@@ -1,0 +1,250 @@
+<title>The Adjustment</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html, body { height:100%; }
+  body { background:#0E0E10; overflow:hidden; font-family:'IBM Plex Mono',ui-monospace,monospace; }
+  canvas { display:block; width:100vw; height:100vh; }
+  #hud {
+    position:fixed; right:18px; bottom:16px; display:flex; flex-direction:column; gap:10px;
+    color:#8A8884; font-size:10.5px; letter-spacing:.08em; text-transform:uppercase;
+    background:rgba(14,14,16,.72); padding:14px 16px; border:1px solid #26262A;
+    backdrop-filter:blur(6px); user-select:none;
+  }
+  #hud label { display:flex; align-items:center; justify-content:space-between; gap:14px; }
+  #hud input[type=range] { width:110px; accent-color:#EDECE8; }
+  #hud button {
+    font:inherit; color:#8A8884; background:none; border:1px solid #26262A; padding:5px 10px;
+    cursor:pointer; letter-spacing:.08em; text-transform:uppercase;
+  }
+  #hud button:hover { color:#EDECE8; border-color:#8A8884; }
+  #title {
+    position:fixed; left:18px; bottom:16px; color:#8A8884; font-size:10.5px;
+    letter-spacing:.08em; text-transform:uppercase;
+  }
+  @media (prefers-reduced-motion: reduce) { #hud .anim-only { display:none; } }
+</style>
+
+<canvas id="c"></canvas>
+<div id="title">the adjustment — loop study · cubic-bezier(0.22, 1.00, 0.36, 1.00)</div>
+<div id="hud">
+  <label>DOF <input type="range" id="dof" min="0" max="200" value="100"></label>
+  <label class="anim-only">Speed <input type="range" id="spd" min="40" max="160" value="100"></label>
+  <label>Grain <input type="checkbox" id="grain" checked></label>
+  <button id="pause" class="anim-only">Pause</button>
+</div>
+
+<script>
+(() => {
+  const cv = document.getElementById('c');
+  const ctx = cv.getContext('2d');
+  const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const DPR = Math.min(devicePixelRatio || 1, 1.5);
+  let W, H, SCALE;
+  function resize() {
+    W = innerWidth; H = innerHeight;
+    cv.width = W * DPR; cv.height = H * DPR;
+    SCALE = Math.min(W, H) / 130; // world is ~100x100 with margin
+  }
+  resize(); addEventListener('resize', resize);
+
+  // ---------- world ----------
+  // curve endpoints (keyframe diamonds), y flipped like SVG
+  const P0 = { x:0, y:100 }, P3 = { x:100, y:0 };
+  const BASE1 = { x:22, y:0 }, BASE2 = { x:36, y:0 };
+  const T = 20; // loop seconds
+  // control points drift on closed paths (integer harmonics of loop => seamless)
+  function ctrlAt(u) { // u in 0..1
+    const a = 2 * Math.PI * u;
+    return {
+      p1: { x: BASE1.x + 7.5 * Math.sin(2*a + .6) + 2.5 * Math.sin(5*a),
+            y: BASE1.y + 10  * Math.sin(3*a + 1.7) + 3   * Math.sin(7*a + .4) },
+      p2: { x: BASE2.x + 9   * Math.sin(3*a + 3.1) + 2.5 * Math.sin(4*a + 2),
+            y: BASE2.y + 8   * Math.sin(2*a + 4.4) + 3   * Math.sin(6*a + 1.1) },
+    };
+  }
+
+  // depth planes (z: negative = far, positive = near camera)
+  const PERSP = 260;
+  // camera keyframes over the loop — anchor follows the live handle positions
+  // ease between keys with the curve's own easing
+  function easeOurs(t) { // cubic-bezier(.22,1,.36,1) progress approx via binary search
+    const x1=.22, y1=1, x2=.36, y2=1;
+    let lo=0, hi=1, s=t;
+    for (let k=0;k<20;k++){ s=(lo+hi)/2;
+      const i=1-s, xs=3*i*i*s*x1+3*i*s*s*x2+s*s*s;
+      xs<t?lo=s:hi=s; }
+    const i=1-s; return 3*i*i*s*y1+3*i*s*s*y2+s*s*s;
+  }
+  const KEYS = [ // t, anchor, zoom, focusZ
+    { t:0.00, an:'p1',  zoom:5.2, f: 12 },
+    { t:0.16, an:'p1',  zoom:4.2, f: 12 },
+    { t:0.42, an:'mid', zoom:1.0, f: 0  },
+    { t:0.58, an:'mid', zoom:0.94,f: -14 }, // breathe wider, focus falls to the grid
+    { t:0.74, an:'p2',  zoom:2.6, f: 10 },
+    { t:0.90, an:'p1',  zoom:4.6, f: 12 },
+    { t:1.00, an:'p1',  zoom:5.2, f: 12 }, // == t 0
+  ];
+  function anchorPos(name, c) {
+    if (name === 'p1') return c.p1;
+    if (name === 'p2') return c.p2;
+    return { x:50, y:52 };
+  }
+  function camAt(u, c) {
+    let i = 0;
+    while (i < KEYS.length - 1 && u > KEYS[i+1].t) i++;
+    const k0 = KEYS[i], k1 = KEYS[Math.min(i+1, KEYS.length-1)];
+    const span = Math.max(k1.t - k0.t, 1e-6);
+    const e = easeOurs(Math.min((u - k0.t) / span, 1));
+    const a0 = anchorPos(k0.an, c), a1 = anchorPos(k1.an, c);
+    return {
+      x: a0.x + (a1.x - a0.x) * e,
+      y: a0.y + (a1.y - a0.y) * e,
+      zoom: k0.zoom + (k1.zoom - k0.zoom) * e,
+      f: k0.f + (k1.f - k0.f) * e,
+    };
+  }
+
+  // project world (x,y,z) through camera
+  function proj(x, y, z, cam) {
+    const p = PERSP / (PERSP - z);
+    const s = SCALE * cam.zoom * p;
+    return { x: (x - cam.x) * s + W / 2, y: (y - cam.y) * s + H / 2, s };
+  }
+
+  // ---------- layers ----------
+  const off = () => { const o = document.createElement('canvas'); o.width = cv.width; o.height = cv.height; return o; };
+  let layers = [];
+  function ensureLayers() {
+    if (layers.length && layers[0].width === cv.width) return;
+    layers = [off(), off(), off(), off(), off()]; // grid-far, grid-near, curve, handle-lines, handles
+  }
+
+  const LZ = { gridFar:-46, gridNear:-22, curve:0, hlines:8, handles:12 };
+
+  function drawGrid(g, z, cam, alpha, step) {
+    g.strokeStyle = `rgba(138,136,132,${alpha})`;
+    g.lineWidth = Math.max(.5 * DPR, .06 * SCALE * cam.zoom * DPR);
+    g.beginPath();
+    for (let gx = -140; gx <= 240; gx += step) {
+      const a = proj(gx, -140, z, cam), b = proj(gx, 240, z, cam);
+      g.moveTo(a.x * DPR, a.y * DPR); g.lineTo(b.x * DPR, b.y * DPR);
+    }
+    for (let gy = -140; gy <= 240; gy += step) {
+      const a = proj(-140, gy, z, cam), b = proj(240, gy, z, cam);
+      g.moveTo(a.x * DPR, a.y * DPR); g.lineTo(b.x * DPR, b.y * DPR);
+    }
+    g.stroke();
+  }
+
+  function drawCurve(g, c, cam) {
+    const a = proj(P0.x, P0.y, LZ.curve, cam), b = proj(P3.x, P3.y, LZ.curve, cam);
+    const c1 = proj(c.p1.x, c.p1.y, LZ.curve, cam), c2 = proj(c.p2.x, c.p2.y, LZ.curve, cam);
+    g.strokeStyle = '#EDECE8';
+    g.lineCap = 'round';
+    g.lineWidth = Math.max(1.6, 1.1 * SCALE * cam.zoom * .5) * DPR;
+    g.beginPath();
+    g.moveTo(a.x * DPR, a.y * DPR);
+    g.bezierCurveTo(c1.x * DPR, c1.y * DPR, c2.x * DPR, c2.y * DPR, b.x * DPR, b.y * DPR);
+    g.stroke();
+    // keyframe diamonds at endpoints
+    for (const p of [a, b]) {
+      const r = Math.max(3, 2.2 * SCALE * cam.zoom * .5) * DPR;
+      g.fillStyle = '#EDECE8';
+      g.save(); g.translate(p.x * DPR, p.y * DPR); g.rotate(Math.PI / 4);
+      g.fillRect(-r / 2, -r / 2, r, r); g.restore();
+    }
+  }
+
+  function drawHandleLines(g, c, cam) {
+    const pairs = [ [P0, c.p1], [P3, c.p2] ];
+    g.strokeStyle = 'rgba(90,158,111,.9)';
+    g.lineWidth = Math.max(.8, .35 * SCALE * cam.zoom * .5) * DPR;
+    g.setLineDash([4 * DPR, 5 * DPR]);
+    g.beginPath();
+    for (const [s0, s1] of pairs) {
+      const a = proj(s0.x, s0.y, LZ.hlines, cam), b = proj(s1.x, s1.y, LZ.hlines, cam);
+      g.moveTo(a.x * DPR, a.y * DPR); g.lineTo(b.x * DPR, b.y * DPR);
+    }
+    g.stroke();
+    g.setLineDash([]);
+  }
+
+  function drawHandles(g, c, cam) {
+    for (const p of [c.p1, c.p2]) {
+      const q = proj(p.x, p.y, LZ.handles, cam);
+      const r = Math.max(3.5, 2.6 * SCALE * cam.zoom * .5) * DPR;
+      g.lineWidth = Math.max(1.2, .5 * SCALE * cam.zoom * .5) * DPR;
+      g.strokeStyle = '#5A9E6F';
+      g.fillStyle = '#0E0E10';
+      g.beginPath(); g.arc(q.x * DPR, q.y * DPR, r, 0, 7); g.fill(); g.stroke();
+    }
+  }
+
+  // grain
+  const noise = document.createElement('canvas');
+  noise.width = 256; noise.height = 256;
+  { const n = noise.getContext('2d'), d = n.createImageData(256, 256);
+    for (let i = 0; i < d.data.length; i += 4) { const v = 118 + Math.random() * 20 | 0; d.data[i]=d.data[i+1]=d.data[i+2]=v; d.data[i+3]=255; }
+    n.putImageData(d, 0, 0); }
+
+  // ---------- render ----------
+  const dofEl = document.getElementById('dof');
+  const spdEl = document.getElementById('spd');
+  const grainEl = document.getElementById('grain');
+  const pauseEl = document.getElementById('pause');
+  let paused = false;
+  pauseEl.addEventListener('click', () => { paused = !paused; pauseEl.textContent = paused ? 'Play' : 'Pause'; });
+
+  let u = RM ? 0.45 : 0; // reduced motion: hold the wide shot
+  let last = performance.now();
+
+  function frame(now) {
+    const dt = (now - last) / 1000; last = now;
+    if (!RM && !paused) u = (u + dt * (spdEl.value / 100) / T) % 1;
+    ensureLayers();
+    const c = ctrlAt(u);
+    const cam = camAt(u, c);
+    const dofAmt = dofEl.value / 100;
+
+    for (const l of layers) l.getContext('2d').clearRect(0, 0, cv.width, cv.height);
+    drawGrid(layers[0].getContext('2d'), LZ.gridFar, cam, .5, 14);
+    drawGrid(layers[1].getContext('2d'), LZ.gridNear, cam, .3, 7);
+    drawCurve(layers[2].getContext('2d'), c, cam);
+    drawHandleLines(layers[3].getContext('2d'), c, cam);
+    drawHandles(layers[4].getContext('2d'), c, cam);
+
+    ctx.filter = 'none';
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.fillStyle = '#0E0E10';
+    ctx.fillRect(0, 0, cv.width, cv.height);
+
+    const zs = [LZ.gridFar, LZ.gridNear, LZ.curve, LZ.hlines, LZ.handles];
+    zs.forEach((z, i) => {
+      const coc = Math.abs(z - cam.f) * .16 * dofAmt * Math.max(cam.zoom * .55, .8);
+      ctx.filter = coc > .25 ? `blur(${Math.min(coc, 14) * DPR}px)` : 'none';
+      ctx.drawImage(layers[i], 0, 0);
+    });
+    ctx.filter = 'none';
+
+    // vignette
+    const vg = ctx.createRadialGradient(cv.width/2, cv.height/2, Math.min(cv.width,cv.height)*.35,
+                                        cv.width/2, cv.height/2, Math.max(cv.width,cv.height)*.75);
+    vg.addColorStop(0, 'rgba(14,14,16,0)'); vg.addColorStop(1, 'rgba(10,10,12,.55)');
+    ctx.fillStyle = vg; ctx.fillRect(0, 0, cv.width, cv.height);
+
+    // grain
+    if (grainEl.checked) {
+      ctx.globalCompositeOperation = 'overlay';
+      ctx.globalAlpha = .07;
+      const ox = (Math.random() * 128) | 0, oy = (Math.random() * 128) | 0;
+      for (let x = -ox; x < cv.width; x += 256) for (let y = -oy; y < cv.height; y += 256) ctx.drawImage(noise, x, y);
+      ctx.globalAlpha = 1;
+      ctx.globalCompositeOperation = 'source-over';
+    }
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+})();
+</script>
