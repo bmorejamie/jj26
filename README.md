@@ -1,10 +1,10 @@
 # jj26 — Jamie Jones, portfolio
 
-Plain HTML and CSS. No build step, no dependencies, no server. GitHub Pages serves
-the files exactly as they sit in this repo, which means **publishing is committing a
-file** — the same action whether a human or an agent does it.
+Source for my personal portfolio site. Plain HTML and CSS — no build step, no
+dependencies, no server. The files are served exactly as they sit here, which means
+publishing is just committing a file.
 
-See `PLAN.md` for the thesis and the phase plan.
+Work in progress.
 
 ---
 
@@ -47,7 +47,7 @@ under `prefers-reduced-motion`.
 ## Still placeholder
 
 - Hero and About copy — written as slots, needs Jamie's words.
-- Contact: email, LinkedIn, and résumé are unfilled by design; no address is published
+- Contact details are unfilled for now
   until Jamie picks the public one.
 - ALPA screens not yet uploaded — the gallery tile is an honest empty state, not a
   stand-in image.
