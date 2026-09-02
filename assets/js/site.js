@@ -47,3 +47,36 @@
     window.addEventListener("scroll", onScroll, { passive: true });
   }
 })();
+
+/* --- edition switch ---------------------------------------------------
+   Three viewer states, not two: an explicit choice stamps data-theme on the
+   root; "system" stamps nothing and lets prefers-color-scheme decide. The
+   stored choice, when there is one, wins in both directions. */
+(function () {
+  "use strict";
+  var root = document.documentElement;
+  var btn = document.getElementById("edition");
+  if (!btn) return;
+  var label = document.getElementById("editionLabel");
+  var mq = window.matchMedia("(prefers-color-scheme: dark)");
+
+  try {
+    var saved = localStorage.getItem("jj26-edition");
+    if (saved === "dark" || saved === "light") root.setAttribute("data-theme", saved);
+  } catch (e) {}
+
+  function isDark() {
+    var t = root.getAttribute("data-theme");
+    return t ? t === "dark" : mq.matches;
+  }
+  function sync() { if (label) label.textContent = isDark() ? "Night" : "Day"; }
+
+  btn.addEventListener("click", function () {
+    var next = isDark() ? "light" : "dark";
+    root.setAttribute("data-theme", next);
+    try { localStorage.setItem("jj26-edition", next); } catch (e) {}
+    sync();
+  });
+  mq.addEventListener("change", sync);
+  sync();
+})();

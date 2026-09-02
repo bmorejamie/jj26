@@ -8,18 +8,27 @@
 --------------------------------------------------------------------------- */
 
 :root {
-  /* Ground + ink */
-  --paper:      #FBFAF7;
-  --paper-sunk: #F3F1EB;
-  --ink:        #171612;
-  --ink-soft:   #55524A;
-  --ink-faint:  #8C887E;
-  --rule:       rgba(23, 22, 18, 0.14);
-  --rule-soft:  rgba(23, 22, 18, 0.07);
+  /* Ground + ink — DAY EDITION. The complete palette lives here; the night
+     blocks below redefine these tokens and nothing else. */
+  --paper:      #F2F3F1;
+  --paper-sunk: #FBFBFA;
+  --ink:        #16171A;
+  --ink-soft:   #53565B;
+  --ink-faint:  #8A8D91;
+  --rule:       rgba(22, 23, 26, 0.14);
+  --rule-soft:  rgba(22, 23, 26, 0.07);
+  --signal:     #2C6B70;
+  --curve:      #16171A;
 
-  /* Type */
-  --display: "Newsreader", Georgia, "Times New Roman", serif;
-  --text:    "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  /* Type — the display face is the edition's voice and changes with it.
+     Body and mono stay constant so it reads as one site changing clothes. */
+  --display:      "Fraunces", Georgia, "Times New Roman", serif;
+  --display-wght: 400;
+  --display-case: none;
+  --display-vf:   "SOFT" 18, "WONK" 1, "opsz" 100;
+  --display-trk:  -0.018em;
+  --text: "Instrument Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
 
   --step--1: clamp(0.78rem, 0.76rem + 0.10vw, 0.84rem);
   --step-0:  clamp(0.98rem, 0.95rem + 0.14vw, 1.06rem);
@@ -43,6 +52,47 @@
   --t-slow:    900ms;
 }
 
+
+/* --- NIGHT STUDIO -------------------------------------------------------
+   Two blocks on purpose: the media query covers viewers on system-dark who
+   have never touched the switch; the stamp lets the switch win either way. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper:      #0E0E10;
+    --paper-sunk: #151518;
+    --ink:        #EDECE8;
+    --ink-soft:   #97958F;
+    --ink-faint:  #65635F;
+    --rule:       rgba(237, 236, 232, 0.16);
+    --rule-soft:  rgba(237, 236, 232, 0.07);
+    --signal:     #79A9AC;
+    --curve:      #D8D6D0;
+
+    --display:      "Archivo", "Helvetica Neue", Arial, sans-serif;
+    --display-wght: 800;
+    --display-case: uppercase;
+    --display-vf:   "wdth" 64;
+    --display-trk:  -0.02em;
+  }
+}
+:root[data-theme="dark"] {
+    --paper:      #0E0E10;
+    --paper-sunk: #151518;
+    --ink:        #EDECE8;
+    --ink-soft:   #97958F;
+    --ink-faint:  #65635F;
+    --rule:       rgba(237, 236, 232, 0.16);
+    --rule-soft:  rgba(237, 236, 232, 0.07);
+    --signal:     #79A9AC;
+    --curve:      #D8D6D0;
+
+    --display:      "Archivo", "Helvetica Neue", Arial, sans-serif;
+    --display-wght: 800;
+    --display-case: uppercase;
+    --display-vf:   "wdth" 64;
+    --display-trk:  -0.02em;
+}
+
 /* --------------------------------------------------------------- reset-ish */
 *, *::before, *::after { box-sizing: border-box; }
 html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
@@ -51,6 +101,7 @@ html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
 body {
   margin: 0;
   background: var(--paper);
+  transition: background-color var(--t-base) var(--ease), color var(--t-base) var(--ease);
   color: var(--ink);
   font-family: var(--text);
   font-size: var(--step-0);
@@ -64,8 +115,10 @@ a { color: inherit; }
 
 h1, h2, h3 {
   font-family: var(--display);
-  font-weight: 400;
-  letter-spacing: -0.018em;
+  font-weight: var(--display-wght);
+  font-variation-settings: var(--display-vf);
+  text-transform: var(--display-case);
+  letter-spacing: var(--display-trk);
   line-height: 1.04;
   margin: 0;
   text-wrap: balance;
@@ -127,9 +180,11 @@ h1, h2, h3 {
 }
 
 .wordmark {
-  font-family: var(--display);
-  font-size: var(--step-1);
-  letter-spacing: -0.02em;
+  display: inline-flex; align-items: center; gap: 0.6rem;
+  font-family: var(--text);
+  font-weight: 600;
+  font-size: var(--step-0);
+  letter-spacing: -0.01em;
   text-decoration: none;
   white-space: nowrap;
 }
@@ -175,6 +230,24 @@ h1, h2, h3 {
   font-style: italic;
   /* Optical: the italic sits a touch heavy next to the roman at display size */
   letter-spacing: -0.015em;
+}
+
+/* Night has no true italic in a compressed grotesk, and a faux oblique on
+   that face looks like a mistake. The emphasis moves to width + weight
+   instead — same job, done in the voice the edition actually speaks. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .hero__statement em {
+    font-style: normal;
+    font-variation-settings: "wdth" 88;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+  }
+}
+:root[data-theme="dark"] .hero__statement em {
+  font-style: normal;
+  font-variation-settings: "wdth" 88;
+  font-weight: 500;
+  letter-spacing: -0.01em;
 }
 
 .hero__meta {
@@ -310,6 +383,9 @@ h1, h2, h3 {
 
 .lede {
   font-family: var(--display);
+  font-weight: var(--display-wght);
+  font-variation-settings: var(--display-vf);
+  text-transform: var(--display-case);
   font-size: var(--step-2);
   line-height: 1.22;
   letter-spacing: -0.015em;
@@ -464,3 +540,40 @@ h1, h2, h3 {
 
 /* No-JS: never leave content invisible. */
 .no-js .rise { opacity: 1; transform: none; }
+
+
+/* --------------------------------------------------------------- the mark
+   His signature: the site's own easing curve, drawn. Hover reveals the
+   control handles — the autograph showing its construction. */
+.mark { width: 24px; height: 24px; flex: none; overflow: visible; }
+.mark path { fill: none; stroke: var(--curve); stroke-width: 9; stroke-linecap: round;
+             transition: stroke var(--t-base) var(--ease); }
+.mark .h  { stroke: var(--ink-faint); stroke-width: 5; opacity: 0;
+            transition: opacity var(--t-quick) var(--ease); }
+.mark .hp { fill: var(--paper); stroke: var(--ink-faint); stroke-width: 5; opacity: 0;
+            transition: opacity var(--t-quick) var(--ease); }
+.wordmark:hover .mark .h, .wordmark:hover .mark .hp { opacity: 1; }
+
+/* ----------------------------------------------------------- edition switch */
+.masthead__inner { align-items: center; }
+.edition {
+  display: inline-flex; align-items: center; gap: 0.55rem;
+  font: inherit; color: inherit; background: none; cursor: pointer;
+  border: 1px solid var(--rule); padding: 0.3rem 0.55rem 0.3rem 0.7rem;
+  transition: border-color var(--t-quick) var(--ease);
+}
+.edition:hover { border-color: var(--ink-faint); }
+.edition__label {
+  font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--ink-faint);
+}
+.edition__sw { width: 26px; height: 14px; border: 1px solid var(--rule); position: relative; }
+.edition__sw::after {
+  content: ""; position: absolute; top: 1px; left: 1px; width: 10px; height: 10px;
+  background: var(--ink); transition: transform var(--t-base) var(--ease);
+}
+:root[data-theme="dark"] .edition__sw::after { transform: translateX(12px); }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .edition__sw::after { transform: translateX(12px); }
+}
+@media (max-width: 640px) { .edition__label { display: none; } }
