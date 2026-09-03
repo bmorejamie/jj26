@@ -25,7 +25,8 @@ second copy. One file per asset, no sync problem.
 ## Adding a project
 
 1. Drop assets in `content/projects/<slug>/`.
-2. Write `content/projects/<slug>.md` — the intake note: blurb, notes, open questions.
+2. Keep the intake note (blurb, role, year, open questions) in the private notes repo,
+   not here — this repo holds only what the site serves.
 3. Make a card image: `sips --resampleWidth 1600 -s formatOptions 78 shot.jpg`, save it
    to `assets/img/work/<slug>-card.jpg`.
 4. Copy the closest `work/<slug>.html` and edit it.
