@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
+<meta name="googlebot" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Building this site with agents — Jamie Jones</title>
+<meta name="description" content="No CMS, no database, no build step. Publishing a page and committing a file are the same action.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23171612'/%3E%3Ctext x='50' y='72' font-family='Georgia,serif' font-size='62' fill='%23FBFAF7' text-anchor='middle'%3Ej%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=Fraunces:opsz,wght@9..144,300..700&family=Instrument+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/site.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="masthead">
+  <div class="wrap masthead__inner">
+    <a class="wordmark" href="../"><svg class="mark" viewBox="-6 -6 112 112" aria-hidden="true"><line class="h" x1="0" y1="100" x2="22" y2="10"></line><line class="h" x1="100" y1="0" x2="36" y2="4"></line><path d="M 0 100 C 22 10, 36 4, 100 0"></path><circle class="hp" cx="22" cy="10" r="7"></circle><circle class="hp" cx="36" cy="4" r="7"></circle></svg><span>Jamie Jones</span></a>
+    <nav class="nav" aria-label="Primary">
+      <a href="../#work">Work</a>
+      <a href="../#lab">Lab</a>
+      <a href="../#about">About</a>
+      <a href="../#contact">Contact</a>
+    </nav>
+    <button class="edition" id="edition" type="button" aria-label="Switch edition"><span class="edition__label" id="editionLabel">Day</span><span class="edition__sw" aria-hidden="true"></span></button>
+  </div>
+</header>
+<main id="main">
+  <section class="wrap shelf">
+    <div class="entry__head rise" style="--i:0">
+      <p class="feed__kind">Artifact · 001</p>
+      <h1 class="lede">Building this site with agents</h1>
+      <p class="entry__standfirst">
+        There's no CMS here, no database and no build step. Publishing a page and committing
+        a file are the same action. Below is this site's actual history, pulled live.
+      </p>
+    </div>
+
+    <div class="entry__body rise" style="--i:1">
+      <p>
+        <em>Draft — this is scaffolding for the template, not finished writing. The artifact
+        below is real and working.</em>
+      </p>
+
+      <h2>The publishing pipeline is git</h2>
+      <p>
+        Every page on this site is a file in a public repository. To publish something, a file
+        gets written and committed. That's the whole mechanism. It means the same action works
+        whether a person does it or an agent does it on their behalf — there's no admin panel
+        standing in between, and nothing to keep running.
+      </p>
+
+      <div class="artifact">
+        <p class="artifact__label">
+          <span>Live — this site's commit history</span>
+          <span id="commitSource">fetching…</span>
+        </p>
+        <ul class="commits" id="commits">
+          <li class="commits__status">Loading the last few commits…</li>
+        </ul>
+        <p class="artifact__caption">
+          Pulled from the GitHub API when this page loads. Nothing here is hand-written:
+          if the list changed since you last looked, the site changed.
+        </p>
+      </div>
+
+      <h2>Why it matters more than it sounds</h2>
+      <p>
+        Most of what I build now has no screens to screenshot. The deliverable is a workflow,
+        an architecture, a way of working. That doesn't fit a traditional portfolio piece — so
+        this is the other kind of portfolio piece: writing with the working thing attached.
+      </p>
+    </div>
+
+    <p class="rise backlink" style="--i:2"><a href="./">← All entries</a></p>
+  </section>
+
+  <script>
+  /* Living artifact: read the repo's own history. Public API, no auth, so it
+     degrades to a plain link if the request fails or the rate limit bites. */
+  (function () {
+    var list = document.getElementById('commits');
+    var source = document.getElementById('commitSource');
+    var REPO = 'bmorejamie/jj26';
+
+    function fail(msg) {
+      list.innerHTML = '<li class="commits__status">' + msg + '</li>';
+      source.textContent = '';
+    }
+
+    fetch('https://api.github.com/repos/' + REPO + '/commits?sha=dev&per_page=8')
+      .then(function (r) {
+        if (!r.ok) throw new Error(r.status === 403 ? 'rate limit' : 'HTTP ' + r.status);
+        return r.json();
+      })
+      .then(function (commits) {
+        if (!commits.length) return fail('No commits returned.');
+        list.innerHTML = '';
+        commits.forEach(function (c) {
+          var when = new Date(c.commit.author.date);
+          var li = document.createElement('li');
+
+          var sha = document.createElement('span');
+          sha.className = 'sha';
+          sha.textContent = c.sha.slice(0, 7);
+
+          var right = document.createElement('span');
+          var msg = document.createElement('span');
+          msg.className = 'msg';
+          msg.textContent = c.commit.message.split('\n')[0];
+          var time = document.createElement('span');
+          time.className = 'when';
+          time.textContent = ' · ' + when.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+
+          right.appendChild(msg);
+          right.appendChild(time);
+          li.appendChild(sha);
+          li.appendChild(right);
+          list.appendChild(li);
+        });
+        source.textContent = REPO;
+      })
+      .catch(function (e) {
+        fail('Could not reach the GitHub API (' + e.message + ').');
+      });
+  })();
+  </script>
+</main>
+<footer class="footer">
+  <div class="wrap footer__inner">
+    <span>© 2026 Jamie Jones</span>
+    <span>Built in the open — <a href="https://github.com/bmorejamie/jj26">source</a></span>
+  </div>
+</footer>
+<script src="../assets/js/site.js"></script>
+</body>
+</html>

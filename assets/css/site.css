@@ -570,3 +570,150 @@ h1, h2, h3 {
   :root:not([data-theme="light"]) .edition__sw::after { transform: translateX(12px); }
 }
 @media (max-width: 640px) { .edition__label { display: none; } }
+
+/* ---------------------------------------------------------------- the lab
+   Entries are dated, numbered and typed. A note is writing; an artifact is
+   a thing that runs. The feed shows both the same way — what differs is
+   what the entry page holds. */
+
+.feed { list-style: none; margin: 0; padding: 0; }
+
+.feed li { border-top: 1px solid var(--rule-soft); }
+.feed li:first-child { border-top: 1px solid var(--rule); }
+.feed li:last-child { border-bottom: 1px solid var(--rule); }
+
+.feed a {
+  display: grid;
+  grid-template-columns: 3.25rem 1fr;
+  gap: 0 clamp(1rem, 3vw, 2rem);
+  padding-block: clamp(1.3rem, 2.5vw, 2rem);
+  text-decoration: none;
+  transition: padding-inline-start var(--t-quick) var(--ease);
+}
+.feed a:hover { padding-inline-start: 0.7rem; }
+
+@media (max-width: 34rem) {
+  .feed a { grid-template-columns: 1fr; gap: 0.4rem; }
+}
+
+.feed__no {
+  font-family: var(--mono);
+  font-size: var(--step--1);
+  color: var(--ink-faint);
+  font-variant-numeric: tabular-nums;
+  padding-top: 0.3em;
+}
+
+.feed__kind {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  font-family: var(--mono);
+  font-size: var(--step--1);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  margin-bottom: 0.55rem;
+}
+/* A filled tick means it runs; an outline means it's writing. */
+.feed__kind::before {
+  content: ""; width: 6px; height: 6px; flex: none;
+  background: var(--signal);
+}
+.feed__kind[data-kind="note"]::before {
+  background: none; border: 1px solid var(--ink-faint);
+}
+
+.feed__title {
+  font-family: var(--display);
+  font-weight: var(--display-wght);
+  font-variation-settings: var(--display-vf);
+  text-transform: var(--display-case);
+  letter-spacing: var(--display-trk);
+  font-size: var(--step-1);
+  line-height: 1.16;
+  margin: 0;
+  transition: color var(--t-quick) var(--ease);
+}
+.feed a:hover .feed__title,
+.feed a:focus-visible .feed__title { color: var(--signal); }
+
+.feed__note {
+  margin: 0.5rem 0 0;
+  color: var(--ink-soft);
+  font-size: var(--step-0);
+  max-width: 58ch;
+}
+
+.feed__date { margin-top: 0.6rem; }
+
+/* --------------------------------------------------------------- an entry */
+
+.entry__head { border-bottom: 1px solid var(--rule); padding-bottom: clamp(1.4rem, 3vw, 2.2rem); }
+.entry__head h1 { margin: 0.7rem 0 0; max-width: 20ch; }
+.entry__standfirst {
+  margin: 1.1rem 0 0;
+  font-size: var(--step-1);
+  line-height: 1.5;
+  color: var(--ink-soft);
+  max-width: 54ch;
+}
+.entry__body { padding-block: clamp(2rem, 5vw, 3.2rem); }
+.entry__body h2 {
+  font-size: var(--step-1);
+  margin: 2.4rem 0 0.9rem;
+  max-width: 34ch;
+}
+.entry__body h2:first-child { margin-top: 0; }
+.entry__body p { margin: 0 0 1.15rem; color: var(--ink-soft); max-width: 66ch; }
+.entry__body strong { color: var(--ink); font-weight: 500; }
+.entry__body code {
+  font-family: var(--mono);
+  font-size: 0.9em;
+  color: var(--ink);
+  background: var(--paper-sunk);
+  padding: 0.12em 0.36em;
+}
+
+/* The living artifact: a thing that actually runs, framed as an exhibit
+   rather than an illustration. */
+.artifact {
+  border: 1px solid var(--rule);
+  background: var(--paper-sunk);
+  padding: clamp(1rem, 3vw, 1.75rem);
+  margin-block: clamp(1.75rem, 4vw, 2.75rem);
+}
+.artifact__label {
+  font-family: var(--mono);
+  font-size: var(--step--1);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  display: flex; justify-content: space-between; gap: 1rem; flex-wrap: wrap;
+  padding-bottom: 0.9rem;
+  margin-bottom: 1.1rem;
+  border-bottom: 1px solid var(--rule-soft);
+}
+.artifact__caption {
+  margin: 1.1rem 0 0;
+  font-size: var(--step--1);
+  color: var(--ink-faint);
+  max-width: 62ch;
+}
+
+/* commit list — used by entry 001, reusable for anything git-shaped */
+.commits { list-style: none; margin: 0; padding: 0; font-family: var(--mono); font-size: var(--step--1); }
+.commits li {
+  display: grid;
+  grid-template-columns: 6.5rem 1fr;
+  gap: 0 1rem;
+  padding-block: 0.5rem;
+  border-top: 1px solid var(--rule-soft);
+}
+.commits li:first-child { border-top: 0; }
+@media (max-width: 34rem) { .commits li { grid-template-columns: 1fr; gap: 0.2rem; } }
+.commits .sha { color: var(--signal); }
+.commits .msg { color: var(--ink-soft); }
+.commits .when { color: var(--ink-faint); }
+.commits__status { grid-column: 1 / -1; color: var(--ink-faint); }
+
+/* back link shared by work + lab pages */
+.backlink { display: inline-block; margin-top: 1rem; }
