@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
+<meta name="googlebot" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Slack for agents — Jamie Jones</title>
+<meta name="description" content="Standing up a personal Buzz hive so agents talk to each other without a human messenger. Traps, fixes, and the living rules.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23171612'/%3E%3Ctext x='50' y='72' font-family='Georgia,serif' font-size='62' fill='%23FBFAF7' text-anchor='middle'%3Ej%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=Fraunces:opsz,wght@9..144,300..700&family=Instrument+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/site.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="masthead">
+  <div class="wrap masthead__inner">
+    <a class="wordmark" href="../"><svg class="mark" viewBox="-6 -6 112 112" aria-hidden="true"><line class="h" x1="0" y1="100" x2="22" y2="10"></line><line class="h" x1="100" y1="0" x2="36" y2="4"></line><path d="M 0 100 C 22 10, 36 4, 100 0"></path><circle class="hp" cx="22" cy="10" r="7"></circle><circle class="hp" cx="36" cy="4" r="7"></circle></svg><span>Jamie Jones</span></a>
+    <nav class="nav" aria-label="Primary">
+      <a href="../#work">Work</a>
+      <a href="../#lab">Lab</a>
+      <a href="../#about">About</a>
+      <a href="../#contact">Contact</a>
+    </nav>
+    <button class="edition" id="edition" type="button" aria-label="Switch edition"><span class="edition__label" id="editionLabel">Day</span><span class="edition__sw" aria-hidden="true"></span></button>
+  </div>
+</header>
+<main id="main">
+  <section class="wrap shelf">
+    <div class="entry__head rise" style="--i:0">
+      <p class="feed__kind">Artifact · 002</p>
+      <h1 class="lede">Slack for agents</h1>
+      <p class="entry__standfirst">
+        A personal Buzz hive where TopBot, Forge, and Personal Claude talk to each other
+        without me as the messenger. One brain → one identity. The traps were the curriculum.
+      </p>
+    </div>
+
+    <div class="entry__body rise" style="--i:1">
+      <p>
+        <em>Draft — TopBot’s first pass. I’ll rewrite in my voice. The widgets below are real.</em>
+      </p>
+
+      <h2>The problem wasn’t “chat”</h2>
+      <p>
+        I was already talking to too many agents — work Claude, personal Claude, Grok, Hermes —
+        and none of them talked to each other. I was the bus. Every context switch burned the
+        thing I was trying to free up: attention.
+      </p>
+      <p>
+        Buzz (Block, built on Nostr) is a workspace where humans and agents are channel members
+        with their own keys. Adding an agent <strong>is</strong> the access grant. That’s the
+        interesting part — identity you can revoke, not a shared bot token nobody can audit.
+      </p>
+
+      <h2>The cast</h2>
+      <p>
+        Click a member. The mouth is how they actually speak on the relay — Desktop cards lied
+        to us more than once.
+      </p>
+
+      <div class="artifact" id="hive-cast">
+        <p class="artifact__label">
+          <span>Live — hive cast</span>
+          <span>jjux · Sep 2026</span>
+        </p>
+        <div class="hive" role="group" aria-label="Hive members">
+          <button type="button" class="hive__node" data-id="jamie" aria-pressed="false">
+            <span class="hive__name">Jamie</span>
+            <span class="hive__role">Owner</span>
+          </button>
+          <button type="button" class="hive__node" data-id="topbot" aria-pressed="false">
+            <span class="hive__name">TopBot</span>
+            <span class="hive__role">Ops · Grok</span>
+          </button>
+          <button type="button" class="hive__node" data-id="forge" aria-pressed="false">
+            <span class="hive__name">Forge</span>
+            <span class="hive__role">Guardian · Hermes</span>
+          </button>
+          <button type="button" class="hive__node" data-id="pclaude" aria-pressed="false">
+            <span class="hive__name">Personal Claude</span>
+            <span class="hive__role">Hands · Claude</span>
+          </button>
+        </div>
+        <p class="hive__detail" id="hiveDetail" aria-live="polite">
+          Pick a node. Hard rule underneath: <strong>one brain → one Buzz identity</strong>.
+          Dual TopBots were the mess.
+        </p>
+        <p class="artifact__caption">
+          Work Claude stays off this map on purpose — work channels only, when invited.
+        </p>
+      </div>
+
+      <h2>What broke (and what it taught)</h2>
+      <p>
+        The useful part of this adventure wasn’t the happy path. It was the scrapyard.
+        Expand a trap.
+      </p>
+
+      <div class="artifact">
+        <p class="artifact__label">
+          <span>Interactive — trap timeline</span>
+          <span>fail → fix</span>
+        </p>
+        <ul class="traps" id="traps">
+          <li>
+            <button type="button" class="traps__btn" aria-expanded="false">
+              <span class="traps__n">01</span>
+              <span class="traps__title">Keychain / Desktop ACP thrash</span>
+            </button>
+            <div class="traps__body">Buzz Desktop secret unlocks froze Keychain Access. We parked Desktop Start for TopBot’s mouth and went CLI + LaunchAgent instead.</div>
+          </li>
+          <li>
+            <button type="button" class="traps__btn" aria-expanded="false">
+              <span class="traps__n">02</span>
+              <span class="traps__title">Dual identities after a key wipe</span>
+            </button>
+            <div class="traps__body">A routine rewrote the env file and deleted the private key. Fresh key meant a new pubkey — suddenly two “TopBots.” Invite claim is the join path; never mint a twin “just to fix CLI.”</div>
+          </li>
+          <li>
+            <button type="button" class="traps__btn" aria-expanded="false">
+              <span class="traps__n">03</span>
+              <span class="traps__title">Five-minute “realtime”</span>
+            </button>
+            <div class="traps__body">Polling felt like Slack with lag. Realtime meant <code>buzz-acp</code> under a LaunchAgent KeepAlive — and <code>--subscribe all</code>, because mentions-only ignores a plain “hey.”</div>
+          </li>
+          <li>
+            <button type="button" class="traps__btn" aria-expanded="false">
+              <span class="traps__n">04</span>
+              <span class="traps__title">Eyes without prose</span>
+            </button>
+            <div class="traps__body">ACP could react 👀 while the Grok subprocess had no <code>auth.json</code>. Auth for the brain is separate from membership on the relay.</div>
+          </li>
+          <li>
+            <button type="button" class="traps__btn" aria-expanded="false">
+              <span class="traps__n">05</span>
+              <span class="traps__title">Desktop @ can’t authorize CLI agents</span>
+            </button>
+            <div class="traps__body">“Could not authorize a mentioned agent.” Managed-agent cards ≠ CLI identities. Fix for day-to-day: listen-all in channels you’re in. Don’t fight autocomplete.</div>
+          </li>
+        </ul>
+        <p class="artifact__caption">Curriculum disguised as debugging.</p>
+      </div>
+
+      <h2>Channel walls are the product</h2>
+      <p>
+        Hive membership isn’t “hears everything.” Channel membership is the privacy wall —
+        especially once Work Claude exists. Toggle the bad idea.
+      </p>
+
+      <div class="artifact" id="channel-wall">
+        <p class="artifact__label">
+          <span>Interactive — channel wall</span>
+          <span>policy toy</span>
+        </p>
+        <label class="wall__toggle">
+          <input type="checkbox" id="wallToggle">
+          Put Work Claude in #general
+        </label>
+        <div class="wall">
+          <div class="wall__panel" id="wallGeneral" data-state="good">
+            <strong>#general</strong> — personal hive
+            <ul class="wall__channels" id="wallGeneralList"></ul>
+          </div>
+          <div class="wall__panel" id="wallWork" data-state="good">
+            <strong>#is-work</strong> — work only
+            <ul class="wall__channels" id="wallWorkList"></ul>
+          </div>
+        </div>
+        <p class="wall__verdict" id="wallVerdict" aria-live="polite"></p>
+        <p class="artifact__caption">
+          Personal agents may roam. Work Claude is intentionally fenced — company policy, not vibes.
+        </p>
+      </div>
+
+      <h2>What “done enough” looks like</h2>
+      <p>
+        Agents answering each other in <code>#general</code> without me prompting from another app.
+        Flat replies. One mouth per brain. A playbook I don’t have to re-derive for the next agent.
+      </p>
+      <p>
+        This is Lab material because the deliverable isn’t a screenshot — it’s a way of working
+        that finally stopped using me as the bus.
+      </p>
+    </div>
+
+    <p class="rise backlink" style="--i:2"><a href="./">← All entries</a></p>
+  </section>
+
+  <script>
+  (function () {
+    var cast = {
+      jamie: { title: 'Jamie', body: '<strong>Owner / orchestrator.</strong> Not the messenger anymore. Signs invites, sets channel walls, still the only one who decides what ships publicly.' },
+      topbot: { title: 'TopBot', body: '<strong>Right-hand / hive ops.</strong> Mouth: LaunchAgent → <code>buzz-acp</code> → Grok. Holds the through-line and the onboarding playbook.' },
+      forge: { title: 'Forge', body: '<strong>Personal guardian / headspace.</strong> Mouth: Hermes gateway Buzz platform over websocket. Creative / confidant lane — not a Desktop twin.' },
+      pclaude: { title: 'Personal Claude', body: '<strong>General-purpose hands.</strong> Mouth: <code>buzz-acp</code> + <code>claude-agent-acp</code>. Same channel access as TopBot/Forge. Not Work Claude.' }
+    };
+    var detail = document.getElementById('hiveDetail');
+    var nodes = document.querySelectorAll('.hive__node');
+    nodes.forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        nodes.forEach(function (n) { n.setAttribute('aria-pressed', 'false'); });
+        btn.setAttribute('aria-pressed', 'true');
+        var d = cast[btn.getAttribute('data-id')];
+        detail.innerHTML = '<strong>' + d.title + '</strong> — ' + d.body;
+      });
+    });
+
+    var traps = document.querySelectorAll('#traps > li');
+    traps.forEach(function (li) {
+      var btn = li.querySelector('.traps__btn');
+      btn.addEventListener('click', function () {
+        var open = li.getAttribute('data-open') === 'true';
+        traps.forEach(function (o) {
+          o.setAttribute('data-open', 'false');
+          o.querySelector('.traps__btn').setAttribute('aria-expanded', 'false');
+        });
+        if (!open) {
+          li.setAttribute('data-open', 'true');
+          btn.setAttribute('aria-expanded', 'true');
+        }
+      });
+    });
+
+    var baseG = ['Jamie', 'TopBot', 'Forge', 'Personal Claude'];
+    var baseW = ['Jamie', 'TopBot', 'Forge', 'Personal Claude'];
+    var toggle = document.getElementById('wallToggle');
+    var gList = document.getElementById('wallGeneralList');
+    var wList = document.getElementById('wallWorkList');
+    var gPanel = document.getElementById('wallGeneral');
+    var wPanel = document.getElementById('wallWork');
+    var verdict = document.getElementById('wallVerdict');
+
+    function renderWall() {
+      var bad = toggle.checked;
+      var g = baseG.slice();
+      if (bad) g.push('Work Claude');
+      gList.innerHTML = g.map(function (n) {
+        var tag = n === 'Work Claude' ? ' <span style="color:#c44">← policy break</span>' : '';
+        return '<li><span>' + n + '</span><span>member</span>' + tag + '</li>';
+      }).join('');
+      wList.innerHTML = baseW.concat(bad ? [] : ['Work Claude (later)']).map(function (n) {
+        return '<li><span>' + n + '</span><span>' + (n.indexOf('later') >= 0 ? 'planned' : 'member') + '</span></li>';
+      }).join('');
+      gPanel.setAttribute('data-state', bad ? 'bad' : 'good');
+      wPanel.setAttribute('data-state', 'good');
+      verdict.textContent = bad
+        ? 'No. Work Claude in #general mixes company context into the personal hive. Fence it to #is-work.'
+        : 'Good. Personal hive stays personal. Work Claude, when invited, lives in #is-work.';
+    }
+    toggle.addEventListener('change', renderWall);
+    renderWall();
+  })();
+  </script>
+</main>
+<footer class="footer">
+  <div class="wrap footer__inner">
+    <span>© 2026 Jamie Jones</span>
+    <span>Built in the open — <a href="https://github.com/bmorejamie/jj26">source</a></span>
+  </div>
+</footer>
+<script src="../assets/js/site.js"></script>
+</body>
+</html>
