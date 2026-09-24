@@ -211,9 +211,14 @@ h1, h2, h3 {
 .nav a:hover { color: var(--ink); }
 .nav a:hover::after { transform: scaleX(1); }
 
+/* Phones: two rows. Name and edition switch share the top; the nav gets a
+   full-width row of its own instead of pushing the page sideways. */
 @media (max-width: 34rem) {
-  .nav { gap: 1rem; }
-  .nav a { letter-spacing: 0.03em; }
+  .masthead__inner { flex-wrap: wrap; row-gap: 0.55rem; padding-block: 0.85rem 0.6rem; }
+  .wordmark { order: 1; }
+  .edition { order: 2; margin-left: auto; }
+  .nav { order: 3; width: 100%; justify-content: space-between; gap: 0; }
+  .nav a { letter-spacing: 0.04em; }
 }
 
 /* ------------------------------------------------------------------- hero */
@@ -540,16 +545,10 @@ h1, h2, h3 {
 
 
 /* --------------------------------------------------------------- the mark
-   His signature: the site's own easing curve, drawn. Hover reveals the
-   control handles — the autograph showing its construction. */
-.mark { width: 24px; height: 24px; flex: none; overflow: visible; }
-.mark path { fill: none; stroke: var(--curve); stroke-width: 9; stroke-linecap: round;
-             transition: stroke var(--t-base) var(--ease); }
-.mark .h  { stroke: var(--ink-faint); stroke-width: 5; opacity: 0;
-            transition: opacity var(--t-quick) var(--ease); }
-.mark .hp { fill: var(--paper); stroke: var(--ink-faint); stroke-width: 5; opacity: 0;
-            transition: opacity var(--t-quick) var(--ease); }
-.wordmark:hover .mark .h, .wordmark:hover .mark .hp { opacity: 1; }
+   Machine pixels spelling human gestures: a square of dots that assembles
+   into small interface shapes and comes home again. Shapes live in
+   assets/js/mark-shapes.js; the motion is at the bottom of site.js. */
+.mark { width: 30px; height: 30px; flex: none; overflow: visible; fill: var(--ink); }
 
 /* ----------------------------------------------------------- edition switch */
 .masthead__inner { align-items: center; }
