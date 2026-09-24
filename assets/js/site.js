@@ -80,3 +80,13 @@
   mq.addEventListener("change", sync);
   sync();
 })();
+
+/* Looping video cards hold still for people who've asked for less motion. */
+(function () {
+  "use strict";
+  if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  Array.prototype.forEach.call(document.querySelectorAll("video[autoplay]"), function (v) {
+    v.removeAttribute("autoplay");
+    v.pause();
+  });
+})();

@@ -310,20 +310,24 @@ h1, h2, h3 {
   border: 1px solid var(--rule-soft);
   margin-bottom: 1.25rem;
 }
-.piece__frame img {
+.piece__frame img,
+.piece__frame video {
+  display: block;
   width: 100%;
   transition: transform var(--t-slow) var(--ease-soft),
               filter var(--t-slow) var(--ease-soft);
   will-change: transform;
 }
 .piece a:hover .piece__frame img,
-.piece a:focus-visible .piece__frame img { transform: scale(1.028); }
+.piece a:focus-visible .piece__frame img,
+.piece a:hover .piece__frame video,
+.piece a:focus-visible .piece__frame video { transform: scale(1.028); }
 
 /* Aspect discipline so mixed source ratios still line up on a shelf. */
 .ratio-16x9 { aspect-ratio: 16 / 9; }
 .ratio-4x3  { aspect-ratio: 4 / 3; }
 .ratio-3x4  { aspect-ratio: 3 / 4; }
-.piece__frame img.cover { height: 100%; object-fit: cover; object-position: top center; }
+.piece__frame .cover { height: 100%; object-fit: cover; object-position: top center; }
 
 .piece__title {
   font-size: var(--step-2);
@@ -527,7 +531,7 @@ h1, h2, h3 {
 @media (prefers-reduced-motion: reduce) {
   .rise, .rise.is-in { opacity: 1; transform: none; transition: none; }
   .availability::before { animation: none; }
-  .piece__frame img { transition: none; }
+  .piece__frame img, .piece__frame video { transition: none; }
   *, *::before, *::after { transition-duration: 0.01ms !important; }
 }
 
