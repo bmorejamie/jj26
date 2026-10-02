@@ -186,10 +186,11 @@
     });
     var up = document.createElement("div");
     up.style.cssText = "display:flex;gap:6px;flex-wrap:wrap;margin-top:8px";
-    up.innerHTML = '<label style="padding:4px 10px;border:1px solid var(--rule);cursor:pointer">Upload still<input id="tuneFile" type="file" accept="image/*" hidden></label><button type="button" id="tuneClear" style="padding:4px 10px;border:1px solid var(--rule);background:none;color:inherit;font:inherit;cursor:pointer">Use generated folds</button>';
+    up.innerHTML = '<button type="button" id="tuneUp" style="padding:4px 10px;border:1px solid var(--rule);background:none;color:inherit;font:inherit;cursor:pointer">Upload still</button><input id="tuneFile" type="file" accept="image/*" style="display:none"><button type="button" id="tuneClear" style="padding:4px 10px;border:1px solid var(--rule);background:none;color:inherit;font:inherit;cursor:pointer">Use generated folds</button>';
     pn.appendChild(up);
     function applyStill(im) { userImg = im; if (cols) genTone(); }
     function loadStill(src) { var im = new Image(); im.onload = function () { applyStill(im); }; im.src = src; }
+    up.querySelector("#tuneUp").addEventListener("click", function () { up.querySelector("#tuneFile").click(); });
     up.querySelector("#tuneFile").addEventListener("change", function (e) {
       var f = e.target.files[0]; if (!f || !/^image\//.test(f.type)) return;
       var fr = new FileReader();
