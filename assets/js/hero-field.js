@@ -15,7 +15,7 @@
   var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   var P = {
-    opacity: 0.6, hint: 0.03, radius: 220, strength: 1, linger: 1.2,
+    cell: 0, opacity: 0.6, hint: 0.03, radius: 220, strength: 1, linger: 1.2,
     rate: reduce ? 0 : 14, fig: 0.6, ghost: reduce ? 0 : 1
   };
 
@@ -70,7 +70,7 @@
     dpr = Math.min(window.devicePixelRatio || 1, 2);
     W = main.clientWidth;
     H = hero.offsetTop + hero.offsetHeight;
-    cell = W < 600 ? 6 : 8;
+    cell = P.cell || (W < 600 ? 6 : 8);
     cv.style.height = H + "px";
     cv.width = Math.floor(W * dpr); cv.height = Math.floor(H * dpr);
     cols = Math.ceil(W / cell); rows = Math.ceil(H / cell);
@@ -154,6 +154,40 @@
   new MutationObserver(function () { readBg(); if (reduce) draw(performance.now() - t0, 0); })
     .observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
   window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", function () { readBg(); });
+
+  /* --- tuning panel (temporary) ----------------------------------------
+     Open the site with #tune (or ?tune) to get sliders over the real hero.
+     Values persist in this browser only; visitors never see any of this.
+     Delete this block once the numbers are locked in above. */
+  if (/[#?&]tune\b/.test(location.hash + location.search)) {
+    var DEF = [["opacity", "Opacity", 0.1, 1, 0.05], ["cell", "Cell size (0 = auto)", 0, 20, 1], ["hint", "Idle hints", 0, 0.15, 0.005],
+      ["radius", "Pointer radius", 60, 500, 5], ["strength", "Pointer density", 0.2, 1.5, 0.05], ["linger", "Linger (s)", 0.2, 4, 0.1],
+      ["rate", "Shimmer rate", 0, 30, 1], ["fig", "Figure strength", 0.2, 1, 0.05], ["ghost", "Idle ghost", 0, 1, 1]];
+    try { var sv = JSON.parse(localStorage.getItem("jj26-tune") || "null"); if (sv) DEF.forEach(function (a) { if (typeof sv[a[0]] === "number") P[a[0]] = sv[a[0]]; }); } catch (e) {}
+    var pn = document.createElement("div");
+    pn.style.cssText = "position:fixed;right:12px;bottom:12px;z-index:60;width:min(17rem,calc(100vw - 24px));max-height:70vh;overflow:auto;padding:10px 12px;background:var(--paper-sunk);color:var(--ink);border:1px solid var(--rule);font:12px/1.4 var(--text)";
+    var ro;
+    function save() {
+      try { localStorage.setItem("jj26-tune", JSON.stringify(P)); } catch (e) {}
+      ro.textContent = DEF.map(function (a) { return a[0] + " " + P[a[0]]; }).join(" · ");
+    }
+    pn.innerHTML = '<strong style="display:block;margin-bottom:6px">Hero tuning</strong>';
+    DEF.forEach(function (a) {
+      var row = document.createElement("label");
+      row.style.cssText = "display:grid;grid-template-columns:1fr auto;gap:2px 8px;margin:6px 0";
+      row.innerHTML = "<span>" + a[1] + '</span><span class="v">' + P[a[0]] + '</span><input type="range" style="grid-column:1/-1;width:100%" min="' + a[2] + '" max="' + a[3] + '" step="' + a[4] + '" value="' + P[a[0]] + '">';
+      var inp = row.querySelector("input"), v = row.querySelector(".v");
+      inp.addEventListener("input", function () {
+        P[a[0]] = parseFloat(inp.value); v.textContent = P[a[0]]; save();
+        if (a[0] === "cell") build();
+        if (reduce) draw(performance.now() - t0, 0);
+      });
+      pn.appendChild(row);
+    });
+    ro = document.createElement("code");
+    ro.style.cssText = "display:block;margin-top:8px;color:var(--ink-soft);user-select:all;word-break:break-word";
+    pn.appendChild(ro); document.body.appendChild(pn); save();
+  }
 
   function go() { build(); start(); }
   var still = cv.getAttribute("data-still");
