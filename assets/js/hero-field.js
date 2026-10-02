@@ -184,6 +184,35 @@
       });
       pn.appendChild(row);
     });
+    var up = document.createElement("div");
+    up.style.cssText = "display:flex;gap:6px;flex-wrap:wrap;margin-top:8px";
+    up.innerHTML = '<label style="padding:4px 10px;border:1px solid var(--rule);cursor:pointer">Upload still<input id="tuneFile" type="file" accept="image/*" hidden></label><button type="button" id="tuneClear" style="padding:4px 10px;border:1px solid var(--rule);background:none;color:inherit;font:inherit;cursor:pointer">Use generated folds</button>';
+    pn.appendChild(up);
+    function applyStill(im) { userImg = im; if (cols) genTone(); }
+    function loadStill(src) { var im = new Image(); im.onload = function () { applyStill(im); }; im.src = src; }
+    up.querySelector("#tuneFile").addEventListener("change", function (e) {
+      var f = e.target.files[0]; if (!f || !/^image\//.test(f.type)) return;
+      var fr = new FileReader();
+      fr.onload = function () {
+        var im = new Image();
+        im.onload = function () {
+          applyStill(im);
+          try {
+            var m = Math.min(1, 900 / Math.max(im.width, im.height)), c = document.createElement("canvas");
+            c.width = Math.round(im.width * m); c.height = Math.round(im.height * m);
+            c.getContext("2d").drawImage(im, 0, 0, c.width, c.height);
+            localStorage.setItem("jj26-tune-still", c.toDataURL("image/jpeg", 0.85));
+          } catch (err) {}
+        };
+        im.src = fr.result;
+      };
+      fr.readAsDataURL(f);
+    });
+    up.querySelector("#tuneClear").addEventListener("click", function () {
+      userImg = null; if (cols) genTone();
+      try { localStorage.removeItem("jj26-tune-still"); } catch (err) {}
+    });
+    try { var sst = localStorage.getItem("jj26-tune-still"); if (sst) loadStill(sst); } catch (e) {}
     ro = document.createElement("code");
     ro.style.cssText = "display:block;margin-top:8px;color:var(--ink-soft);user-select:all;word-break:break-word";
     pn.appendChild(ro); document.body.appendChild(pn); save();
