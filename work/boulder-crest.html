@@ -24,7 +24,7 @@
       <a href="../#about">Info</a>
       <a href="../#contact">Contact</a>
     </nav>
-    <button class="edition" id="edition" type="button" aria-label="Switch edition"><span class="edition__label" id="editionLabel">Day</span><span class="edition__sw" aria-hidden="true"></span></button>
+    <div class="wdn" data-edition role="group" aria-label="Edition"><span class="wdn__frame" aria-hidden="true"></span><span class="wdn__w">Working</span><button class="wdn__b" type="button" data-set="light" aria-pressed="false">Day</button><span class="wdn__w">and</span><button class="wdn__b" type="button" data-set="dark" aria-pressed="false">Night</button></div>
   </div>
 </header>
 <main id="main">
@@ -83,6 +83,8 @@
 </footer>
 <script src="../assets/js/mark-shapes.js"></script>
 <script src="../assets/js/site.js"></script>
+<script src="../assets/js/moonwalker.js"></script>
+<script src="../assets/js/edition.js"></script>
 <script src="../assets/js/name-scramble.js"></script>
 </body>
 </html>
