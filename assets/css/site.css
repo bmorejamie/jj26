@@ -981,3 +981,54 @@ main { position: relative; overflow-x: clip; }
 }
 .shelf.rule-top::before { left: calc(var(--gutter) - 4px); }
 .shelf.rule-top::after  { right: calc(var(--gutter) - 4px); }
+
+/* ------------------------------------- edition switch: Working Day and Night
+   The label is the switch: "Working Day and Night", where Day and Night are
+   the two buttons. One hairline frame sits on the pressed edition and slides
+   to the other on a flick. Fallback variant (.wdn--icons): thin sun / moon.
+   Logic in edition.js; the moonwalker (moonwalker.js) dances beside it. */
+.wdn {
+  position: relative;
+  display: inline-flex; align-items: center; gap: 0.3em;
+  font-family: var(--mono); font-size: 10px; line-height: 1;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--ink-faint); white-space: nowrap;
+}
+.wdn__w { padding-block: 0.5em; }
+.wdn__b {
+  position: relative; z-index: 1;
+  font: inherit; letter-spacing: inherit; text-transform: inherit;
+  color: var(--ink-faint); background: none; border: 0; margin: 0;
+  padding: 0.5em 0.6em; cursor: pointer;
+  transition: color var(--t-quick) var(--ease);
+}
+.wdn__b:hover { color: var(--ink-soft); }
+.wdn__b[aria-pressed="true"] { color: var(--ink); cursor: default; }
+.wdn__frame {
+  position: absolute; left: 0; top: 0; width: 0; height: 0;
+  border: 1px solid var(--rule); pointer-events: none;
+  transition: border-color var(--t-quick) var(--ease);
+}
+.wdn:hover .wdn__frame { border-color: var(--ink-faint); }
+.wdn.is-ready .wdn__frame {
+  transition: transform var(--t-base) var(--ease), width var(--t-base) var(--ease),
+              border-color var(--t-quick) var(--ease);
+}
+
+/* Fallback: thin sun / moon. Same frame, same behaviour. */
+.wdn--icons { gap: 0.15rem; }
+.wdn--icons .wdn__b { display: inline-flex; padding: 0.3rem; }
+.wdn--icons svg {
+  width: 14px; height: 14px; display: block;
+  fill: none; stroke: currentColor; stroke-width: 1; stroke-linecap: square;
+}
+
+/* The moonwalker's stage: just left of the switch, feet on its baseline. */
+.mw {
+  position: absolute; right: 100%; bottom: 0; margin-right: 0.6rem;
+  pointer-events: none; color: var(--ink);
+  image-rendering: pixelated;
+  visibility: hidden;
+}
+.mw.is-on { visibility: visible; }
+@media (prefers-reduced-motion: reduce) { .mw { display: none; } }
