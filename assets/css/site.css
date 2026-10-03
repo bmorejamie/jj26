@@ -1093,3 +1093,56 @@ body::after {
 .at-end body::before,
 .at-end body::after { opacity: 0; }
 @media print { body::before, body::after { display: none; } }
+
+/* ------------------------------------------------ case study: plate detail
+   Figures are numbered (CSS counter, so order is always true) and report
+   the width they were captured at. Crop marks at the plate corners say
+   "this is a captured plate" in print-shop language. */
+main { counter-reset: fig; }
+.plate { counter-increment: fig; position: relative; }
+.plate figcaption { display: flex; justify-content: space-between; gap: 1rem; align-items: baseline; }
+.plate figcaption::before {
+  content: "Fig. " counter(fig, decimal-leading-zero);
+  font-family: var(--mono); letter-spacing: 0.04em;
+  margin-right: 0.9em; opacity: 0.75;
+}
+.plate figcaption { justify-content: flex-start; }
+.plate__w {
+  margin-left: auto;
+  font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.04em;
+  text-transform: none; font-variant-numeric: tabular-nums;
+}
+.plate--phone figcaption { justify-content: center; }
+.plate--phone .plate__w { margin-left: 0.9em; }
+
+/* Crop marks: 8px ticks just outside each corner of the image. */
+.plate > img, .plate > .scrollplate { position: relative; }
+.plate::before, .plate::after {
+  content: ""; position: absolute; pointer-events: none;
+  width: 8px; height: 8px; opacity: 0.6;
+}
+.plate::before {
+  top: -6px; left: -6px;
+  border-top: 1px solid var(--ink-faint); border-left: 1px solid var(--ink-faint);
+}
+.plate::after {
+  bottom: calc(0.85rem + 1.4em - 2px); right: -6px;
+  border-bottom: 1px solid var(--ink-faint); border-right: 1px solid var(--ink-faint);
+}
+.plate--phone::before, .plate--phone::after { display: none; }
+
+/* Position above the title + prev/next at the foot. */
+.case__pos {
+  font-family: var(--mono); font-size: var(--step--1);
+  letter-spacing: 0.06em; text-transform: uppercase;
+  color: var(--ink-faint); margin: 0 0 1rem;
+}
+.case__pager {
+  display: grid; grid-template-columns: auto 1fr auto auto; align-items: baseline;
+  gap: 0.4rem 1rem; padding-block: 1.6rem; margin-bottom: 2rem;
+  border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule);
+  font-size: var(--step--1); letter-spacing: 0.09em; text-transform: uppercase;
+}
+.case__pager-k { font-family: var(--mono); letter-spacing: 0.06em; color: var(--ink-faint); opacity: 0.75; }
+.case__pager-k--r { text-align: right; }
+@media (max-width: 34rem) { .case__pager { grid-template-columns: auto 1fr; } .case__pager-k--r { text-align: left; } }
