@@ -245,7 +245,7 @@ main { position: relative; overflow-x: clip; }
   display: flex; flex-direction: column; justify-content: flex-end;
   min-height: calc(clamp(3.5rem, 1.75rem + 8vw, 8rem) + 0.98 * var(--step-4)
                  + clamp(1.75rem, 1rem + 2vw, 3rem) + clamp(3.5rem, 2rem + 5vw, 6.5rem));
-  padding-block: 2rem 100px;
+  padding-block: 2rem 3.125rem; /* 50px */
 }
 
 .hero__statement {
