@@ -16,7 +16,7 @@
   .lt-row { padding-block: 2.5rem; border-bottom: 1px solid var(--rule-soft); }
   .lt-row .label { margin-bottom: 1.25rem; }
   .lt-frames { display: flex; flex-direction: column; gap: 1.5rem; align-items: flex-start; }
-  .lt-frames canvas { image-rendering: pixelated; color: var(--ink); }
+  .lt-frames canvas { image-rendering: pixelated; }
 </style>
 </head>
 <body>
@@ -31,7 +31,7 @@
       <a href="../#about">Info</a>
       <a href="../#contact">Contact</a>
     </nav>
-    <div class="wdn" data-edition role="group" aria-label="Workin’ Day &amp; Night"><span class="wdn__frame" aria-hidden="true"></span><span class="wdn__w">Workin’</span><button class="wdn__b" type="button" data-set="light" aria-pressed="false">Day</button><span class="wdn__w">&amp;</span><button class="wdn__b" type="button" data-set="dark" aria-pressed="false">Night</button></div>
+    <div class="masthead__end"><div class="wdn" data-edition role="group" aria-label="Workin’ Day &amp; Night"><span class="wdn__frame" aria-hidden="true"></span><span class="wdn__w">Workin’</span><button class="wdn__b" type="button" data-set="light" aria-pressed="false">Day</button><span class="wdn__w">&amp;</span><button class="wdn__b" type="button" data-set="dark" aria-pressed="false">Night</button></div><span class="mw-slot" aria-hidden="true"></span></div>
   </div>
 </header>
 
@@ -50,7 +50,7 @@
         <a href="../#about">Info</a>
         <a href="../#contact">Contact</a>
       </nav>
-      <div class="wdn wdn--icons" data-edition role="group" aria-label="Workin’ Day &amp; Night"><span class="wdn__frame" aria-hidden="true"></span><button class="wdn__b" type="button" data-set="light" aria-pressed="false" aria-label="Day"><svg viewBox="0 0 14 14" aria-hidden="true"><circle cx="7" cy="7" r="2.6"/><path d="M7 .9v1.8M7 11.3v1.8M.9 7h1.8M11.3 7h1.8M2.7 2.7l1.25 1.25M10.05 10.05l1.25 1.25M2.7 11.3l1.25-1.25M10.05 3.95l1.25-1.25"/></svg></button><button class="wdn__b" type="button" data-set="dark" aria-pressed="false" aria-label="Night"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M11.6 8.6A5 5 0 1 1 5.4 2.4a4 4 0 0 0 6.2 6.2z"/></svg></button></div>
+      <div class="masthead__end"><div class="wdn wdn--icons" data-edition role="group" aria-label="Workin’ Day &amp; Night"><span class="wdn__frame" aria-hidden="true"></span><button class="wdn__b" type="button" data-set="light" aria-pressed="false" aria-label="Day"><svg viewBox="0 0 14 14" aria-hidden="true"><circle cx="7" cy="7" r="2.6"/><path d="M7 .9v1.8M7 11.3v1.8M.9 7h1.8M11.3 7h1.8M2.7 2.7l1.25 1.25M10.05 10.05l1.25 1.25M2.7 11.3l1.25-1.25M10.05 3.95l1.25-1.25"/></svg></button><button class="wdn__b" type="button" data-set="dark" aria-pressed="false" aria-label="Night"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M11.6 8.6A5 5 0 1 1 5.4 2.4a4 4 0 0 0 6.2 6.2z"/></svg></button></div><span class="mw-slot" aria-hidden="true"></span></div>
     </div>
   </div>
   <section class="wrap lt-row">
@@ -60,8 +60,8 @@
   <section class="wrap lt-row">
     <p class="label">Frames · 1× · 4×</p>
     <div class="lt-frames">
-      <canvas id="frames1" aria-hidden="true"></canvas>
-      <canvas id="frames4" aria-hidden="true"></canvas>
+      <canvas id="frames1" class="mw-frames" aria-hidden="true"></canvas>
+      <canvas id="frames4" class="mw-frames" aria-hidden="true"></canvas>
     </div>
   </section>
 </main>

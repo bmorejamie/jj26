@@ -223,7 +223,9 @@ h1, h2, h3 {
 @media (max-width: 34rem) {
   .masthead__inner { flex-wrap: wrap; row-gap: 0.55rem; padding-block: 0.85rem 0.6rem; }
   .wordmark { order: 1; }
-  .wdn { order: 2; margin-left: auto; }
+  .masthead__inner { column-gap: 0.75rem; }
+  .masthead__end { order: 2; margin-left: auto; gap: 0.35rem; }
+  .mw-slot { width: 24px; }
   .nav { order: 3; width: 100%; justify-content: space-between; gap: 0; }
   .nav a { letter-spacing: 0.04em; }
 }
@@ -967,7 +969,8 @@ main { position: relative; overflow-x: clip; }
    The label is the switch: "Workin’ Day & Night", where Day and Night are
    the two buttons. One hairline frame sits on the pressed edition and slides
    to the other on a flick. Fallback variant (.wdn--icons): thin sun / moon.
-   Logic in edition.js; the moonwalker (moonwalker.js) dances beside it. */
+   Logic in edition.js; the moonwalker (moonwalker.js) dances in the slot
+   to its right, on the far right edge of the masthead. */
 .wdn {
   position: relative;
   display: inline-flex; align-items: center; gap: 0.3em;
@@ -1004,15 +1007,42 @@ main { position: relative; overflow-x: clip; }
   fill: none; stroke: currentColor; stroke-width: 1; stroke-linecap: square;
 }
 
-/* The moonwalker's stage: just left of the switch, feet on its baseline. */
+/* Right end of the masthead: the switch, then the moonwalker's slot on the
+   far right edge. The slot mirrors the mark on the far left (same 30px box,
+   same 0.6rem gap the mark keeps from the name) so the ends pair up. */
+.masthead__end { display: flex; align-items: center; gap: 0.6rem; }
+.mw-slot { position: relative; flex: none; width: 30px; height: 30px; }
+
+/* The stage hangs off the slot's right edge by a few px (room for the
+   sparkle) and centres his 36px height on the slot's 30px. */
 .mw {
-  position: absolute; right: 100%; bottom: 0; margin-right: 0.6rem;
-  pointer-events: none; color: var(--ink);
-  image-rendering: pixelated;
+  position: absolute; right: -6px; bottom: -3px;
+  pointer-events: none; image-rendering: pixelated;
   visibility: hidden;
 }
 .mw.is-on { visibility: visible; }
-@media (prefers-reduced-motion: reduce) { .mw { display: none; } }
+
+/* His palette, as real colour properties so the tokens resolve (read by
+   moonwalker.js; no border is drawn). Day: ink body, pale socks, white
+   glove walled in by body pixels. Night: the body steps down to ink-soft so
+   the white glove is still the one bright pixel. */
+.mw, .mw-frames {
+  border: 0 solid;
+  color: var(--ink);                                                          /* body  */
+  border-top-color: color-mix(in srgb, var(--ink-faint) 45%, var(--paper));  /* socks */
+  border-bottom-color: #fff;                                                  /* glove */
+}
+:root[data-theme="dark"] .mw, :root[data-theme="dark"] .mw-frames {
+  color: var(--ink-soft);
+  border-top-color: color-mix(in srgb, var(--ink) 55%, var(--ink-soft));
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .mw, :root:not([data-theme="light"]) .mw-frames {
+    color: var(--ink-soft);
+    border-top-color: color-mix(in srgb, var(--ink) 55%, var(--ink-soft));
+  }
+}
+@media (prefers-reduced-motion: reduce) { .mw, .mw-slot { display: none; } }
 
 /* ------------------------------------------------------------ bottom blur
    Content goes slightly out of focus as it nears the bottom edge. Two
