@@ -188,6 +188,13 @@ h1, h2, h3 {
   text-decoration: none;
   white-space: nowrap;
 }
+/* The name only (not the mark): JetBrains Mono, all caps. CSS caps keep the DOM text
+   "Jamie Jones" for screen readers; name-scramble.js measures it as rendered. */
+.wordmark > span {
+  font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
 
 .nav { display: flex; gap: clamp(1rem, 0.4rem + 1.8vw, 2.25rem); }
 

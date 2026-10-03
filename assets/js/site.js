@@ -94,8 +94,11 @@
 /* --- the mark ---------------------------------------------------------
    Machine pixels spelling human gestures. A square of dots gets pulled in
    on itself, then settles into a shape from the library in
-   mark-shapes.js, holds, and goes home to the square. Hovering the name
-   skips the wait. Reduced motion, or no library: the square stays put. */
+   mark-shapes.js, holds, and goes home to the square. It loops on its own;
+   window.JJMark.restart() (called by name-scramble.js when the name is
+   hovered, tapped or focused) interrupts it and starts a fresh move to a
+   new shape that sweeps left to right. Reduced motion, or no library: the
+   square stays put and restart() is a no-op. */
 (function () {
   "use strict";
   var lib = window.JJ_MARK;
@@ -179,6 +182,7 @@
   }
   draw();
 
+  window.JJMark = { restart: function () {} };   // no-op until the loop is live
   if (window.matchMedia("(prefers-reduced-motion: reduce)").matches || !shapes.length) return;
 
   var atHome = true, last = -1;
@@ -192,7 +196,7 @@
     return shapes[i];
   }
 
-  function startMove() {
+  function startMove(sweep) {
     from = pos.map(function (p) { return p.slice(); });
     to = assign(from, nextTarget());
     atHome = !atHome;
@@ -204,6 +208,13 @@
     var dists = to.map(function (t, i) { return Math.sqrt(d2(t, from[i])); });
     var maxD = Math.max.apply(null, dists) || 1;
     delays = dists.map(function (d) { return (d / maxD) * 160; });   // farther dots leave a touch later
+    if (sweep) {
+      /* Restart: dots leave left to right instead, so the sweep runs on
+         into the name. Same 0-160ms spread, same total duration. */
+      var xs = from.map(function (p) { return p[0]; });
+      var minX = Math.min.apply(null, xs), spanX = (Math.max.apply(null, xs) - minX) || 1;
+      delays = xs.map(function (x) { return ((x - minX) / spanX) * 160; });
+    }
     phase = "move"; clock = 0;
   }
 
@@ -235,8 +246,11 @@
   }
   requestAnimationFrame(tick);
 
-  var word = document.querySelector(".wordmark");
-  if (word) word.addEventListener("mouseenter", function () {
-    if (phase === "hold") clock = HOLD;
-  });
+  /* Interrupt wherever the loop is (mid-hold or mid-move, from the dots'
+     current positions) and head for a fresh shape. Afterwards the loop
+     carries on as normal: hold, home, hold, shape... */
+  window.JJMark.restart = function () {
+    atHome = true;            // so nextTarget() picks a shape, not home
+    startMove(true);
+  };
 })();
