@@ -941,3 +941,43 @@ main { position: relative; overflow-x: clip; }
 .shelf--tight { padding-top: clamp(2rem, 1.5rem + 2vw, 3rem); }
 .tags-all__label { margin: clamp(2.5rem, 2rem + 2vw, 4rem) 0 1rem; }
 .feed__kind[data-kind="work"]::before { background: var(--ink-faint); }
+
+/* ------------------------------------------------------- micro details
+   Small mono notes that report something true: section number, a live
+   count, a place, the time there. Same faint ink as the labels, so they
+   read as the label's second half rather than new information. */
+.label--row { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; }
+.label__no {
+  font-family: var(--mono);
+  letter-spacing: 0.04em;
+  margin-right: 0.9em;
+  color: var(--ink-faint);
+  opacity: 0.7;
+}
+.label__aside {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.06em;
+  text-transform: none;
+  font-weight: 400;
+  color: var(--ink-faint);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+@media (max-width: 34rem) { .label__aside { display: none; } }
+
+/* Registration marks where each section rule meets the content column —
+   they mark the grid the page is actually set on. */
+.shelf.rule-top { position: relative; }
+.shelf.rule-top::before,
+.shelf.rule-top::after {
+  content: ""; position: absolute; top: -5px;
+  width: 9px; height: 9px;
+  background:
+    linear-gradient(var(--ink-faint), var(--ink-faint)) center / 1px 100% no-repeat,
+    linear-gradient(var(--ink-faint), var(--ink-faint)) center / 100% 1px no-repeat;
+  opacity: 0.55;
+  pointer-events: none;
+}
+.shelf.rule-top::before { left: calc(var(--gutter) - 4px); }
+.shelf.rule-top::after  { right: calc(var(--gutter) - 4px); }
