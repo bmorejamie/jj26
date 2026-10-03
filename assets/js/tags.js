@@ -27,11 +27,11 @@ window.JJ_ITEMS = [
   { kind: "Work", title: "ProLift Toyota", url: "work/prolift-toyota.html",
     meta: "Website", tags: ["design-lead", "ux", "visual-design"] },
   { kind: "Lab", title: "Design engineering workflow", url: "lab/design-engineering-workflow.html",
-    meta: "Artifact", tags: ["agentic", "design-systems"] },
+    meta: "Artifact · Stub", tags: ["agentic", "design-systems"] },
   { kind: "Lab", title: "Building Forge", url: "lab/building-forge.html",
-    meta: "Artifact", tags: ["agentic"] },
+    meta: "Artifact · Stub", tags: ["agentic"] },
   { kind: "Lab", title: "Slack for agents", url: "lab/slack-for-agents.html",
-    meta: "Artifact", tags: ["agentic"] },
+    meta: "Artifact · Draft", tags: ["agentic"] },
   { kind: "Lab", title: "Building this site with agents", url: "lab/building-this-site-with-agents.html",
-    meta: "Artifact", tags: ["agentic", "front-end"] }
+    meta: "Artifact · Draft", tags: ["agentic", "front-end"] }
 ];
