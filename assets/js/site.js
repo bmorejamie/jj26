@@ -46,6 +46,19 @@
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
   }
+
+  /* --- bottom blur steps aside at the end of the page ------------------ */
+  var root = document.documentElement, atEnd = null;
+  var onEnd = function () {
+    var end = window.innerHeight + window.scrollY >= root.scrollHeight - 2;
+    if (end === atEnd) return;
+    atEnd = end;
+    root.classList.toggle("at-end", end);
+  };
+  onEnd();
+  window.addEventListener("scroll", onEnd, { passive: true });
+  window.addEventListener("resize", onEnd);
+  window.addEventListener("load", onEnd);
 })();
 
 /* The edition switch lives in edition.js (with moonwalker.js). */

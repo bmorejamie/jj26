@@ -1013,3 +1013,30 @@ main { position: relative; overflow-x: clip; }
 }
 .mw.is-on { visibility: visible; }
 @media (prefers-reduced-motion: reduce) { .mw { display: none; } }
+
+/* ------------------------------------------------------------ bottom blur
+   Content goes slightly out of focus as it nears the bottom edge. Two
+   stacked layers make it progressive: a soft one over the whole band, a
+   stronger one only at the very edge, each faded in by a mask. It steps
+   aside at the end of the page (site.js) so the footer reads sharp. */
+body::before,
+body::after {
+  content: ""; position: fixed; left: 0; right: 0; bottom: 0; z-index: 40;
+  pointer-events: none;
+  -webkit-mask-image: linear-gradient(to top, #000, transparent);
+          mask-image: linear-gradient(to top, #000, transparent);
+  transition: opacity var(--t-base) var(--ease);
+}
+body::before {
+  height: clamp(4rem, 3rem + 6vh, 7.5rem);
+  -webkit-backdrop-filter: blur(1.5px);
+          backdrop-filter: blur(1.5px);
+}
+body::after {
+  height: clamp(2rem, 1.5rem + 3vh, 3.75rem);
+  -webkit-backdrop-filter: blur(3px);
+          backdrop-filter: blur(3px);
+}
+.at-end body::before,
+.at-end body::after { opacity: 0; }
+@media print { body::before, body::after { display: none; } }
