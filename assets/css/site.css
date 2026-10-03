@@ -866,3 +866,78 @@ main { position: relative; overflow-x: clip; }
 }
 .wall__toggle input { accent-color: var(--signal); }
 .wall__verdict { margin: 0.75rem 0 0; color: var(--ink-soft); max-width: 48ch; font-size: var(--step-0); }
+
+/* --------------------------------------------------- "All work →" links
+   Same hairline wipe as the nav, same gap below the word. The line draws
+   under the word only; the arrow starts tucked in and steps out just as the
+   line arrives, so the two read as one motion. Leaving reverses with no
+   delay — the arrow shouldn't hang around after you've moved on. */
+.bl {
+  display: inline-flex; align-items: baseline; gap: 0.3em;
+  text-decoration: none;
+  color: var(--ink-faint);
+  transition: color var(--t-quick) var(--ease);
+}
+.bl__t { position: relative; padding-block: 0.2rem; }
+.bl__t::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: 0;
+  height: 1px; background: var(--ink);
+  transform: scaleX(0); transform-origin: left;
+  transition: transform var(--t-base) var(--ease);
+}
+.bl__a {
+  display: inline-block;
+  transition: transform 420ms var(--ease);
+}
+.bl:hover, .bl:focus-visible { color: var(--ink); }
+.bl:hover .bl__t::after, .bl:focus-visible .bl__t::after { transform: scaleX(1); }
+.bl:hover .bl__a, .bl:focus-visible .bl__a {
+  transform: translateX(0.32em);
+  transition-delay: 160ms;
+}
+/* Back links: the arrow leads, so the line draws from the right toward it
+   and the arrow steps out to the left. */
+.bl--back .bl__t::after { transform-origin: right; }
+.bl--back:hover .bl__a, .bl--back:focus-visible .bl__a { transform: translateX(-0.32em); }
+.backlink .bl, a.backlink.bl { text-decoration: none; }
+
+/* ------------------------------------------------------------------ tags
+   Tags are links, never decoration: each one opens tags.html filtered to it
+   (Work + Lab together). Quiet mono so they sit under the meta line without
+   competing; same left-to-right wipe as everything else on hover. */
+.tags {
+  list-style: none; margin: 0.8rem 0 0; padding: 0;
+  display: flex; flex-wrap: wrap; gap: 0.35rem 1rem;
+}
+.tags a {
+  position: relative;
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  text-decoration: none;
+  padding-block: 0.15rem;
+  transition: color var(--t-quick) var(--ease);
+}
+.tags a::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: 0;
+  height: 1px; background: currentColor;
+  transform: scaleX(0); transform-origin: left;
+  transition: transform var(--t-base) var(--ease);
+}
+.tags a:hover, .tags a:focus-visible, .tags a[aria-current] { color: var(--ink); }
+.tags a:hover::after, .tags a:focus-visible::after, .tags a[aria-current]::after { transform: scaleX(1); }
+.tags__n { color: var(--ink-faint); margin-left: 0.25em; }
+
+/* In the Lab feed the tag row lines up with the title column. */
+.feed li:has(> .tags) > a { padding-bottom: 0.7rem; }
+.feed li > .tags {
+  margin: 0 0 clamp(1.3rem, 2.5vw, 2rem) calc(3.25rem + clamp(1rem, 3vw, 2rem));
+}
+@media (max-width: 34rem) { .feed li > .tags { margin-left: 0; } }
+
+/* tags.html */
+.shelf--tight { padding-top: clamp(2rem, 1.5rem + 2vw, 3rem); }
+.tags-all__label { margin: clamp(2.5rem, 2rem + 2vw, 4rem) 0 1rem; }
+.feed__kind[data-kind="work"]::before { background: var(--ink-faint); }
