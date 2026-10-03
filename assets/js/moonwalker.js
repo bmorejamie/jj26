@@ -26,57 +26,86 @@
   /* "#" body, "o" glove, "s" sock. Drawn facing right; he dances mirrored,
      facing left into the page. */
   var F = {
-    walkA: [
+    /* Moonwalk in silhouette is three frames: feet together, the flat foot
+       sliding back past the one up on its toe, the flat foot fully back.
+       Both legs read as one shape, so the cycle never needs a mirror. */
+    pass: [
       "........###.....",
       ".......#####....",
       "......########..",
-      "...........##...",
+      "........###.#...",
       "........###.....",
       "........###.....",
       "........##......",
       ".......####.....",
+      ".......####.....",
       "......#####.....",
-      "......#####.#...",
-      "......####...#..",
-      ".....#####...o..",
-      ".....####.......",
-      ".....####.......",
-      ".....##.##......",
-      "....##...##.....",
-      "....##....##....",
-      "...##.....##....",
-      "...##....##.....",
-      "..##.....##.....",
-      "..ss.....ss.....",
-      ".ss......ss.....",
-      "###.......###...",
-      "##.........#...."
+      "......####......",
+      "......####......",
+      "......####......",
+      "......###o......",
+      "......####......",
+      "......##.##.....",
+      "......##.##.....",
+      ".......##.##....",
+      ".......##.##....",
+      "......##.##.....",
+      "......ss.ss.....",
+      "......ss..ss....",
+      "......###..##...",
+      "......####..##.."
     ],
-    walkB: [
+    mid: [
       "........###.....",
       ".......#####....",
       "......########..",
-      "...........##...",
+      "........###.#...",
       "........###.....",
       "........###.....",
       "........##......",
       ".......####.....",
+      ".......####.....",
       "......#####.....",
-      "......#####.#...",
-      "......####...#..",
-      ".....#####...o..",
-      ".....####.......",
-      ".....####.......",
-      ".....##.##......",
-      "....##...##.....",
-      "....##....##....",
-      "....##.....##...",
+      "......####......",
+      "......####......",
+      "......####......",
+      "......###o......",
+      "......####......",
+      "......##.##.....",
+      "......##..##....",
+      ".....##...##....",
+      ".....##..##.....",
+      ".....##..##.....",
+      ".....ss..ss.....",
+      ".....ss...ss....",
+      ".....####..##...",
+      ".....####...##.."
+    ],
+    wide: [
+      "........###.....",
+      ".......#####....",
+      "......########..",
+      "........###.#...",
+      "........###.....",
+      "........###.....",
+      "........##......",
+      ".......####.....",
+      ".......####.....",
+      "......#####.....",
+      "......####......",
+      "......####......",
+      "......####......",
+      "......###o......",
+      "......####......",
+      "......##.##.....",
+      ".....##...##....",
       ".....##....##...",
-      ".....##.....##..",
-      ".....ss.....ss..",
-      "......s.....ss..",
-      "....###.....####",
-      ".....#.........."
+      "....##....##....",
+      "....##....##....",
+      "....ss....ss....",
+      "....ss.....ss...",
+      "....####....##..",
+      "....####.....##."
     ],
     spinS: [
       ".......###......",
@@ -162,13 +191,13 @@
 
   var GW = 16, GH = 24;            // sprite grid
   var SW = 34, SH = 26;            // stage in sprite pixels: room for the glide and the sparkle
-  var GLIDE = 8;                   // sprite pixels travelled backwards (rightwards) over the two steps
+  var GLIDE = 10;                   // sprite pixels travelled backwards (rightwards) over the two steps
   var EDGE = 4;                    // spare stage right of where he stops, for the sparkle
   var FY = SH - GH;                // feet on the stage floor
   var X0 = SW - EDGE - GW - GLIDE, X1 = X0 + GLIDE;   // where he builds, where he stops
 
   /* Timeline, ms. */
-  var BUILD = 380, STEP = 200, STEPS = 4, SPIN = 90, HOLD = 380, SPARK = 480;
+  var BUILD = 380, STEP = 170, STEPS = 6, SPIN = 90, HOLD = 380, SPARK = 480;
   var T_WALK = BUILD, T_SPIN = T_WALK + STEP * STEPS, T_TOE = T_SPIN + SPIN * 5,
       T_SPARK = T_TOE + HOLD, T_END = T_SPARK + SPARK;
 
@@ -190,11 +219,12 @@
     return out;
   }
   var P = {
-    walkA: parse(F.walkA, "left"), walkB: parse(F.walkB, "left"),
+    pass: parse(F.pass, "left"), mid: parse(F.mid, "left"), wide: parse(F.wide, "left"),
     sideL: parse(F.spinS, "left"), front: parse(F.front),
     sideR: parse(F.spinS), back: parse(F.front, "left"),
     toe: parse(F.toe, "left")
   };
+  var WALK = [P.pass, P.mid, P.wide];
   var SPIN_SEQ = [P.sideL, P.front, P.sideR, P.back, P.sideL];
 
   /* The site's easing, cubic-bezier(0.22, 1, 0.36, 1) — same solver as the mark. */
@@ -212,7 +242,7 @@
 
   /* Build: a tight square of pixels, nearest pixel takes nearest cell. */
   function buildPlan() {
-    var to = P.walkA, n = to.length, side = Math.ceil(Math.sqrt(n));
+    var to = P.pass, n = to.length, side = Math.ceil(Math.sqrt(n));
     var cx = X0 + GW / 2, cy = FY + GH * 0.55;
     var from = [];
     for (var i = 0; i < n; i++) from.push([cx - side / 2 + (i % side), cy - side / 2 + Math.floor(i / side)]);
@@ -326,7 +356,7 @@
           /* Moonwalk: an even backwards glide, snapped to whole sprite pixels. */
           var w = (t - T_WALK) / (T_SPIN - T_WALK);
           ox = X0 + Math.round(GLIDE * w);
-          pose = Math.floor((t - T_WALK) / STEP) % 2 ? P.walkB : P.walkA;
+          pose = WALK[Math.floor((t - T_WALK) / STEP) % 3];
         } else {
           ox = X1;
           pose = t < T_TOE ? SPIN_SEQ[Math.min(4, Math.floor((t - T_SPIN) / SPIN))] : P.toe;
@@ -362,7 +392,7 @@
 
   /* For the lab test page: every frame side by side at `px` device pixels per sprite pixel. */
   function paintFrames(cv, px) {
-    var list = [P.walkA, P.walkB, P.sideL, P.front, P.sideR, P.back, P.toe];
+    var list = [P.pass, P.mid, P.wide, P.sideL, P.front, P.sideR, P.back, P.toe];
     var gap = 4;
     cv.width = (list.length * (GW + gap) - gap) * px; cv.height = GH * px;
     var dpr = window.devicePixelRatio || 1;
