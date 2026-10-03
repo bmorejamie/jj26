@@ -15,8 +15,8 @@
   var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   var P = {
-    cell: 0, opacity: 0.6, hint: 0.03, radius: 220, strength: 1, linger: 1.2,
-    rate: reduce ? 0 : 14, fig: 0.6, ghost: reduce ? 0 : 1
+    cell: 10, opacity: 0.2, hint: 0.01, radius: 85, strength: 0.4, linger: 0.4,
+    rate: reduce ? 0 : 1, fig: 0.7, ghost: reduce ? 0 : 1
   };
 
   function h2(x, y) { var n = Math.sin(x * 127.1 + y * 311.7) * 43758.5453; return n - Math.floor(n); }
@@ -154,70 +154,6 @@
   new MutationObserver(function () { readBg(); if (reduce) draw(performance.now() - t0, 0); })
     .observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
   window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", function () { readBg(); });
-
-  /* --- tuning panel (temporary) ----------------------------------------
-     Open the site with #tune (or ?tune) to get sliders over the real hero.
-     Values persist in this browser only; visitors never see any of this.
-     Delete this block once the numbers are locked in above. */
-  if (/[#?&]tune\b/.test(location.hash + location.search)) {
-    var DEF = [["opacity", "Opacity", 0.1, 1, 0.05], ["cell", "Cell size (0 = auto)", 0, 20, 1], ["hint", "Idle hints", 0, 0.15, 0.005],
-      ["radius", "Pointer radius", 60, 500, 5], ["strength", "Pointer density", 0.2, 1.5, 0.05], ["linger", "Linger (s)", 0.2, 4, 0.1],
-      ["rate", "Shimmer rate", 0, 30, 1], ["fig", "Figure strength", 0.2, 1, 0.05], ["ghost", "Idle ghost", 0, 1, 1]];
-    try { var sv = JSON.parse(localStorage.getItem("jj26-tune") || "null"); if (sv) DEF.forEach(function (a) { if (typeof sv[a[0]] === "number") P[a[0]] = sv[a[0]]; }); } catch (e) {}
-    var pn = document.createElement("div");
-    pn.style.cssText = "position:fixed;right:12px;bottom:12px;z-index:60;width:min(17rem,calc(100vw - 24px));max-height:70vh;overflow:auto;padding:10px 12px;background:var(--paper-sunk);color:var(--ink);border:1px solid var(--rule);font:12px/1.4 var(--text)";
-    var ro;
-    function save() {
-      try { localStorage.setItem("jj26-tune", JSON.stringify(P)); } catch (e) {}
-      ro.textContent = DEF.map(function (a) { return a[0] + " " + P[a[0]]; }).join(" · ");
-    }
-    pn.innerHTML = '<strong style="display:block;margin-bottom:6px">Hero tuning</strong>';
-    DEF.forEach(function (a) {
-      var row = document.createElement("label");
-      row.style.cssText = "display:grid;grid-template-columns:1fr auto;gap:2px 8px;margin:6px 0";
-      row.innerHTML = "<span>" + a[1] + '</span><span class="v">' + P[a[0]] + '</span><input type="range" style="grid-column:1/-1;width:100%" min="' + a[2] + '" max="' + a[3] + '" step="' + a[4] + '" value="' + P[a[0]] + '">';
-      var inp = row.querySelector("input"), v = row.querySelector(".v");
-      inp.addEventListener("input", function () {
-        P[a[0]] = parseFloat(inp.value); v.textContent = P[a[0]]; save();
-        if (a[0] === "cell") build();
-        if (reduce) draw(performance.now() - t0, 0);
-      });
-      pn.appendChild(row);
-    });
-    var up = document.createElement("div");
-    up.style.cssText = "display:flex;gap:6px;flex-wrap:wrap;margin-top:8px";
-    up.innerHTML = '<button type="button" id="tuneUp" style="padding:4px 10px;border:1px solid var(--rule);background:none;color:inherit;font:inherit;cursor:pointer">Upload still</button><input id="tuneFile" type="file" accept="image/*" style="display:none"><button type="button" id="tuneClear" style="padding:4px 10px;border:1px solid var(--rule);background:none;color:inherit;font:inherit;cursor:pointer">Use generated folds</button>';
-    pn.appendChild(up);
-    function applyStill(im) { userImg = im; if (cols) genTone(); }
-    function loadStill(src) { var im = new Image(); im.onload = function () { applyStill(im); }; im.src = src; }
-    up.querySelector("#tuneUp").addEventListener("click", function () { up.querySelector("#tuneFile").click(); });
-    up.querySelector("#tuneFile").addEventListener("change", function (e) {
-      var f = e.target.files[0]; if (!f || !/^image\//.test(f.type)) return;
-      var fr = new FileReader();
-      fr.onload = function () {
-        var im = new Image();
-        im.onload = function () {
-          applyStill(im);
-          try {
-            var m = Math.min(1, 900 / Math.max(im.width, im.height)), c = document.createElement("canvas");
-            c.width = Math.round(im.width * m); c.height = Math.round(im.height * m);
-            c.getContext("2d").drawImage(im, 0, 0, c.width, c.height);
-            localStorage.setItem("jj26-tune-still", c.toDataURL("image/jpeg", 0.85));
-          } catch (err) {}
-        };
-        im.src = fr.result;
-      };
-      fr.readAsDataURL(f);
-    });
-    up.querySelector("#tuneClear").addEventListener("click", function () {
-      userImg = null; if (cols) genTone();
-      try { localStorage.removeItem("jj26-tune-still"); } catch (err) {}
-    });
-    try { var sst = localStorage.getItem("jj26-tune-still"); if (sst) loadStill(sst); } catch (e) {}
-    ro = document.createElement("code");
-    ro.style.cssText = "display:block;margin-top:8px;color:var(--ink-soft);user-select:all;word-break:break-word";
-    pn.appendChild(ro); document.body.appendChild(pn); save();
-  }
 
   function go() { build(); start(); }
   var still = cv.getAttribute("data-still");
