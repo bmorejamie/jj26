@@ -230,11 +230,12 @@ h1, h2, h3 {
 
 /* ------------------------------------------------------------------- hero */
 main { position: relative; overflow-x: clip; }
+/* The pixel field sits fixed behind everything (z-index -1, above only the
+   page ground) so the pointer trail follows down the whole page. The hero's
+   old bottom fade now happens in hero-field.js, row by row. */
 .hero-field {
-  position: absolute; top: 0; left: 0; width: 100%; height: 0;
-  z-index: 0; pointer-events: none;
-  -webkit-mask-image: linear-gradient(to bottom, #000 72%, transparent);
-          mask-image: linear-gradient(to bottom, #000 72%, transparent);
+  position: fixed; top: 0; left: 0; width: 100%; height: 0;
+  z-index: -1; pointer-events: none;
 }
 /* The hero keeps the height it had with the big one-line statement (top pad
    + 0.98 x step-4 line + statement margin + bottom pad), so the field keeps
