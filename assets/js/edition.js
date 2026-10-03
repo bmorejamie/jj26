@@ -1,4 +1,4 @@
-/* --- edition switch: Working Day and Night ------------------------------
+/* --- edition switch: Workin’ Day & Night -------------------------------
    Same three viewer states as before: an explicit choice stamps data-theme
    on the root; no choice stamps nothing and lets prefers-color-scheme
    decide. The stored choice, when there is one, wins in both directions.

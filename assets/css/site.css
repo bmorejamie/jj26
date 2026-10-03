@@ -579,7 +579,7 @@ main { position: relative; overflow-x: clip; }
 .mark { width: 30px; height: 30px; flex: none; overflow: visible; fill: var(--ink); }
 
 /* ----------------------------------------------------------- edition switch
-   Styles live with the Working Day and Night switch (.wdn) further down. */
+   Styles live with the Workin’ Day & Night switch (.wdn) further down. */
 .masthead__inner { align-items: center; }
 
 /* ---------------------------------------------------------------- the lab
@@ -963,8 +963,8 @@ main { position: relative; overflow-x: clip; }
 .shelf.rule-top::before { left: calc(var(--gutter) - 4px); }
 .shelf.rule-top::after  { right: calc(var(--gutter) - 4px); }
 
-/* ------------------------------------- edition switch: Working Day and Night
-   The label is the switch: "Working Day and Night", where Day and Night are
+/* -------------------------------------- edition switch: Workin’ Day & Night
+   The label is the switch: "Workin’ Day & Night", where Day and Night are
    the two buttons. One hairline frame sits on the pressed edition and slides
    to the other on a flick. Fallback variant (.wdn--icons): thin sun / moon.
    Logic in edition.js; the moonwalker (moonwalker.js) dances beside it. */
