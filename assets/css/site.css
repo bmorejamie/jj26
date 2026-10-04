@@ -1094,3 +1094,7 @@ body::after {
 .at-end body::after { opacity: 0; }
 @media print { body::before, body::after { display: none; } }
 
+
+/* Case pages, this release: pieces run full width in one column (the
+   two-up layout returns with the long-form copy in the next version). */
+.case__header ~ section .plates-duo { grid-template-columns: 1fr !important; }
