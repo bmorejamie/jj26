@@ -1093,3 +1093,11 @@ body::after {
 .at-end body::before,
 .at-end body::after { opacity: 0; }
 @media print { body::before, body::after { display: none; } }
+
+/* Case header: a short note on who the client is, under the blurb. */
+.case__about { margin-top: 1.75rem; max-width: 62ch; }
+.case__about-k {
+  font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--ink-faint); margin: 0 0 0.4rem;
+}
+.case__about p:last-child { margin: 0; color: var(--ink-soft); }
