@@ -19,6 +19,7 @@
   --rule-soft:  rgba(22, 23, 26, 0.07);
   --signal:     #2C6B70;
   --curve:      #16171A;
+  --plate-glow: rgba(22, 23, 26, 0.06);   /* pool of ground behind device plates; set to transparent to switch off */
 
   /* Type — the display face is the edition's voice and changes with it.
      Body and mono stay constant so it reads as one site changing clothes. */
@@ -67,6 +68,7 @@
     --rule-soft:  rgba(237, 236, 232, 0.07);
     --signal:     #79A9AC;
     --curve:      #D8D6D0;
+    --plate-glow: rgba(237, 236, 232, 0.055);
 
     --display:      "Archivo", "Helvetica Neue", Arial, sans-serif;
     --display-wght: 800;
@@ -85,6 +87,7 @@
     --rule-soft:  rgba(237, 236, 232, 0.07);
     --signal:     #79A9AC;
     --curve:      #D8D6D0;
+    --plate-glow: rgba(237, 236, 232, 0.055);
 
     --display:      "Archivo", "Helvetica Neue", Arial, sans-serif;
     --display-wght: 800;
@@ -501,6 +504,36 @@ main { position: relative; overflow-x: clip; }
   letter-spacing: 0.09em;
   text-transform: uppercase;
   color: var(--ink-faint);
+}
+
+/* Device plates: the renders are transparent (their shadows live in the
+   alpha), so they sit on the edition's own ground. Behind them, a faint pool
+   of --plate-glow fades out to nothing well inside the frame: depth without a
+   rectangle. To switch it off, set --plate-glow: transparent (one token, in
+   each edition block at the top of this file). Device videos
+   can't be transparent, so they bake the same pool into a day and a night cut
+   (assets/js/plate-video.js picks one) and feather their outer edge. */
+.plate--device picture {
+  display: block;
+  /* closest-side: the pool reaches zero exactly at the frame's edges, so
+     there is no seam anywhere along the box. */
+  background: radial-gradient(closest-side, var(--plate-glow), transparent);
+}
+/* Optional: add .plate--bleed to a figure whose device runs off the bottom
+   edge to dissolve it instead of cropping it hard. Not applied anywhere yet. */
+.plate--bleed picture {
+  -webkit-mask-image: linear-gradient(to bottom, #000 80%, transparent 99%);
+          mask-image: linear-gradient(to bottom, #000 80%, transparent 99%);
+}
+.plate--device img,
+.plate--cut img { border: 0; }
+.plate--device video {
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 3%, #000 97%, transparent),
+                      linear-gradient(to bottom, transparent, #000 3%, #000 97%, transparent);
+  -webkit-mask-composite: source-in;
+          mask-image: linear-gradient(to right, transparent, #000 3%, #000 97%, transparent),
+                      linear-gradient(to bottom, transparent, #000 3%, #000 97%, transparent);
+          mask-composite: intersect;
 }
 
 .plate--phone img {
