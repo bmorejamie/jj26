@@ -53,21 +53,30 @@
       <figcaption>Equipment Finder — filtering</figcaption>
     </figure>
 
-    <figure class="plate plate--device rise" style="--i:1">
-      <picture>
-        <source srcset="../content/projects/prolift-toyota/pieces/desktop.webp" type="image/webp">
-        <img src="../content/projects/prolift-toyota/pieces/desktop.png" width="2880" height="1800" alt="The ProLift Toyota homepage on a desktop display." loading="lazy" decoding="async">
-      </picture>
-      <figcaption>Desktop</figcaption>
+    <figure class="plate plate--3d rise" style="--i:1">
+      <div class="devices3d" data-devices3d data-project="prolift"
+           data-laptop="../content/projects/prolift-toyota/pieces/screen-laptop.webp"
+           data-phone="../content/projects/prolift-toyota/pieces/screen-phone.webp"
+           role="img" aria-label="The ProLift Toyota homepage on a laptop and on a phone."></div>
+      <figcaption>Desktop · Mobile</figcaption>
     </figure>
+    <div class="devices3d-fallback">
+      <figure class="plate plate--device rise" style="--i:1">
+        <picture>
+          <source srcset="../content/projects/prolift-toyota/pieces/desktop.webp" type="image/webp">
+          <img src="../content/projects/prolift-toyota/pieces/desktop.png" width="2880" height="1800" alt="The ProLift Toyota homepage on a desktop display." loading="lazy" decoding="async">
+        </picture>
+        <figcaption>Desktop</figcaption>
+      </figure>
 
-    <figure class="plate plate--device rise" style="--i:2">
-      <picture>
-        <source srcset="../content/projects/prolift-toyota/pieces/mobile-phones.webp" type="image/webp">
-        <img src="../content/projects/prolift-toyota/pieces/mobile-phones.png" width="2880" height="1800" alt="Three phones showing the ProLift Toyota homepage on mobile: the hero, featured products, and the brands they carry." loading="lazy" decoding="async">
-      </picture>
-      <figcaption>Mobile</figcaption>
-    </figure>
+      <figure class="plate plate--device rise" style="--i:2">
+        <picture>
+          <source srcset="../content/projects/prolift-toyota/pieces/mobile-phones.webp" type="image/webp">
+          <img src="../content/projects/prolift-toyota/pieces/mobile-phones.png" width="2880" height="1800" alt="Three phones showing the ProLift Toyota homepage on mobile: the hero, featured products, and the brands they carry." loading="lazy" decoding="async">
+        </picture>
+        <figcaption>Mobile</figcaption>
+      </figure>
+    </div>
   </section>
 
   <section class="wrap shelf rule-top">
@@ -85,5 +94,6 @@
 <script src="../assets/js/moonwalker.js"></script>
 <script src="../assets/js/edition.js"></script>
 <script src="../assets/js/name-scramble.js"></script>
+<script src="../assets/js/devices-3d.js"></script>
 </body>
 </html>

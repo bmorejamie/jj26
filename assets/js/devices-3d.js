@@ -67,6 +67,11 @@
         start: { p: [15, -14.5, 46], r: [15, 30.5, -22] },
         end:   { p: [14, 3, 52.5], r: [2, -28, -5.5] },
         scale: 1, speed: 1.3, depth: 0
+      },
+      phone2: {
+        start: { p: [-14, -10, 40], r: [14, -28, 20] },
+        end:   { p: [-12, 4, 44], r: [3, 24, 5] },
+        scale: 1, speed: 1, depth: 0
       }
     },
     narrow: {
@@ -80,6 +85,11 @@
         start: { p: [9, -24, 44], r: [14, 30, -18] },
         end:   { p: [5, 2, 46], r: [4, -18, -6] },
         scale: 1.15, speed: 1.3, depth: 0
+      },
+      phone2: {
+        start: { p: [-8, -20, 38], r: [14, -26, 18] },
+        end:   { p: [-6, 6, 42], r: [4, 20, 6] },
+        scale: 1.05, speed: 1, depth: 0
       }
     },
     /* opacity at 15 cm up; blur in cm at 15 cm up (it scales with height);
@@ -98,6 +108,29 @@
     }
   };
   function clone(o) { return JSON.parse(JSON.stringify(o)); }
+  /* Which devices this page has (data-devices, default "laptop phone") and
+     which project's baked values to start from (data-project). Each
+     project's numbers come from its own ?tune pass. */
+  var HAS = {};
+  (host.getAttribute("data-devices") || "laptop phone").split(/\s+/).forEach(function (n) { if (n) HAS[n] = true; });
+  var PROJECT = host.getAttribute("data-project") || "";
+  var PROJECTS = {
+    /* Boulder Crest is the base set above. The others start from
+       compositions of their own and get Jamie's tuned numbers baked in
+       here (same shape as DEFAULTS; only the numbers that differ). */
+    "alpa": {
+      wide: {
+        cam: { fov: 22, dist: 108, x: 0, y: 0 },
+        phone:  { start: { p: [12, -15, 38], r: [16, 30, -18] }, end: { p: [9.5, 1, 42], r: [3, -16, -5] }, scale: 1.25, speed: 1.3 },
+        phone2: { start: { p: [-14, -13, 28], r: [16, -30, 16] }, end: { p: [-9.5, 0, 32], r: [4, 18, 5] }, scale: 1.25, speed: 1 }
+      },
+      narrow: {
+        cam: { fov: 24, dist: 150, x: 0, y: 1 },
+        phone:  { start: { p: [9, -24, 44], r: [14, 28, -16] }, end: { p: [7, 2, 48], r: [4, -16, -6] }, scale: 1.45, speed: 1.3 },
+        phone2: { start: { p: [-11, -20, 34], r: [14, -26, 16] }, end: { p: [-7.5, 3, 38], r: [4, 18, 6] }, scale: 1.45, speed: 1 }
+      }
+    }
+  };
   function merge(dst, src) {
     if (!src || typeof src !== "object") return dst;
     Object.keys(dst).forEach(function (k) {
@@ -108,7 +141,8 @@
     });
     return dst;
   }
-  var STORE = "jj26-devices3d-tune";
+  merge(DEFAULTS, PROJECTS[PROJECT]);
+  var STORE = "jj26-devices3d-tune:" + (PROJECT || "default");
   var CONFIG = clone(DEFAULTS);
   if (TUNE) { try { merge(CONFIG, JSON.parse(localStorage.getItem(STORE) || "null")); } catch (e) {} }
 
@@ -318,25 +352,30 @@
     PH.w = PH.sw + 2 * PH.inset;
     PH.h = PH.sh + 2 * PH.inset;
 
-    var phone = new T.Group();
-    var phoneBody = new T.Group();
-    phone.add(phoneBody);
-    phoneBody.add(new T.Mesh(slab(PH.w, PH.h, PH.t, PH.R, PH.r, 14, 6), bodyMat));
-    var sr = PH.R - PH.inset;
-    var ph = new T.Mesh(panel(PH.sw + 2 * HAIR, PH.sh + 2 * HAIR, sr + HAIR, sr + HAIR, sr + HAIR, sr + HAIR), hairMat);
-    ph.position.z = PH.t / 2 + 0.003;
-    phoneBody.add(ph);
-    var pScreenMat = new T.MeshBasicMaterial({ toneMapped: false });
-    var pScreen = new T.Mesh(panel(PH.sw, PH.sh, sr, sr, sr, sr), pScreenMat);
-    pScreen.position.z = PH.t / 2 + 0.006;
-    phoneBody.add(pScreen);
-    /* Buttons: [side, from top (fraction of height), length cm]. */
-    [[-1, 0.205, 0.62], [-1, 0.300, 1.05], [-1, 0.400, 1.05], [1, 0.335, 1.55]].forEach(function (b) {
-      var m = new T.Mesh(slab(0.16, b[2], 0.3, 0.075, 0.06, 6, 3), bodyMat);
-      m.position.set(b[0] * (PH.w / 2 + 0.01), PH.h / 2 - b[1] * PH.h - b[2] / 2, 0);
-      phoneBody.add(m);
-    });
-    scene.add(phone);
+    function makePhone() {
+      var g = new T.Group(), body = new T.Group();
+      g.add(body);
+      body.add(new T.Mesh(slab(PH.w, PH.h, PH.t, PH.R, PH.r, 14, 6), bodyMat));
+      var sr = PH.R - PH.inset;
+      var ph = new T.Mesh(panel(PH.sw + 2 * HAIR, PH.sh + 2 * HAIR, sr + HAIR, sr + HAIR, sr + HAIR, sr + HAIR), hairMat);
+      ph.position.z = PH.t / 2 + 0.003;
+      body.add(ph);
+      var mat = new T.MeshBasicMaterial({ toneMapped: false });
+      var scr = new T.Mesh(panel(PH.sw, PH.sh, sr, sr, sr, sr), mat);
+      scr.position.z = PH.t / 2 + 0.006;
+      body.add(scr);
+      /* Buttons: [side, from top (fraction of height), length cm]. */
+      [[-1, 0.205, 0.62], [-1, 0.300, 1.05], [-1, 0.400, 1.05], [1, 0.335, 1.55]].forEach(function (b) {
+        var m = new T.Mesh(slab(0.16, b[2], 0.3, 0.075, 0.06, 6, 3), bodyMat);
+        m.position.set(b[0] * (PH.w / 2 + 0.01), PH.h / 2 - b[1] * PH.h - b[2] / 2, 0);
+        body.add(m);
+      });
+      scene.add(g);
+      return { obj: g, part: body, mat: mat };
+    }
+    var phoneA = HAS.phone ? makePhone() : null;
+    var phoneB = HAS.phone2 ? makePhone() : null;
+    if (!HAS.laptop) scene.remove(laptop);
 
     /* ================================================================
        Shadows: each device's corners are projected onto the plate along
@@ -386,11 +425,13 @@
     }
     /* One shadow per rigid part (laptop base, laptop lid, phone), each an
        oriented box round that part's corners as they fall on the plate. */
-    var shadows = [
+    var shadows = [];
+    if (HAS.laptop) shadows.push(
       { obj: laptop, part: base, pts: boxPoints(LT.w, LT.d, LT.t), m: makeShadow(0) },
-      { obj: laptop, part: lid, pts: boxPoints(LT.w, LT.lidH, LT.lidT), m: makeShadow(1) },
-      { obj: phone, part: phoneBody, pts: boxPoints(PH.w, PH.h, PH.t), m: makeShadow(2) }
-    ];
+      { obj: laptop, part: lid, pts: boxPoints(LT.w, LT.lidH, LT.lidT), m: makeShadow(1) });
+    [phoneA, phoneB].forEach(function (ph, i) {
+      if (ph) shadows.push({ obj: ph.obj, part: ph.part, pts: boxPoints(PH.w, PH.h, PH.t), m: makeShadow(2 + i) });
+    });
     var tmpV = new T.Vector3(), axisV = new T.Vector3();
     var shadowK = 1;
 
@@ -423,7 +464,10 @@
       U.uBlur.value = blur;
       U.uOpacity.value = Math.min(op, 0.9);
     }
-    var devices = { laptop: { obj: laptop }, phone: { obj: phone } };
+    var devices = {};
+    if (HAS.laptop) devices.laptop = { obj: laptop };
+    if (phoneA) devices.phone = { obj: phoneA.obj };
+    if (phoneB) devices.phone2 = { obj: phoneB.obj };
 
     /* ================================================================
        Poses
@@ -447,10 +491,11 @@
     }
     var lidDeg = null;
     function pose(p) {
-      var L = CONFIG[mode].laptop.lid || 110;
-      if (L !== lidDeg) { lidDeg = L; setLid(L); }
-      applyDevice("laptop", devQ("laptop", p));
-      applyDevice("phone", devQ("phone", p));
+      if (HAS.laptop) {
+        var L = CONFIG[mode].laptop.lid || 110;
+        if (L !== lidDeg) { lidDeg = L; setLid(L); }
+      }
+      Object.keys(devices).forEach(function (n) { applyDevice(n, devQ(n, p)); });
       var c = CONFIG[mode].cam;
       if (camera.fov !== c.fov) { camera.fov = c.fov; camera.updateProjectionMatrix(); }
       camera.position.set(c.x, c.y, c.dist);
@@ -458,8 +503,7 @@
       camera.near = Math.max(c.dist - 110, 1);
       camera.far = c.dist + 10;
       camera.updateProjectionMatrix();
-      laptop.updateMatrixWorld(true);
-      phone.updateMatrixWorld(true);
+      Object.keys(devices).forEach(function (n) { devices[n].obj.updateMatrixWorld(true); });
       shadows.forEach(updateShadow);
     }
 
@@ -589,7 +633,7 @@
        ================================================================ */
     var phoneSrc = host.getAttribute("data-phone");
     var pick = params.get("phone");
-    if (pick && /^(hero|stats|stories)$/.test(pick)) phoneSrc = phoneSrc.replace(/screen-phone-\w+/, "screen-phone-" + pick);
+    if (phoneSrc && pick && /^(hero|stats|stories)$/.test(pick)) phoneSrc = phoneSrc.replace(/screen-phone-\w+/, "screen-phone-" + pick);
     var loader = new T.TextureLoader();
     var maxAniso = Math.min(renderer.capabilities.getMaxAnisotropy(), 16);
     function tex(url) {
@@ -651,9 +695,12 @@
       raf = requestAnimationFrame(tick);
     }
 
-    Promise.all([tex(host.getAttribute("data-laptop")), tex(phoneSrc)]).then(function (t) {
-      lScreenMat.map = t[0]; lScreenMat.needsUpdate = true;
-      pScreenMat.map = t[1]; pScreenMat.needsUpdate = true;
+    var screens = [];   // [material, url] for each device present
+    if (HAS.laptop) screens.push([lScreenMat, host.getAttribute("data-laptop")]);
+    if (phoneA) screens.push([phoneA.mat, phoneSrc]);
+    if (phoneB) screens.push([phoneB.mat, host.getAttribute("data-phone2")]);
+    Promise.all(screens.map(function (sc) { return tex(sc[1]); })).then(function (t) {
+      screens.forEach(function (sc, i) { sc[0].map = t[i]; sc[0].needsUpdate = true; });
       host.appendChild(canvas);
       resize();
       renderer.compile(scene, camera);
@@ -677,7 +724,7 @@
 
       if (TUNE || CAPTURE) {
         host.__devices3d = {
-          config: CONFIG, defaults: DEFAULTS, store: STORE,
+          config: CONFIG, defaults: DEFAULTS, store: STORE, devices: Object.keys(devices),
           mode: function () { return mode; },
           edition: edition,
           tokens: function () { var t = tokens(); return { plate: hex(t.plate), body: hex(t.body), bezel: hex(t.bezel) }; },

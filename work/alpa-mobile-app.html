@@ -56,13 +56,22 @@
       <figcaption>Member home → Saved Flights → FTDT</figcaption>
     </figure>
 
-    <figure class="plate plate--device rise" style="--i:1">
-      <picture>
-        <source srcset="../content/projects/alpa-mobile-app/pieces/screens.webp" type="image/webp">
-        <img src="../content/projects/alpa-mobile-app/pieces/screens.png" width="2880" height="1800" alt="Three phones showing the ALPA app: Flight Finder results, Saved Flights, and FTDT archived duty periods." loading="lazy" decoding="async">
-      </picture>
-      <figcaption>Flight Finder · Saved Flights · Duty periods</figcaption>
+    <figure class="plate plate--3d rise" style="--i:1">
+      <div class="devices3d" data-devices3d data-project="alpa" data-devices="phone phone2"
+           data-phone="../content/projects/alpa-mobile-app/pieces/screen-phone-flights.webp"
+           data-phone2="../content/projects/alpa-mobile-app/pieces/screen-phone-limits.webp"
+           role="img" aria-label="Two phones showing the ALPA app: Saved Flights, and FTDT cumulative flight and duty hour limits."></div>
+      <figcaption>Saved Flights · FTDT limits</figcaption>
     </figure>
+    <div class="devices3d-fallback">
+      <figure class="plate plate--device rise" style="--i:1">
+        <picture>
+          <source srcset="../content/projects/alpa-mobile-app/pieces/screens.webp" type="image/webp">
+          <img src="../content/projects/alpa-mobile-app/pieces/screens.png" width="2880" height="1800" alt="Three phones showing the ALPA app: Flight Finder results, Saved Flights, and FTDT archived duty periods." loading="lazy" decoding="async">
+        </picture>
+        <figcaption>Flight Finder · Saved Flights · Duty periods</figcaption>
+      </figure>
+    </div>
 
     <figure class="plate plate--device rise" style="--i:2">
       <picture>
@@ -89,5 +98,6 @@
 <script src="../assets/js/edition.js"></script>
 <script src="../assets/js/plate-video.js"></script>
 <script src="../assets/js/name-scramble.js"></script>
+<script src="../assets/js/devices-3d.js"></script>
 </body>
 </html>

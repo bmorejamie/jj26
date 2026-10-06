@@ -224,8 +224,9 @@
       track(slider("Frame X (cm)", function () { return m().cam.x; }, function (v) { m().cam.x = v; }, -40, 40, 0.5)),
       track(slider("Frame Y (cm)", function () { return m().cam.y; }, function (v) { m().cam.y = v; }, -40, 40, 0.5))
     ], true),
-    section("Laptop", deviceRows("laptop", true)),
-    section("Phone", deviceRows("phone", false)),
+    api.devices.indexOf("laptop") >= 0 ? section("Laptop", deviceRows("laptop", true)) : null,
+    api.devices.indexOf("phone") >= 0 ? section("Phone", deviceRows("phone", false)) : null,
+    api.devices.indexOf("phone2") >= 0 ? section("Phone 2", deviceRows("phone2", false)) : null,
     section("Shadow", [
       track(slider("Opacity", function () { return C.shadow.opacity; }, function (v) { C.shadow.opacity = v; }, 0, 1, 0.01)),
       track(slider("Blur (cm @15)", function () { return C.shadow.blur; }, function (v) { C.shadow.blur = v; }, 0, 30, 0.1)),
@@ -246,7 +247,7 @@
       track(slider("Hairline", function () { return C.hairline; }, function (v) { C.hairline = v; }, 0, 1, 0.01))
     ])
   ];
-  [head].concat(sections).concat([out]).forEach(function (n) { panel.appendChild(n); });
+  [head].concat(sections.filter(Boolean)).concat([out]).forEach(function (n) { panel.appendChild(n); });
 
   function refreshAll() { showMode(); rows.forEach(function (r) { if (r.refresh) r.refresh(); }); }
   host.addEventListener("devices3d:mode", refreshAll);

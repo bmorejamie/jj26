@@ -54,13 +54,22 @@
       <figcaption>Home — scroll</figcaption>
     </figure>
 
-    <figure class="plate plate--device rise" style="--i:1">
-      <picture>
-        <source srcset="../content/projects/action-against-hunger/pieces/desktop-mobile.webp" type="image/webp">
-        <img src="../content/projects/action-against-hunger/pieces/desktop-mobile.png" width="2880" height="1800" alt="The Action Against Hunger homepage on a laptop and a phone." loading="lazy" decoding="async">
-      </picture>
+    <figure class="plate plate--3d rise" style="--i:1">
+      <div class="devices3d" data-devices3d data-project="aah"
+           data-laptop="../content/projects/action-against-hunger/pieces/screen-laptop.webp"
+           data-phone="../content/projects/action-against-hunger/pieces/screen-phone.webp"
+           role="img" aria-label="The Action Against Hunger homepage on a laptop and on a phone."></div>
       <figcaption>Desktop + mobile</figcaption>
     </figure>
+    <div class="devices3d-fallback">
+      <figure class="plate plate--device rise" style="--i:1">
+        <picture>
+          <source srcset="../content/projects/action-against-hunger/pieces/desktop-mobile.webp" type="image/webp">
+          <img src="../content/projects/action-against-hunger/pieces/desktop-mobile.png" width="2880" height="1800" alt="The Action Against Hunger homepage on a laptop and a phone." loading="lazy" decoding="async">
+        </picture>
+        <figcaption>Desktop + mobile</figcaption>
+      </figure>
+    </div>
 
     <figure class="plate plate--device rise" style="--i:2">
       <picture>
@@ -86,5 +95,6 @@
 <script src="../assets/js/moonwalker.js"></script>
 <script src="../assets/js/edition.js"></script>
 <script src="../assets/js/name-scramble.js"></script>
+<script src="../assets/js/devices-3d.js"></script>
 </body>
 </html>
