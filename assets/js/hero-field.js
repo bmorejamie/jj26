@@ -20,7 +20,7 @@
   var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   var P = {
-    cell: 10, opacity: 0.2, hint: 0.01, radius: 85, strength: 0.4, linger: 0.4,
+    cell: 10, opacity: 0.2, opacityDark: 0.36, overLink: 0.3, hint: 0.01, radius: 85, strength: 0.4, linger: 0.4,
     rate: reduce ? 0 : 1, fig: 0.7, ghost: reduce ? 0 : 1
   };
 
@@ -36,6 +36,9 @@
   var W, H, dpr, cell, cols, rows, tRows, tone, E, small, sctx, img, bgGray = 14, userImg = null;
   var ptr = { x: 0, y: 0, on: false }, lastInput = -1e9, t0 = performance.now(), last = t0;
   var visible = true, raf = 0, hot = false;
+  /* Over a link or button the field steps back so the label stays readable;
+     `dim` eases toward its target instead of snapping. */
+  var dim = 1, dimTo = 1;
 
   function readBg() {
     var m = /\d+/.exec(getComputedStyle(document.body).backgroundColor || "");
@@ -134,7 +137,9 @@
     sctx.putImageData(img, 0, 0);
     ctx.clearRect(0, 0, cv.width, cv.height);
     ctx.imageSmoothingEnabled = false;
-    ctx.globalAlpha = P.opacity;
+    dim += (dimTo - dim) * Math.min(1, dt * 10);
+    if (Math.abs(dimTo - dim) > 0.01) hot = true;
+    ctx.globalAlpha = (bgGray < 128 ? P.opacityDark : P.opacity) * dim;
     ctx.drawImage(small, 0, Math.round(-frac * dpr), cols * cell * dpr, rows * cell * dpr);
     ctx.globalAlpha = 1;
   }
@@ -156,6 +161,8 @@
     ptr.x = e.clientX - r.left; ptr.y = e.clientY - r.top;
     lastInput = performance.now() - t0;
     ptr.on = e.pointerType === "mouse" ? true : down;
+    var tg = e.target && e.target.closest ? e.target.closest("a, button, [role=button], label, summary") : null;
+    dimTo = tg ? P.overLink : 1;
     if (reduce) draw(lastInput, 0.25); else start();
   }
   document.addEventListener("pointermove", function (e) { setPtr(e, e.pointerType !== "mouse" && ptr.on); });

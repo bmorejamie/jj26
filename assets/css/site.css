@@ -365,6 +365,9 @@ main { position: relative; overflow-x: clip; }
 .ratio-16x9 { aspect-ratio: 16 / 9; }
 .ratio-4x3  { aspect-ratio: 4 / 3; }
 .ratio-3x4  { aspect-ratio: 3 / 4; }
+.piece__frame--device picture { display: block; height: 100%; }
+.piece__frame--device img { height: 100%; object-fit: cover; object-position: center top; }
+.case__tags { margin-top: 1.25rem; }
 .piece__frame .cover { height: 100%; object-fit: cover; object-position: top center; }
 
 .piece__title {
@@ -923,27 +926,23 @@ main { position: relative; overflow-x: clip; }
    competing; same left-to-right wipe as everything else on hover. */
 .tags {
   list-style: none; margin: 0.8rem 0 0; padding: 0;
-  display: flex; flex-wrap: wrap; gap: 0.35rem 1rem;
+  display: flex; flex-wrap: wrap; gap: 0.4rem;
 }
 .tags a {
-  position: relative;
+  display: inline-block;
   font-family: var(--mono);
-  font-size: 0.72rem;
+  font-size: 0.68rem;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: var(--ink-faint);
+  color: var(--ink-soft);
   text-decoration: none;
-  padding-block: 0.15rem;
-  transition: color var(--t-quick) var(--ease);
+  line-height: 1;
+  padding: 0.32rem 0.5rem 0.3rem;
+  border: 1px solid var(--rule);
+  border-radius: 2px;
+  transition: color var(--t-quick) var(--ease), border-color var(--t-quick) var(--ease);
 }
-.tags a::after {
-  content: ""; position: absolute; left: 0; right: 0; bottom: 0;
-  height: 1px; background: currentColor;
-  transform: scaleX(0); transform-origin: left;
-  transition: transform var(--t-base) var(--ease);
-}
-.tags a:hover, .tags a:focus-visible, .tags a[aria-current] { color: var(--ink); }
-.tags a:hover::after, .tags a:focus-visible::after, .tags a[aria-current]::after { transform: scaleX(1); }
+.tags a:hover, .tags a:focus-visible, .tags a[aria-current] { color: var(--ink); border-color: var(--ink); }
 .tags__n { color: var(--ink-faint); margin-left: 0.25em; }
 
 /* In the Lab feed the tag row lines up with the title column. */
