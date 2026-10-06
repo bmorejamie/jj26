@@ -133,12 +133,12 @@
        compositions of their own and get Jamie's tuned numbers baked in
        here (same shape as DEFAULTS; only the numbers that differ). */
     /* ALPA, first piece (Saved Flights + FTDT limits): wide tuned by Jamie
-       2026-10-06; narrow is the starting composition. */
+       2026-10-06 (second pass); narrow is the starting composition. */
     "alpa": {
       wide: {
         cam: { fov: 22, dist: 108, x: 0, y: 0 },
-        phone:  { start: { p: [6, -14, 38], r: [16, 30, -18] }, end: { p: [9.5, 1, 42], r: [3, -16, -5] }, scale: 1.54, speed: 1.3 },
-        phone2: { start: { p: [-13, -10.5, 36], r: [9, -20, 10] }, end: { p: [-8.5, -1, 43], r: [10.5, 20, 11] }, scale: 1.54, speed: 1 }
+        phone:  { start: { p: [8, -13, 44.5], r: [16, -17.5, -8.5] }, end: { p: [7, 0, 42], r: [16, -11.5, -5] }, scale: 1.48, speed: 1.3 },
+        phone2: { start: { p: [-6.5, -17.5, 39.5], r: [5.5, -20, 10] }, end: { p: [-8.5, -1, 53.5], r: [10.5, 20, 11] }, scale: 1.54, speed: 1 }
       },
       narrow: {
         cam: { fov: 24, dist: 150, x: 0, y: 1 },
@@ -146,14 +146,14 @@
         phone2: { start: { p: [-11, -20, 34], r: [14, -26, 16] }, end: { p: [-7.5, 3, 38], r: [4, 18, 6] }, scale: 1.45, speed: 1 }
       }
     },
-    /* ALPA, second piece (replaces the flat FTDT plate): Cumulative
-       Limitations (phone) + Duty Periods (phone2). Starting poses, not
-       tuned yet: the mirror of the first piece, so the two read differently. */
+    /* ALPA, second piece (replaces the flat FTDT plate): Flight Finder
+       (phone) + Duty Periods (phone2). Wide tuned by Jamie 2026-10-06;
+       narrow is the starting composition. */
     "alpa-2": {
       wide: {
         cam: { fov: 22, dist: 108, x: 0, y: 0 },
-        phone:  { start: { p: [-8, -14, 40], r: [14, -26, 16] }, end: { p: [-10, -1, 44], r: [3, 18, 5] }, scale: 1.5, speed: 1.2 },
-        phone2: { start: { p: [11, -10, 32], r: [10, 24, -12] }, end: { p: [9.5, -2, 36], r: [8, -18, -10] }, scale: 1.5, speed: 1 }
+        phone:  { start: { p: [-7, -10, 47], r: [3, -30.5, 20.5] }, end: { p: [-10, -1.5, 44], r: [4, 38.5, 10] }, scale: 1.48, speed: 1.2 },
+        phone2: { start: { p: [9, -17, 32], r: [10, 24, -12] }, end: { p: [7.5, 0.5, 36.5], r: [14, -26.5, -10.5] }, scale: 1.93, speed: 1.4 }
       },
       narrow: {
         cam: { fov: 24, dist: 150, x: 0, y: 1 },
