@@ -130,7 +130,8 @@
       colors: { night: { plate: "#2f3132" } }
     },
     /* AAH, second piece (replaces the flat Sudan plate): one laptop, the
-       mirror of the first piece. Starting poses, not tuned yet. */
+       mirror of the first piece. Narrow tuned by Jamie 2026-10-06; wide is
+       still the starting pose. */
     "aah-2": {
       wide: {
         cam: { fov: 22, dist: 108, x: 0, y: 0 },
@@ -138,7 +139,7 @@
       },
       narrow: {
         cam: { fov: 19.5, dist: 150, x: 0, y: 1 },
-        laptop: { start: { p: [3, 14, 26], r: [12, 26, -8] }, end: { p: [0, 8, 26.5], r: [8, -12, 3] }, scale: 1, speed: 1 }
+        laptop: { start: { p: [4.5, -13, 23], r: [12, 26, -8] }, end: { p: [-3, 1.5, 42], r: [8, -12, 3] }, scale: 1, speed: 1 }
       },
       colors: { night: { plate: "#2f3132" } }
     },

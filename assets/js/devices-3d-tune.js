@@ -211,14 +211,24 @@
     var out = el("textarea", { readonly: "", hidden: "" });
     var copyBtn = el("button", { type: "button", text: "Copy values" });
     copyBtn.addEventListener("click", function () {
-      var json = JSON.stringify(C, null, 2);
+      /* The copy names its piece, so a paste says where it came from. */
+      var piece = host.getAttribute("data-project") || "default";
+      var json = JSON.stringify(Object.assign({ piece: piece }, C), null, 2);
       function done(ok) {
-        copyBtn.textContent = ok ? "Copied" : "Select + copy below";
-        setTimeout(function () { copyBtn.textContent = "Copy values"; }, 1600);
-        if (!ok) { out.hidden = false; out.value = json; out.focus(); out.select(); }
+        copyBtn.textContent = ok ? "Copied \u00b7 " + piece : "Select + copy below";
+        setTimeout(function () { copyBtn.textContent = "Copy values"; }, 2400);
+        if (ok) out.hidden = true;
+        else { out.hidden = false; out.value = json; out.focus(); out.select(); }
       }
-      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(json).then(function () { done(true); }, function () { done(false); });
-      else done(false);
+      /* The clipboard API can be refused inside the viewer's frame; the
+         old select-and-copy route usually still works. */
+      function legacy() {
+        var ok = false;
+        try { out.hidden = false; out.value = json; out.focus(); out.select(); ok = document.execCommand("copy"); } catch (e) {}
+        done(ok);
+      }
+      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(json).then(function () { done(true); }, legacy);
+      else legacy();
     });
     var resetBtn = el("button", { type: "button", "class": "is-quiet", text: "Reset" });
     resetBtn.addEventListener("click", function () {
