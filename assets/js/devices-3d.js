@@ -151,7 +151,11 @@
       narrow: LAPTOP_PHONE_NARROW,
       colors: { night: { plate: "#2a2a2d" } }
     },
-    /* Boulder Crest is the base set above. The others start from
+    /* Boulder Crest: the base set above for wide; narrow shared with AAH. */
+    "bc": {
+      narrow: LAPTOP_PHONE_NARROW
+    },
+    /* The others start from
        compositions of their own and get Jamie's tuned numbers baked in
        here (same shape as DEFAULTS; only the numbers that differ). */
     /* ALPA, first piece (Saved Flights + FTDT limits): wide tuned by Jamie
@@ -169,8 +173,8 @@
       }
     },
     /* ALPA, second piece (replaces the flat FTDT plate): Flight Finder
-       (phone) + Duty Periods (phone2). Wide tuned by Jamie 2026-10-06;
-       narrow is the starting composition. */
+       (phone) + Duty Periods (phone2). Wide and narrow tuned by Jamie
+       2026-10-06. */
     "alpa-2": {
       wide: {
         cam: { fov: 22, dist: 108, x: 0, y: 0 },
@@ -179,8 +183,8 @@
       },
       narrow: {
         cam: { fov: 24, dist: 150, x: 0, y: 1 },
-        phone:  { start: { p: [-7, -22, 42], r: [14, -24, 14] }, end: { p: [-8, 3, 46], r: [4, 16, 5] }, scale: 1.45, speed: 1.2 },
-        phone2: { start: { p: [9, -18, 34], r: [10, 22, -12] }, end: { p: [7.5, 0, 38], r: [8, -16, -9] }, scale: 1.4, speed: 1 }
+        phone:  { start: { p: [-8, 25.5, 56], r: [14, -24, 14] }, end: { p: [-3.5, 0.5, 90], r: [3, 37.5, 5] }, scale: 1.45, speed: 1.2 },
+        phone2: { start: { p: [9, -18, 34], r: [10.5, 18, -12] }, end: { p: [5, 5.5, 76.5], r: [8, -16, -9] }, scale: 1.4, speed: 1 }
       }
     }
   };
