@@ -937,7 +937,7 @@ main { position: relative; overflow-x: clip; }
   color: var(--ink-soft);
   text-decoration: none;
   line-height: 1;
-  padding: 0.32rem 0.5rem 0.3rem;
+  padding: 0.18rem 0.32rem 0.16rem;
   border: 1px solid var(--rule);
   border-radius: 2px;
   transition: color var(--t-quick) var(--ease), border-color var(--t-quick) var(--ease);
@@ -1108,17 +1108,17 @@ body::before,
 body::after {
   content: ""; position: fixed; left: 0; right: 0; bottom: 0; z-index: 40;
   pointer-events: none;
-  -webkit-mask-image: linear-gradient(to top, #000, transparent);
-          mask-image: linear-gradient(to top, #000, transparent);
+  -webkit-mask-image: linear-gradient(to top, #000 20%, transparent);
+          mask-image: linear-gradient(to top, #000 20%, transparent);
   transition: opacity var(--t-base) var(--ease);
 }
 body::before {
-  height: clamp(4rem, 3rem + 6vh, 7.5rem);
-  -webkit-backdrop-filter: blur(1.5px);
-          backdrop-filter: blur(1.5px);
+  height: 300px; /* tuned by Jamie 2026-10-06 */
+  -webkit-backdrop-filter: blur(6px);
+          backdrop-filter: blur(6px);
 }
 body::after {
-  height: clamp(2rem, 1.5rem + 3vh, 3.75rem);
+  height: 125px;
   -webkit-backdrop-filter: blur(3px);
           backdrop-filter: blur(3px);
 }
