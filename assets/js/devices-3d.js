@@ -146,16 +146,19 @@
         phone2: { start: { p: [-11, -20, 34], r: [14, -26, 16] }, end: { p: [-7.5, 3, 38], r: [4, 18, 6] }, scale: 1.45, speed: 1 }
       }
     },
-    /* ALPA, second piece (replaces the flat FTDT plate): starting poses,
-       not tuned yet. */
+    /* ALPA, second piece (replaces the flat FTDT plate): Cumulative
+       Limitations (phone) + Duty Periods (phone2). Starting poses, not
+       tuned yet: the mirror of the first piece, so the two read differently. */
     "alpa-2": {
       wide: {
         cam: { fov: 22, dist: 108, x: 0, y: 0 },
-        phone: { start: { p: [4, -14, 40], r: [14, -24, 14] }, end: { p: [-3, 1, 44], r: [4, 22, 6] }, scale: 1.54, speed: 1.1 }
+        phone:  { start: { p: [-8, -14, 40], r: [14, -26, 16] }, end: { p: [-10, -1, 44], r: [3, 18, 5] }, scale: 1.5, speed: 1.2 },
+        phone2: { start: { p: [11, -10, 32], r: [10, 24, -12] }, end: { p: [9.5, -2, 36], r: [8, -18, -10] }, scale: 1.5, speed: 1 }
       },
       narrow: {
         cam: { fov: 24, dist: 150, x: 0, y: 1 },
-        phone: { start: { p: [3, -22, 42], r: [14, -22, 12] }, end: { p: [-2, 2, 46], r: [4, 18, 6] }, scale: 1.45, speed: 1.1 }
+        phone:  { start: { p: [-7, -22, 42], r: [14, -24, 14] }, end: { p: [-8, 3, 46], r: [4, 16, 5] }, scale: 1.45, speed: 1.2 },
+        phone2: { start: { p: [9, -18, 34], r: [10, 22, -12] }, end: { p: [7.5, 0, 38], r: [8, -16, -9] }, scale: 1.4, speed: 1 }
       }
     }
   };
