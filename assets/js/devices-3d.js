@@ -57,15 +57,15 @@
      ================================================================== */
   var DEFAULTS = {
     wide: {
-      cam: { fov: 22, dist: 116, x: 3, y: 0 },
+      cam: { fov: 22, dist: 108, x: 5, y: 0 },
       laptop: {
         start: { p: [-7, 7, 26], r: [12, -36, 9] },
         end:   { p: [-2, -5, 26], r: [3, 10, -4] },
         scale: 1, speed: 1, depth: 0, lid: 110
       },
       phone: {
-        start: { p: [17, -17, 44], r: [16, 36, -22] },
-        end:   { p: [13, 12, 46], r: [2, -24, -6] },
+        start: { p: [15, -14.5, 46], r: [15, 30.5, -22] },
+        end:   { p: [14, 3, 52.5], r: [2, -28, -5.5] },
         scale: 1, speed: 1.3, depth: 0
       }
     },
@@ -88,7 +88,7 @@
     shadow: { opacity: 0.3, blur: 6, x: 3.2, y: -4.4, spread: -0.5 },
     /* damping: the spring's response (1/s; lower = lazier).
        ease: 0 = linear through the poses, 1 = slow in and out. */
-    motion: { damping: 5.5, ease: 0.35 },
+    motion: { damping: 5, ease: 0.35 },
     /* hairline where screen meets body: 0 = bezel colour, 1 = shadow colour */
     hairline: 0.2,
     /* null = use the token from site.css */
