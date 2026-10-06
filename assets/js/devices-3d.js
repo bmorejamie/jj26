@@ -115,15 +115,18 @@
   var HAS = {};
   (host.getAttribute("data-devices") || "laptop phone").split(/\s+/).forEach(function (n) { if (n) HAS[n] = true; });
   var PROJECT = host.getAttribute("data-project") || "";
+  /* Jamie's 390 px pass on Action Against Hunger (2026-10-06); ProLift has
+     the same laptop + phone layout, so it shares these narrow values. */
+  var LAPTOP_PHONE_NARROW = {
+    cam: { fov: 19.5 },
+    laptop: { end: { p: [1, 9, 26.5], r: [9.5, 12.5, -3] } },
+    phone: { start: { p: [4.5, -18.5, 44] }, end: { p: [5.5, -6.5, 46] } }
+  };
   var PROJECTS = {
     /* Action Against Hunger: Boulder Crest's wide poses; narrow and the
        night plate tuned by Jamie 2026-10-06. */
     "aah": {
-      narrow: {
-        cam: { fov: 19.5 },
-        laptop: { end: { p: [1, 9, 26.5], r: [9.5, 12.5, -3] } },
-        phone: { start: { p: [4.5, -18.5, 44] }, end: { p: [5.5, -6.5, 46] } }
-      },
+      narrow: LAPTOP_PHONE_NARROW,
       colors: { night: { plate: "#2f3132" } }
     },
     /* AAH, second piece (replaces the flat Sudan plate): one laptop, the
@@ -140,11 +143,12 @@
       colors: { night: { plate: "#2f3132" } }
     },
     /* ProLift Toyota: Boulder Crest's phone, tuned laptop and night plate
-       (2026-10-06). */
+       (2026-10-06); narrow copied from AAH. */
     "prolift": {
       wide: {
         laptop: { start: { r: [12, -36, 5] }, end: { p: [-0.5, -4.5, 33], r: [4.5, 20.5, 7] } }
       },
+      narrow: LAPTOP_PHONE_NARROW,
       colors: { night: { plate: "#2a2a2d" } }
     },
     /* Boulder Crest is the base set above. The others start from
