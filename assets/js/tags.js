@@ -33,5 +33,5 @@ window.JJ_ITEMS = [
   { kind: "Lab", title: "Slack for agents", url: "lab/slack-for-agents.html",
     meta: "Artifact · Draft", tags: ["agentic"] },
   { kind: "Lab", title: "Building this site with agents", url: "lab/building-this-site-with-agents.html",
-    meta: "Artifact · Draft", tags: ["agentic", "front-end"] }
+    meta: "Artifact", tags: ["agentic", "front-end"] }
 ];
