@@ -14,14 +14,11 @@
 --------------------------------------------------------------------------- */
 (function () {
   "use strict";
-  /* The panel edits one scene at a time: the first on the page that is ready
-     (a piece switcher for pages with several is still to come). */
-  var ready = (window.__devices3dHosts || []).slice().sort(function (a, b) { return a.compareDocumentPosition(b) & 4 ? -1 : 1; });
-  var host = ready[0];
-  if (!host) return;
-  var api = host.__devices3d;
-  if (!api) return;
-  var C = api.config;
+  /* One panel, one scene at a time. A page with several scenes (ALPA has two)
+     gets a piece switcher; each scene keeps its own values and its own
+     saved settings (data-project). */
+  var hosts = window.__devices3dHosts || [];
+  var host, api, C;
   var root = document.documentElement;
 
   /* Token values for the edition not on screen (the one on screen is read
@@ -67,6 +64,7 @@
     ".d3t summary::after { content: '+'; float: right; font-family: var(--mono); color: var(--ink-faint); }",
     ".d3t details[open] summary::after { content: '\\2212'; }",
     ".d3t details > div { padding-bottom: 0.6rem; }",
+    ".d3t__pick { margin: 0 0 0.6rem; }",
     ".d3t__sub { padding: 0.5rem 1rem 0.15rem; color: var(--ink-faint); text-transform: uppercase; letter-spacing: 0.09em; }",
     ".d3t__btns { display: flex; gap: 0.5rem; flex-wrap: wrap; }",
     ".d3t button, .d3t-toggle { font: 500 11px/1 var(--mono); letter-spacing: 0.06em; text-transform: uppercase; cursor: pointer;",
@@ -171,92 +169,123 @@
     return out;
   }
 
+  /* --- mounting ------------------------------------------------------------ */
+  var pollId = 0, refreshCurrent = function () {}, watched = [];
+  function pieceName(h, i) { return (i + 1) + " \u00b7 " + (h.getAttribute("data-project") || "piece"); }
+  function mount(h) {
+    host = h; api = h.__devices3d; C = api.config; rows = [];
+    clearInterval(pollId);
+    panel.textContent = "";
   /* --- header ------------------------------------------------------------ */
-  var modeText = el("p", { "class": "d3t__meta" });
-  function showMode() {
-    modeText.textContent = "Editing: " + (api.mode() === "wide" ? "WIDE — 16:10 plate (desktop)" : "NARROW — 4:5 plate (below 46rem)") +
-      " · " + (api.edition() === "night" ? "Night" : "Day") + " edition";
-  }
-  var scrubOn = el("input", { type: "checkbox" });
-  var scrubR = el("input", { type: "range", min: 0, max: 1, step: 0.001, value: 0.5 });
-  var scrubN = el("input", { type: "number", min: 0, max: 1, step: 0.001, value: "0.500" });
-  function applyScrub() { api.scrub(scrubOn.checked ? +scrubR.value : null); }
-  scrubOn.addEventListener("change", function () { if (scrubOn.checked) { scrubR.value = api.progress(); scrubN.value = (+scrubR.value).toFixed(3); } applyScrub(); });
-  scrubR.addEventListener("input", function () { scrubOn.checked = true; scrubN.value = (+scrubR.value).toFixed(3); applyScrub(); });
-  scrubN.addEventListener("change", function () { scrubOn.checked = true; scrubR.value = +scrubN.value; applyScrub(); });
-  /* While not scrubbing, the slider follows the real scroll. */
-  setInterval(function () {
-    if (panel.hidden || scrubOn.checked) return;
-    var p = api.progress(); scrubR.value = p; scrubN.value = p.toFixed(3);
-  }, 120);
-
-  var out = el("textarea", { readonly: "", hidden: "" });
-  var copyBtn = el("button", { type: "button", text: "Copy values" });
-  copyBtn.addEventListener("click", function () {
-    var json = JSON.stringify(C, null, 2);
-    function done(ok) {
-      copyBtn.textContent = ok ? "Copied" : "Select + copy below";
-      setTimeout(function () { copyBtn.textContent = "Copy values"; }, 1600);
-      if (!ok) { out.hidden = false; out.value = json; out.focus(); out.select(); }
+    var modeText = el("p", { "class": "d3t__meta" });
+    function showMode() {
+      modeText.textContent = "Editing: " + (api.mode() === "wide" ? "WIDE — 16:10 plate (desktop)" : "NARROW — 4:5 plate (below 46rem)") +
+        " · " + (api.edition() === "night" ? "Night" : "Day") + " edition";
     }
-    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(json).then(function () { done(true); }, function () { done(false); });
-    else done(false);
-  });
-  var resetBtn = el("button", { type: "button", "class": "is-quiet", text: "Reset" });
-  resetBtn.addEventListener("click", function () {
-    var d = JSON.parse(JSON.stringify(api.defaults));
-    Object.keys(d).forEach(function (k) { C[k] = d[k]; });
-    try { localStorage.removeItem(api.store); } catch (e) {}
-    api.update(); refreshAll();
-  });
-  var hideBtn = el("button", { type: "button", "class": "is-quiet", text: "Hide" });
-  hideBtn.addEventListener("click", function () { setHidden(true); });
-
-  var head = el("div", { "class": "d3t__head" }, [
-    el("p", { "class": "d3t__title" }, [el("span", { text: "Devices 3D — tune" })]),
-    modeText,
-    el("div", { "class": "d3t__btns" }, [copyBtn, resetBtn, hideBtn]),
-    el("div", { "class": "d3t__scrub" }, [el("label", null, [scrubOn, el("span", { text: "Scrub" })]), scrubR, scrubN])
-  ]);
-
-  /* --- sections ----------------------------------------------------------- */
-  var sections = [
-    section("Camera", [
-      track(slider("FOV (deg)", function () { return m().cam.fov; }, function (v) { m().cam.fov = v; }, 8, 60, 0.5)),
-      track(slider("Distance / zoom", function () { return m().cam.dist; }, function (v) { m().cam.dist = v; }, 40, 320, 1)),
-      track(slider("Frame X (cm)", function () { return m().cam.x; }, function (v) { m().cam.x = v; }, -40, 40, 0.5)),
-      track(slider("Frame Y (cm)", function () { return m().cam.y; }, function (v) { m().cam.y = v; }, -40, 40, 0.5))
-    ], true),
-    api.devices.indexOf("laptop") >= 0 ? section("Laptop", deviceRows("laptop", true)) : null,
-    api.devices.indexOf("phone") >= 0 ? section("Phone", deviceRows("phone", false)) : null,
-    api.devices.indexOf("phone2") >= 0 ? section("Phone 2", deviceRows("phone2", false)) : null,
-    section("Shadow", [
-      track(slider("Opacity", function () { return C.shadow.opacity; }, function (v) { C.shadow.opacity = v; }, 0, 1, 0.01)),
-      track(slider("Blur (cm @15)", function () { return C.shadow.blur; }, function (v) { C.shadow.blur = v; }, 0, 30, 0.1)),
-      track(slider("Offset X /10cm", function () { return C.shadow.x; }, function (v) { C.shadow.x = v; }, -15, 15, 0.1)),
-      track(slider("Offset Y /10cm", function () { return C.shadow.y; }, function (v) { C.shadow.y = v; }, -15, 15, 0.1)),
-      track(slider("Spread (cm)", function () { return C.shadow.spread; }, function (v) { C.shadow.spread = v; }, -10, 20, 0.1))
-    ], true),
-    section("Motion", [
-      track(slider("Damping (1/s)", function () { return C.motion.damping; }, function (v) { C.motion.damping = v; }, 0.5, 20, 0.1)),
-      track(slider("Easing", function () { return C.motion.ease; }, function (v) { C.motion.ease = v; }, 0, 1, 0.01))
-    ]),
-    section("Colour", [
-      sub("Day"),
-      track(colour("Plate", "day", "plate")), track(colour("Body (clay)", "day", "body")), track(colour("Bezel", "day", "bezel")),
-      sub("Night"),
-      track(colour("Plate", "night", "plate")), track(colour("Body (clay)", "night", "body")), track(colour("Bezel", "night", "bezel")),
-      sub("Both"),
-      track(slider("Hairline", function () { return C.hairline; }, function (v) { C.hairline = v; }, 0, 1, 0.01))
-    ])
-  ];
-  [head].concat(sections.filter(Boolean)).concat([out]).forEach(function (n) { panel.appendChild(n); });
-
-  function refreshAll() { showMode(); rows.forEach(function (r) { if (r.refresh) r.refresh(); }); }
-  host.addEventListener("devices3d:mode", refreshAll);
-  new MutationObserver(function () { setTimeout(refreshAll, 0); }).observe(root, { attributes: true, attributeFilter: ["data-theme"] });
-  refreshAll();
+    var scrubOn = el("input", { type: "checkbox" });
+    var scrubR = el("input", { type: "range", min: 0, max: 1, step: 0.001, value: 0.5 });
+    var scrubN = el("input", { type: "number", min: 0, max: 1, step: 0.001, value: "0.500" });
+    function applyScrub() { api.scrub(scrubOn.checked ? +scrubR.value : null); }
+    scrubOn.addEventListener("change", function () { if (scrubOn.checked) { scrubR.value = api.progress(); scrubN.value = (+scrubR.value).toFixed(3); } applyScrub(); });
+    scrubR.addEventListener("input", function () { scrubOn.checked = true; scrubN.value = (+scrubR.value).toFixed(3); applyScrub(); });
+    scrubN.addEventListener("change", function () { scrubOn.checked = true; scrubR.value = +scrubN.value; applyScrub(); });
+    /* While not scrubbing, the slider follows the real scroll. */
+    pollId = setInterval(function () {
+      if (panel.hidden || scrubOn.checked) return;
+      var p = api.progress(); scrubR.value = p; scrubN.value = p.toFixed(3);
+    }, 120);
+  
+    var out = el("textarea", { readonly: "", hidden: "" });
+    var copyBtn = el("button", { type: "button", text: "Copy values" });
+    copyBtn.addEventListener("click", function () {
+      var json = JSON.stringify(C, null, 2);
+      function done(ok) {
+        copyBtn.textContent = ok ? "Copied" : "Select + copy below";
+        setTimeout(function () { copyBtn.textContent = "Copy values"; }, 1600);
+        if (!ok) { out.hidden = false; out.value = json; out.focus(); out.select(); }
+      }
+      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(json).then(function () { done(true); }, function () { done(false); });
+      else done(false);
+    });
+    var resetBtn = el("button", { type: "button", "class": "is-quiet", text: "Reset" });
+    resetBtn.addEventListener("click", function () {
+      var d = JSON.parse(JSON.stringify(api.defaults));
+      Object.keys(d).forEach(function (k) { C[k] = d[k]; });
+      try { localStorage.removeItem(api.store); } catch (e) {}
+      api.update(); refreshAll();
+    });
+    var hideBtn = el("button", { type: "button", "class": "is-quiet", text: "Hide" });
+    hideBtn.addEventListener("click", function () { setHidden(true); });
+  
+    var picker = null;
+    if (hosts.length > 1) {
+      picker = el("div", { "class": "d3t__btns d3t__pick" }, hosts.map(function (x, i) {
+        var b = el("button", { type: "button", "class": x === h ? "" : "is-quiet", text: pieceName(x, i) });
+        b.addEventListener("click", function () { mount(x); x.scrollIntoView({ block: "center" }); });
+        return b;
+      }));
+    }
+    var head = el("div", { "class": "d3t__head" }, [
+      el("p", { "class": "d3t__title" }, [el("span", { text: "Devices 3D — tune" })]),
+      picker,
+      modeText,
+      el("div", { "class": "d3t__btns" }, [copyBtn, resetBtn, hideBtn]),
+      el("div", { "class": "d3t__scrub" }, [el("label", null, [scrubOn, el("span", { text: "Scrub" })]), scrubR, scrubN])
+    ]);
+  
+    /* --- sections ----------------------------------------------------------- */
+    var sections = [
+      section("Camera", [
+        track(slider("FOV (deg)", function () { return m().cam.fov; }, function (v) { m().cam.fov = v; }, 8, 60, 0.5)),
+        track(slider("Distance / zoom", function () { return m().cam.dist; }, function (v) { m().cam.dist = v; }, 40, 320, 1)),
+        track(slider("Frame X (cm)", function () { return m().cam.x; }, function (v) { m().cam.x = v; }, -40, 40, 0.5)),
+        track(slider("Frame Y (cm)", function () { return m().cam.y; }, function (v) { m().cam.y = v; }, -40, 40, 0.5))
+      ], true),
+      api.devices.indexOf("laptop") >= 0 ? section("Laptop", deviceRows("laptop", true)) : null,
+      api.devices.indexOf("phone") >= 0 ? section("Phone", deviceRows("phone", false)) : null,
+      api.devices.indexOf("phone2") >= 0 ? section("Phone 2", deviceRows("phone2", false)) : null,
+      section("Shadow", [
+        track(slider("Opacity", function () { return C.shadow.opacity; }, function (v) { C.shadow.opacity = v; }, 0, 1, 0.01)),
+        track(slider("Blur (cm @15)", function () { return C.shadow.blur; }, function (v) { C.shadow.blur = v; }, 0, 30, 0.1)),
+        track(slider("Offset X /10cm", function () { return C.shadow.x; }, function (v) { C.shadow.x = v; }, -15, 15, 0.1)),
+        track(slider("Offset Y /10cm", function () { return C.shadow.y; }, function (v) { C.shadow.y = v; }, -15, 15, 0.1)),
+        track(slider("Spread (cm)", function () { return C.shadow.spread; }, function (v) { C.shadow.spread = v; }, -10, 20, 0.1))
+      ], true),
+      section("Motion", [
+        track(slider("Damping (1/s)", function () { return C.motion.damping; }, function (v) { C.motion.damping = v; }, 0.5, 20, 0.1)),
+        track(slider("Easing", function () { return C.motion.ease; }, function (v) { C.motion.ease = v; }, 0, 1, 0.01))
+      ]),
+      section("Colour", [
+        sub("Day"),
+        track(colour("Plate", "day", "plate")), track(colour("Body (clay)", "day", "body")), track(colour("Bezel", "day", "bezel")),
+        sub("Night"),
+        track(colour("Plate", "night", "plate")), track(colour("Body (clay)", "night", "body")), track(colour("Bezel", "night", "bezel")),
+        sub("Both"),
+        track(slider("Hairline", function () { return C.hairline; }, function (v) { C.hairline = v; }, 0, 1, 0.01))
+      ])
+    ];
+    [head].concat(sections.filter(Boolean)).concat([out]).forEach(function (n) { panel.appendChild(n); });
+    function refreshAll() { showMode(); rows.forEach(function (r) { if (r.refresh) r.refresh(); }); }
+    refreshCurrent = refreshAll;
+    refreshAll();
+  
+  }
+  function watch(h) {
+    if (watched.indexOf(h) >= 0) return;
+    watched.push(h);
+    h.addEventListener("devices3d:mode", function () { if (h === host) refreshCurrent(); });
+  }
+  new MutationObserver(function () { setTimeout(function () { refreshCurrent(); }, 0); }).observe(root, { attributes: true, attributeFilter: ["data-theme"] });
+  /* devices-3d.js calls add() each time another scene is ready. */
+  window.__devices3dTune = {
+    add: function () {
+      hosts.sort(function (a, b) { return a.compareDocumentPosition(b) & 4 ? -1 : 1; });
+      hosts.forEach(watch);
+      mount(host || hosts[0]);
+    }
+  };
   var hidden = false;
   try { hidden = !!localStorage.getItem(HIDE); } catch (e) {}
   setHidden(hidden);
+  window.__devices3dTune.add();
 })();
