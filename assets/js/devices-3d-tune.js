@@ -75,6 +75,8 @@
     ".d3t__scrub label { color: var(--ink-soft); display: flex; gap: 0.35rem; align-items: center; }",
     ".d3t textarea { width: calc(100% - 2rem); margin: 0.5rem 1rem 0; height: 10rem; font: 10px/1.35 var(--mono);",
     "  color: inherit; background: var(--paper); border: 1px solid var(--rule); padding: 0.4rem; }",
+    ".d3t__narrow { display: flex; gap: 0.45rem; align-items: center; margin: 0 0 0.6rem; color: var(--ink-soft); cursor: pointer; }",
+    "@media (max-width: 46rem) { .d3t { top: auto; width: 100%; height: 46vh; border-left: 0; border-top: 1px solid var(--rule); } }",
     ".d3t-toggle { position: fixed; right: 1rem; bottom: 1rem; z-index: 2147483000; background: var(--paper-sunk); }"
   ].join("\n");
   var style = document.createElement("style");
@@ -170,6 +172,17 @@
   }
 
   /* --- mounting ------------------------------------------------------------ */
+  /* Narrow preview: squeezes every plate to a 390 px, 4:5 column so the
+     phone composition can be tuned on a desktop screen. */
+  var narrowState = false;
+  function applyNarrow(on) {
+    narrowState = on;
+    hosts.forEach(function (h) {
+      h.style.maxWidth = on ? "390px" : "";
+      h.style.marginInline = on ? "auto" : "";
+      h.style.aspectRatio = on ? "4 / 5" : "";
+    });
+  }
   var pollId = 0, refreshCurrent = function () {}, watched = [];
   function pieceName(h, i) { return (i + 1) + " \u00b7 " + (h.getAttribute("data-project") || "piece"); }
   function mount(h) {
@@ -217,6 +230,10 @@
     var hideBtn = el("button", { type: "button", "class": "is-quiet", text: "Hide" });
     hideBtn.addEventListener("click", function () { setHidden(true); });
   
+    var narrowBox = el("input", { type: "checkbox" });
+    narrowBox.checked = narrowState;
+    narrowBox.addEventListener("change", function () { applyNarrow(narrowBox.checked); });
+    applyNarrow(narrowState);
     var picker = null;
     if (hosts.length > 1) {
       picker = el("div", { "class": "d3t__btns d3t__pick" }, hosts.map(function (x, i) {
@@ -229,6 +246,7 @@
       el("p", { "class": "d3t__title" }, [el("span", { text: "Devices 3D — tune" })]),
       picker,
       modeText,
+      el("label", { "class": "d3t__narrow" }, [narrowBox, el("span", { text: "Narrow preview (390 px)" })]),
       el("div", { "class": "d3t__btns" }, [copyBtn, resetBtn, hideBtn]),
       el("div", { "class": "d3t__scrub" }, [el("label", null, [scrubOn, el("span", { text: "Scrub" })]), scrubR, scrubN])
     ]);
