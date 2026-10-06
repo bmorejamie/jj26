@@ -115,6 +115,11 @@
   (host.getAttribute("data-devices") || "laptop phone").split(/\s+/).forEach(function (n) { if (n) HAS[n] = true; });
   var PROJECT = host.getAttribute("data-project") || "";
   var PROJECTS = {
+    /* Action Against Hunger: Boulder Crest's poses, as tuned 2026-10-06;
+       only the night plate was changed. */
+    "aah": {
+      colors: { night: { plate: "#2f3132" } }
+    },
     /* Boulder Crest is the base set above. The others start from
        compositions of their own and get Jamie's tuned numbers baked in
        here (same shape as DEFAULTS; only the numbers that differ). */
