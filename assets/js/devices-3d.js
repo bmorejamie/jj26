@@ -2,33 +2,37 @@
    Live 3D devices — experiment (Boulder Crest).
 
    A laptop and a phone built in the page with three.js, wearing the real
-   captures from the case plates as their screens. Matte clay bodies, black
-   glass, no reflections, no texture: flat, but 3D. Scroll turns and lifts
-   them; the phone sits nearer the camera and moves further, so the two part
-   in depth as you go.
+   captures from the case plates as their screens. Matte clay bodies, thin
+   clay rims, no reflections, no texture: flat, but 3D. They float well
+   above a square plate in the page column and cast soft, offset shadows
+   onto it. The plate is the frame: it crops them.
 
    How it behaves
-   - Lazy: nothing (not even three.js) loads until the frame nears the
+   - Lazy: nothing (not even three.js) loads until the plate nears the
      viewport. Off-screen, or once the motion has settled, nothing renders.
-   - Motion: scroll position -> progress (0 as the frame enters, 1 as it
-     leaves) -> a critically damped spring (no overshoot, no 1:1 jitter) ->
-     a curve that slows through the middle, so the devices ease into their
-     composed pose as the frame reaches the centre and ease out of it again.
-   - Reduced motion: the composed pose, still. Rendered on demand only.
-   - Small screens: a tighter composition and fewer, smaller moves.
-   - Day & Night: body, glass, shadow and ground bounce come from the
-     --device tokens in site.css; a flip of the switch cross-fades them on
-     the same duration and curve as the page ground (--t-base, --ease).
+   - Motion: each device has a start pose and an end pose (position and
+     rotation). Scroll progress runs 0 -> 1 from the plate entering the
+     viewport, through 0.5 with it centred, to 1 as it leaves (or the page
+     runs out, whichever is first),
+     through a critically damped spring (no overshoot, no 1:1 jitter). Each
+     device runs through its poses at its own speed, the phone nearer the
+     camera and faster, so the two part in depth as you scroll.
+   - Reduced motion: both devices hold their halfway pose, still.
+   - Small screens: a taller plate and its own composition (CONFIG.narrow).
+   - Day & Night: plate, body, bezel and shadow come from the --device
+     tokens in site.css; a flip of the switch cross-fades them on the same
+     duration and curve as the page ground (--t-base, --ease).
    - Pixel-exact screens: each screen is the capture's exact aspect, sRGB,
      unlit (no tone mapping), mipmapped with anisotropic filtering.
-   - Shadows are analytic: a rounded-rectangle distance field with a soft
-     falloff, drawn on the ground under each device. No shadow maps, so no
-     aliasing; they spread and fade as a device rises.
+   - Shadows are analytic: each device's outline is projected onto the
+     plate along the light, then drawn as a soft rounded-rectangle field
+     that grows softer and fainter the higher the device floats. No shadow
+     maps, so no aliasing.
    - No WebGL 2 / no module support / a failed load: the original two image
      plates stand in (html.devices3d-failed).
-   - Review aid: ?phone=hero|stats|stories swaps the phone screen between the
-     three captures on the Mobile plate (default: data-phone, the stats one).
-     ?capture exposes a fixed-step hook for frame-exact recordings.
+   - ?tune loads a controls panel (devices-3d-tune.js) that edits CONFIG
+     live and copies it as JSON. ?phone=hero|stats|stories swaps the phone
+     screen. ?capture exposes a fixed-step hook for frame-exact recordings.
 --------------------------------------------------------------------------- */
 (function () {
   "use strict";
@@ -36,23 +40,90 @@
   var host = document.querySelector("[data-devices3d]");
   if (!host) return;
 
+  var SELF = (document.currentScript && document.currentScript.src) || "";
   var THREE_URL = "https://cdnjs.cloudflare.com/ajax/libs/three.js/0.186.1/three.module.min.js";
   var root = document.documentElement;
   var DEG = Math.PI / 180;
+  var params = new URLSearchParams(location.search);
+  var TUNE = params.has("tune");
+  var CAPTURE = params.has("capture");
+
+  /* ==================================================================
+     Defaults — the numbers the ?tune panel edits. Units: cm and degrees.
+     The plate is the z = 0 plane; +z comes out towards the camera.
+     Rotations apply pitch (x), then turn (y), then spin in the plate (z).
+     speed: how fast a device runs through its start -> end (about the
+     middle of the scroll); depth: extra height above the plate.
+     ================================================================== */
+  var DEFAULTS = {
+    wide: {
+      cam: { fov: 22, dist: 116, x: 3, y: 0 },
+      laptop: {
+        start: { p: [-7, 7, 26], r: [12, -36, 9] },
+        end:   { p: [-2, -5, 26], r: [3, 10, -4] },
+        scale: 1, speed: 1, depth: 0, lid: 110
+      },
+      phone: {
+        start: { p: [17, -17, 44], r: [16, 36, -22] },
+        end:   { p: [13, 12, 46], r: [2, -24, -6] },
+        scale: 1, speed: 1.3, depth: 0
+      }
+    },
+    narrow: {
+      cam: { fov: 24, dist: 150, x: 0, y: 1 },
+      laptop: {
+        start: { p: [-3, 14, 26], r: [12, -28, 8] },
+        end:   { p: [0, 4, 26], r: [3, 12, -3] },
+        scale: 1, speed: 1, depth: 0, lid: 110
+      },
+      phone: {
+        start: { p: [9, -24, 44], r: [14, 30, -18] },
+        end:   { p: [5, 2, 46], r: [4, -18, -6] },
+        scale: 1.15, speed: 1.3, depth: 0
+      }
+    },
+    /* opacity at 15 cm up; blur in cm at 15 cm up (it scales with height);
+       x/y: how far the shadow falls per 10 cm of height; spread: cm added
+       round the outline. */
+    shadow: { opacity: 0.3, blur: 6, x: 3.2, y: -4.4, spread: -0.5 },
+    /* damping: the spring's response (1/s; lower = lazier).
+       ease: 0 = linear through the poses, 1 = slow in and out. */
+    motion: { damping: 5.5, ease: 0.35 },
+    /* hairline where screen meets body: 0 = bezel colour, 1 = shadow colour */
+    hairline: 0.2,
+    /* null = use the token from site.css */
+    colors: {
+      day:   { plate: null, body: null, bezel: null },
+      night: { plate: null, body: null, bezel: null }
+    }
+  };
+  function clone(o) { return JSON.parse(JSON.stringify(o)); }
+  function merge(dst, src) {
+    if (!src || typeof src !== "object") return dst;
+    Object.keys(dst).forEach(function (k) {
+      if (!(k in src)) return;
+      if (dst[k] && typeof dst[k] === "object" && !Array.isArray(dst[k])) merge(dst[k], src[k]);
+      else if (Array.isArray(dst[k]) && Array.isArray(src[k])) src[k].forEach(function (v, i) { if (typeof v === "number") dst[k][i] = v; });
+      else if (src[k] === null || typeof src[k] === typeof dst[k] || dst[k] === null) dst[k] = src[k];
+    });
+    return dst;
+  }
+  var STORE = "jj26-devices3d-tune";
+  var CONFIG = clone(DEFAULTS);
+  if (TUNE) { try { merge(CONFIG, JSON.parse(localStorage.getItem(STORE) || "null")); } catch (e) {} }
 
   function fail(err) {
     if (err && window.console) console.warn("[devices-3d]", err);
     root.classList.add("devices3d-failed");
   }
-
   function hasWebGL2() {
     try { return !!document.createElement("canvas").getContext("webgl2"); }
     catch (e) { return false; }
   }
   if (!hasWebGL2()) { fail(); return; }
 
-  /* Wait until the frame is within about a screen of the viewport. */
-  if ("IntersectionObserver" in window) {
+  /* Wait until the plate is within about a screen of the viewport. */
+  if ("IntersectionObserver" in window && !TUNE) {
     var nearby = new IntersectionObserver(function (entries) {
       if (!entries.some(function (e) { return e.isIntersecting; })) return;
       nearby.disconnect();
@@ -71,8 +142,6 @@
   function build(T) {
     var reduceMq = window.matchMedia("(prefers-reduced-motion: reduce)");
     var darkMq = window.matchMedia("(prefers-color-scheme: dark)");
-    var params = new URLSearchParams(location.search);
-    var capture = params.has("capture");   // deterministic frame stepping for recordings
 
     /* --- renderer ----------------------------------------------------- */
     var canvas = document.createElement("canvas");
@@ -81,7 +150,7 @@
     try {
       renderer = new T.WebGLRenderer({
         canvas: canvas, antialias: true, alpha: true,
-        premultipliedAlpha: true, preserveDrawingBuffer: capture
+        premultipliedAlpha: true, preserveDrawingBuffer: CAPTURE
       });
     } catch (e) { fail(e); return; }
     renderer.setClearColor(0x000000, 0);
@@ -94,20 +163,21 @@
     host.appendChild(probe);
 
     var scene = new T.Scene();
-    var camera = new T.PerspectiveCamera(22, 16 / 10, 10, 1000);
+    var camera = new T.PerspectiveCamera(22, 16 / 10, 1, 1000);
 
     /* --- materials (colours filled in by the theme) ------------------- */
     var bodyMat = new T.MeshStandardMaterial({ roughness: 0.62, metalness: 0 });
-    var glassMat = new T.MeshStandardMaterial({ roughness: 0.42, metalness: 0 });
-    var lensMat = new T.MeshBasicMaterial({ color: 0x1a1b1f });
+    var bezelMat = new T.MeshStandardMaterial({ roughness: 0.7, metalness: 0 });
+    var hairMat = new T.MeshStandardMaterial({ roughness: 0.7, metalness: 0 });
 
-    /* --- lights: soft sky + ground bounce, a key from upper left front,
-       a low fill from the right so the right-hand bevels still read. ---- */
+    /* --- lights: soft sky + plate bounce, a key from upper left front
+       (the shadows fall down and right, away from it), a low fill from
+       the right so the right-hand edges still read. ------------------- */
     var hemi = new T.HemisphereLight(0xffffff, 0xffffff, 1.0);
     var key = new T.DirectionalLight(0xffffff, 1.0);
-    key.position.set(-0.55, 1.0, 0.8);
+    key.position.set(-0.55, 0.75, 0.9);
     var fill = new T.DirectionalLight(0xffffff, 0.3);
-    fill.position.set(1.0, 0.25, 0.35);
+    fill.position.set(1.0, -0.1, 0.5);
     scene.add(hemi, key, fill);
 
     /* ================================================================
@@ -184,58 +254,78 @@
       return g;
     }
 
+    var HAIR = 0.03;   // the hairline round each screen, cm
+
     /* --- the laptop (cm). A 15" MacBook Air, more or less: a thin base
-       slab, the lid hinged open at 112 degrees, a 16:10 screen in thin
-       black glass with a slightly deeper chin. No keyboard, no trackpad. */
+       slab, the lid hinged open, a 16:10 screen in a bezel of slightly
+       darker clay with a slightly deeper chin. No keyboard, no trackpad. */
     var LT = { w: 34.0, d: 23.8, t: 1.05, R: 1.2, r: 0.4, lidT: 0.48, lidr: 0.2, rim: 0.2,
-               side: 0.5, top: 0.75, chin: 1.05, open: 112 };
+               side: 0.5, top: 0.75, chin: 1.05 };
     LT.sw = LT.w - 2 * (LT.rim + LT.side);
     LT.sh = LT.sw * 900 / 1440;                       // the capture is 1440 x 900
     LT.lidH = LT.sh + 2 * LT.rim + LT.top + LT.chin;
 
     var laptop = new T.Group();
+    var laptopInner = new T.Group();   // centred on the whole open laptop
+    laptop.add(laptopInner);
     var base = new T.Mesh(slab(LT.w, LT.d, LT.t, LT.R, LT.r, 14, 7), bodyMat);
     base.rotation.x = -Math.PI / 2;
-    laptop.add(base);
-
+    laptopInner.add(base);
     var hinge = new T.Group();
     hinge.position.set(0, LT.t / 2 - 0.08, -LT.d / 2 + 0.55);
-    hinge.rotation.x = -(LT.open - 90) * DEG;
-    laptop.add(hinge);
-
+    laptopInner.add(hinge);
     var lid = new T.Group();
     lid.position.set(0, LT.lidH / 2, LT.lidT / 2 - 0.1);
     hinge.add(lid);
     lid.add(new T.Mesh(slab(LT.w, LT.lidH, LT.lidT, LT.R, LT.lidr, 14, 5), bodyMat));
-    var lg = new T.Mesh(panel(LT.w - 2 * LT.rim, LT.lidH - 2 * LT.rim,
-      LT.R - LT.rim, LT.R - LT.rim, LT.R - LT.rim, LT.R - LT.rim), glassMat);
-    lg.position.z = LT.lidT / 2 + 0.004;
-    lid.add(lg);
+    var lb = new T.Mesh(panel(LT.w - 2 * LT.rim, LT.lidH - 2 * LT.rim,
+      LT.R - LT.rim, LT.R - LT.rim, LT.R - LT.rim, LT.R - LT.rim), bezelMat);
+    lb.position.z = LT.lidT / 2 + 0.003;
+    lid.add(lb);
+    var lScreenY = -LT.lidH / 2 + LT.rim + LT.chin + LT.sh / 2;
+    var lh = new T.Mesh(panel(LT.sw + 2 * HAIR, LT.sh + 2 * HAIR, 0.22 + HAIR, 0.22 + HAIR, HAIR, HAIR), hairMat);
+    lh.position.set(0, lScreenY, LT.lidT / 2 + 0.006);
+    lid.add(lh);
     var lScreenMat = new T.MeshBasicMaterial({ toneMapped: false });
     var lScreen = new T.Mesh(panel(LT.sw, LT.sh, 0.22, 0.22, 0, 0), lScreenMat);
-    lScreen.position.set(0, -LT.lidH / 2 + LT.rim + LT.chin + LT.sh / 2, LT.lidT / 2 + 0.008);
+    lScreen.position.set(0, lScreenY, LT.lidT / 2 + 0.009);
     lid.add(lScreen);
-    var lLens = new T.Mesh(new T.CircleGeometry(0.11, 20), lensMat);
+    var lLens = new T.Mesh(new T.CircleGeometry(0.1, 20), hairMat);
     lLens.position.set(0, LT.lidH / 2 - LT.rim - LT.top / 2, LT.lidT / 2 + 0.007);
     lid.add(lLens);
     scene.add(laptop);
 
+    function setLid(deg) {
+      hinge.rotation.x = -(deg - 90) * DEG;
+      /* Re-centre so poses turn about the middle of the open laptop. */
+      var keep = [laptop.position.clone(), laptop.quaternion.clone(), laptop.scale.clone()];
+      laptop.position.set(0, 0, 0); laptop.quaternion.identity(); laptop.scale.setScalar(1);
+      laptopInner.position.set(0, 0, 0);
+      laptop.updateMatrixWorld(true);
+      var c = new T.Box3().setFromObject(laptopInner).getCenter(new T.Vector3());
+      laptopInner.position.set(-c.x, -c.y, -c.z);
+      laptop.position.copy(keep[0]); laptop.quaternion.copy(keep[1]); laptop.scale.copy(keep[2]);
+      laptop.updateMatrixWorld(true);
+    }
+
     /* --- the phone (cm). iPhone 15 Pro proportions, taken from the case
-       plate: 560 x 1214 screen, thin bezel, side buttons. */
-    var PH = { w: 7.06, t: 0.82, R: 1.06, r: 0.17, bez: 0.15 };
-    PH.sw = PH.w - 2 * (PH.r + PH.bez);
+       plate: 560 x 1214 screen, a thin clay rim with a hairline where the
+       screen meets the body, side buttons. */
+    var PH = { t: 0.82, R: 1.06, r: 0.17, rim: 0.07 };
+    PH.sw = 6.46;
     PH.sh = PH.sw * 1214 / 560;
-    PH.h = PH.sh + 2 * (PH.r + PH.bez);
+    PH.inset = PH.r + PH.rim + HAIR;
+    PH.w = PH.sw + 2 * PH.inset;
+    PH.h = PH.sh + 2 * PH.inset;
 
     var phone = new T.Group();
-    var phoneBody = new T.Group();   // the phone itself; `phone` carries the pose
+    var phoneBody = new T.Group();
     phone.add(phoneBody);
     phoneBody.add(new T.Mesh(slab(PH.w, PH.h, PH.t, PH.R, PH.r, 14, 6), bodyMat));
-    var pg = new T.Mesh(panel(PH.w - 2 * PH.r, PH.h - 2 * PH.r,
-      PH.R - PH.r, PH.R - PH.r, PH.R - PH.r, PH.R - PH.r), glassMat);
-    pg.position.z = PH.t / 2 + 0.003;
-    phoneBody.add(pg);
-    var sr = PH.R - PH.r - PH.bez;
+    var sr = PH.R - PH.inset;
+    var ph = new T.Mesh(panel(PH.sw + 2 * HAIR, PH.sh + 2 * HAIR, sr + HAIR, sr + HAIR, sr + HAIR, sr + HAIR), hairMat);
+    ph.position.z = PH.t / 2 + 0.003;
+    phoneBody.add(ph);
     var pScreenMat = new T.MeshBasicMaterial({ toneMapped: false });
     var pScreen = new T.Mesh(panel(PH.sw, PH.sh, sr, sr, sr, sr), pScreenMat);
     pScreen.position.z = PH.t / 2 + 0.006;
@@ -249,10 +339,9 @@
     scene.add(phone);
 
     /* ================================================================
-       Shadows: one tight contact shadow and one wide ambient shadow per
-       device, each a rounded-rect distance field with a soft falloff.
-       The footprint follows the device (its corners projected straight
-       down); height spreads and lightens it. Dithered against banding.
+       Shadows: each device's corners are projected onto the plate along
+       the shadow direction; the outline (an oriented box round them) is
+       drawn as a soft rounded-rectangle field. Dithered against banding.
        ================================================================ */
     var shadowVS = "varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }";
     var shadowFS = [
@@ -263,8 +352,8 @@
       "void main(){",
       "  vec2 p = (vUv - 0.5) * uSize;",
       "  float d = sdRoundBox(p, uHalf, uRadius);",
-      "  float s = max(d / uBlur + 0.65, 0.0);",
-      "  float a = uOpacity * exp(-2.1 * s * s);",
+      "  float s = max(d / uBlur + 0.6, 0.0);",       // the falloff starts inside the outline
+      "  float a = uOpacity * exp(-1.8 * s * s);",
       "  float n = fract(sin(dot(gl_FragCoord.xy, vec2(12.9898, 78.233))) * 43758.5453);",
       "  a += (n - 0.5) / 255.0;",
       "  gl_FragColor = vec4(uColor, clamp(a, 0.0, 1.0));",
@@ -272,7 +361,6 @@
     ].join("\n");
     var shadowColor = new T.Vector3(0.09, 0.09, 0.1);
     var planeGeo = new T.PlaneGeometry(1, 1);
-    planeGeo.rotateX(-Math.PI / 2);
 
     function makeShadow(order) {
       var mat = new T.ShaderMaterial({
@@ -289,8 +377,6 @@
       scene.add(m);
       return m;
     }
-
-    /* Points (device-local) whose drop to the ground outlines the footprint. */
     function boxPoints(w, h, t) {
       var out = [];
       [-1, 1].forEach(function (a) { [-1, 1].forEach(function (b) { [-1, 1].forEach(function (c) {
@@ -298,184 +384,115 @@
       }); }); });
       return out;
     }
-    var devices = [
-      { obj: laptop, parts: [[base, boxPoints(LT.w, LT.d, LT.t)], [lid, boxPoints(LT.w, LT.lidH, LT.lidT)]],
-        contact: makeShadow(1), ambient: makeShadow(0),
-        k: { cOp: 0.34, cBlur: 0.9, cGrow: 0.22, aOp: 0.17, aBlur: 4.5, aGrow: 0.55, inset: 0.6 } },
-      { obj: phone, parts: [[phoneBody, boxPoints(PH.w, PH.h, PH.t)]],
-        contact: makeShadow(1), ambient: makeShadow(0),
-        k: { cOp: 0.28, cBlur: 0.9, cGrow: 0.2, aOp: 0.14, aBlur: 3.2, aGrow: 0.5, inset: 0.15 } }
+    /* One shadow per rigid part (laptop base, laptop lid, phone), each an
+       oriented box round that part's corners as they fall on the plate. */
+    var shadows = [
+      { obj: laptop, part: base, pts: boxPoints(LT.w, LT.d, LT.t), m: makeShadow(0) },
+      { obj: laptop, part: lid, pts: boxPoints(LT.w, LT.lidH, LT.lidT), m: makeShadow(1) },
+      { obj: phone, part: phoneBody, pts: boxPoints(PH.w, PH.h, PH.t), m: makeShadow(2) }
     ];
-    var tmpV = new T.Vector3(), tmpQ = new T.Quaternion(), tmpE = new T.Euler();
+    var tmpV = new T.Vector3(), axisV = new T.Vector3();
     var shadowK = 1;
 
-    function updateShadow(dev) {
-      dev.obj.updateMatrixWorld(true);
-      dev.obj.getWorldQuaternion(tmpQ);
-      tmpE.setFromQuaternion(tmpQ, "YXZ");
-      var yaw = tmpE.y, cy = Math.cos(yaw), sy = Math.sin(yaw);
-      var minU = Infinity, maxU = -Infinity, minV = Infinity, maxV = -Infinity, low = Infinity;
-      dev.parts.forEach(function (part) {
-        part[1].forEach(function (p) {
-          tmpV.copy(p).applyMatrix4(part[0].matrixWorld);
-          low = Math.min(low, tmpV.y);
-          var u = tmpV.x * cy - tmpV.z * sy, v = tmpV.x * sy + tmpV.z * cy;
-          minU = Math.min(minU, u); maxU = Math.max(maxU, u);
-          minV = Math.min(minV, v); maxV = Math.max(maxV, v);
-        });
+    function updateShadow(sh) {
+      var S = CONFIG.shadow, M = sh.part.matrixWorld;
+      axisV.setFromMatrixColumn(M, 0);
+      var ang = Math.atan2(axisV.y, axisV.x), ca = Math.cos(ang), sa = Math.sin(ang);
+      var minU = Infinity, maxU = -Infinity, minV = Infinity, maxV = -Infinity, hs = 0;
+      sh.pts.forEach(function (p) {
+        tmpV.copy(p).applyMatrix4(M);
+        var z = Math.max(tmpV.z, 0);
+        var x = tmpV.x + S.x * z / 10, y = tmpV.y + S.y * z / 10;
+        var u = x * ca + y * sa, v = -x * sa + y * ca;
+        minU = Math.min(minU, u); maxU = Math.max(maxU, u);
+        minV = Math.min(minV, v); maxV = Math.max(maxV, v);
+        hs += z;
       });
-      var h = Math.max(low, 0), cu = (minU + maxU) / 2, cv = (minV + maxV) / 2;
-      var hu = (maxU - minU) / 2, hv = (maxV - minV) / 2, k = dev.k;
-      var wx = cu * cy + cv * sy, wz = -cu * sy + cv * cy;
-      [[dev.contact, k.cOp / (1 + 0.16 * h), k.cBlur + k.cGrow * h, -k.inset],
-       [dev.ambient, k.aOp / (1 + 0.035 * h), k.aBlur + k.aGrow * h, 0.4]].forEach(function (s) {
-        var m = s[0], U = m.material.uniforms, blur = s[2];
-        var ex = Math.max(hu + s[3], 0.3), ez = Math.max(hv + s[3], 0.3);
-        var sx = 2 * (ex + 2.4 * blur), sz = 2 * (ez + 2.4 * blur);
-        m.position.set(wx, 0.01 + m.renderOrder * 0.005, wz);
-        m.rotation.y = yaw;
-        m.scale.set(sx, 1, sz);
-        U.uSize.value.set(sx, sz);
-        U.uHalf.value.set(ex, ez);
-        U.uRadius.value = Math.min(ex, ez, 1.2 + blur * 0.5);
-        U.uBlur.value = blur;
-        U.uOpacity.value = Math.min(s[1] * shadowK, 0.85);
-      });
-      return { x: wx, z: wz, hu: hu, hv: hv, yaw: yaw, blur: k.aBlur + k.aGrow * h };
+      var h = Math.max(hs / sh.pts.length, 0.5), cu = (minU + maxU) / 2, cv = (minV + maxV) / 2;
+      var ex = Math.max((maxU - minU) / 2 + S.spread, 0.2), ey = Math.max((maxV - minV) / 2 + S.spread, 0.2);
+      var blur = Math.max(S.blur * (0.35 + 0.65 * h / 15), 0.2);
+      var op = S.opacity * Math.sqrt(Math.min(Math.max(15 / h, 0.5), 2)) * shadowK;
+      var m = sh.m, U = m.material.uniforms;
+      var sx = 2 * (ex + 2.2 * blur), sy = 2 * (ey + 2.2 * blur);
+      m.position.set(cu * ca - cv * sa, cu * sa + cv * ca, 0.01 + 0.01 * m.renderOrder);
+      m.rotation.z = ang;
+      m.scale.set(sx, sy, 1);
+      U.uSize.value.set(sx, sy);
+      U.uHalf.value.set(ex, ey);
+      U.uRadius.value = Math.min(ex, ey) * 0.6;
+      U.uBlur.value = blur;
+      U.uOpacity.value = Math.min(op, 0.9);
     }
+    var devices = { laptop: { obj: laptop }, phone: { obj: phone } };
 
     /* ================================================================
-       Composition + motion. Rest pose = progress 0.5 (frame centred).
-       Each move is rest + amplitude * e, where e runs -1..1 through the
-       scroll. Rotations in degrees, positions in cm.
+       Poses
        ================================================================ */
-    var COMP = {
-      wide: {
-        laptop: { p: [-4.0, 2.4, 0], r: [0, 15, 0] },
-        phone:  { p: [13.0, 8.6, 11], r: [-8, -17, -3.5], s: 1.12 },
-        cam: { el: 9, az: 0, fov: 20 }
-      },
-      narrow: {   // the phone steps in front of the laptop's corner
-        laptop: { p: [-2.5, 3.4, -3], r: [0, 14, 0] },
-        phone:  { p: [9.5, 5.6, 15], r: [-9, -15, -3], s: 1.22 },
-        cam: { el: 10, az: 0, fov: 22 }
-      }
-    };
-    var MOVE = {
-      wide: {
-        laptop: { p: [0.8, 1.8, 0], r: [-1.6, 10, 0] },
-        phone:  { p: [-1.0, 4.4, 2.2], r: [5.5, -16, 3] },
-        cam: { el: 1.8, az: -3.2 }
-      },
-      narrow: {   // fewer degrees of freedom, smaller moves
-        laptop: { p: [0, 1.0, 0], r: [0, 6, 0] },
-        phone:  { p: [0, 2.8, 0], r: [3, -10, 0] },
-        cam: { el: 0, az: 0 }
-      }
-    };
-    var mode = "wide", camTarget = new T.Vector3(0, 8, 0), camDist = 150;
-
-    function applyDevice(obj, c, m, e) {
-      obj.position.set(c.p[0] + m.p[0] * e, c.p[1] + m.p[1] * e, c.p[2] + m.p[2] * e);
-      obj.rotation.set((c.r[0] + m.r[0] * e) * DEG, (c.r[1] + m.r[1] * e) * DEG, (c.r[2] + m.r[2] * e) * DEG, "YXZ");
-      if (c.s) obj.scale.setScalar(c.s);
+    var mode = "wide";
+    function lerp(a, b, t) { return a + (b - a) * t; }
+    function applyDevice(name, q) {
+      var c = CONFIG[mode][name], o = devices[name].obj;
+      var a = c.start, b = c.end, d = c.depth || 0;
+      o.position.set(lerp(a.p[0], b.p[0], q), lerp(a.p[1], b.p[1], q), lerp(a.p[2], b.p[2], q) + d);
+      o.rotation.set(lerp(a.r[0], b.r[0], q) * DEG, lerp(a.r[1], b.r[1], q) * DEG, lerp(a.r[2], b.r[2], q) * DEG, "ZYX");
+      o.scale.setScalar(c.scale || 1);
     }
-    function camDir(el, az) {
-      return new T.Vector3(Math.sin(az * DEG) * Math.cos(el * DEG), Math.sin(el * DEG), Math.cos(az * DEG) * Math.cos(el * DEG));
+    /* Per-device progress: its speed stretches the scroll about the middle,
+       then a blend of linear and smoothstep sets how it eases. */
+    function devQ(name, p) {
+      var sp = CONFIG[mode][name].speed || 1;
+      var q = Math.min(Math.max(0.5 + (p - 0.5) * sp, 0), 1);
+      var e = Math.min(Math.max(CONFIG.motion.ease, 0), 1);
+      return lerp(q, q * q * (3 - 2 * q), e);
     }
-    function placeCamera(e) {
-      var c = COMP[mode].cam, m = MOVE[mode].cam;
-      camera.position.copy(camDir(c.el + m.el * e, c.az + m.az * e)).multiplyScalar(camDist).add(camTarget);
-      camera.lookAt(camTarget);
-    }
-    function pose(e) {
-      applyDevice(laptop, COMP[mode].laptop, MOVE[mode].laptop, e);
-      applyDevice(phone, COMP[mode].phone, MOVE[mode].phone, e);
-      placeCamera(e);
-      var fp = devices.map(updateShadow);
-      return fp;
-    }
-
-    /* Auto-frame: from the rest pose, find the camera distance and aim that
-       fit the devices (and their shadows, with less margin) in the frame. */
-    function frameScene() {
-      var c = COMP[mode].cam;
-      camera.fov = c.fov;
-      var fp = pose(0);
-      var devPts = [], shPts = [];
-      devices.forEach(function (dev) {
-        dev.parts.forEach(function (part) {
-          part[1].forEach(function (p) { devPts.push(p.clone().applyMatrix4(part[0].matrixWorld)); });
-        });
-      });
-      fp.forEach(function (f) {
-        var cy = Math.cos(f.yaw), sy = Math.sin(f.yaw), g = 0.9 * f.blur;
-        [[-1, -1], [1, -1], [1, 1], [-1, 1]].forEach(function (q) {
-          var u = q[0] * (f.hu + g), v = q[1] * (f.hv + g);
-          shPts.push(new T.Vector3(f.x + u * cy + v * sy, 0, f.z - u * sy + v * cy));
-        });
-      });
-      var dir = camDir(c.el, c.az);
-      camTarget.set(0, 0, 0);
-      devPts.forEach(function (p) { camTarget.add(p); });
-      camTarget.divideScalar(devPts.length);
-      var right = new T.Vector3().crossVectors(new T.Vector3(0, 1, 0), dir).normalize();
-      var up = new T.Vector3().crossVectors(dir, right).normalize();
-      /* Devices fit the figure's own box; the canvas bleeds past it into
-         the gutters, so the shadows may spread out there before fading. */
-      var MX = (mode === "wide" ? 0.9 : 0.98) * boxFx, MY = (mode === "wide" ? 0.86 : 0.86) * boxFy, MS = 0.97;
-
-      function measure(dist) {
-        camera.position.copy(dir).multiplyScalar(dist).add(camTarget);
-        camera.lookAt(camTarget);
-        camera.updateMatrixWorld(); camera.updateProjectionMatrix();
-        var b = [Infinity, -Infinity, Infinity, -Infinity], worst = 0;
-        devPts.forEach(function (p) {
-          tmpV.copy(p).project(camera);
-          b[0] = Math.min(b[0], tmpV.x); b[1] = Math.max(b[1], tmpV.x);
-          b[2] = Math.min(b[2], tmpV.y); b[3] = Math.max(b[3], tmpV.y);
-        });
-        var cx = (b[0] + b[1]) / 2, cyy = (b[2] + b[3]) / 2;
-        worst = Math.max((b[1] - b[0]) / 2 / MX, (b[3] - b[2]) / 2 / MY);
-        shPts.forEach(function (p) {
-          tmpV.copy(p).project(camera);
-          worst = Math.max(worst, Math.abs(tmpV.x - cx) / MS, Math.abs(tmpV.y - cyy) / MS);
-        });
-        return { worst: worst, cx: cx, cy: cyy };
-      }
-      for (var it = 0; it < 4; it++) {
-        var lo = 20, hi = 2000, mres;
-        for (var s = 0; s < 32; s++) {
-          var mid = (lo + hi) / 2;
-          mres = measure(mid);
-          if (mres.worst > 1) lo = mid; else hi = mid;
-        }
-        camDist = hi;
-        mres = measure(camDist);
-        var halfH = Math.tan(camera.fov * DEG / 2) * camDist, halfW = halfH * camera.aspect;
-        camTarget.addScaledVector(right, mres.cx * halfW).addScaledVector(up, mres.cy * halfH);
-      }
-      camera.near = Math.max(camDist * 0.4, 1);
-      camera.far = camDist * 2.5;
+    var lidDeg = null;
+    function pose(p) {
+      var L = CONFIG[mode].laptop.lid || 110;
+      if (L !== lidDeg) { lidDeg = L; setLid(L); }
+      applyDevice("laptop", devQ("laptop", p));
+      applyDevice("phone", devQ("phone", p));
+      var c = CONFIG[mode].cam;
+      if (camera.fov !== c.fov) { camera.fov = c.fov; camera.updateProjectionMatrix(); }
+      camera.position.set(c.x, c.y, c.dist);
+      camera.lookAt(c.x, c.y, 0);
+      camera.near = Math.max(c.dist - 110, 1);
+      camera.far = c.dist + 10;
       camera.updateProjectionMatrix();
+      laptop.updateMatrixWorld(true);
+      phone.updateMatrixWorld(true);
+      shadows.forEach(updateShadow);
     }
 
     /* ================================================================
-       Theme: read the tokens through the probe, cross-fade on a flip.
+       Theme: tokens through the probe (or the panel's overrides),
+       cross-faded on a flip.
        ================================================================ */
     function rgb(str) {
       var m = str.match(/[\d.]+/g) || [0, 0, 0];
       var f = /^color\(/.test(str) ? 1 : 255;   // rgb(r, g, b) or color(srgb r g b)
       return [m[0] / f, m[1] / f, m[2] / f];
     }
-    function readTheme() {
+    function hex(c) {
+      return "#" + c.map(function (v) { var h = Math.round(Math.min(Math.max(v, 0), 1) * 255).toString(16); return h.length < 2 ? "0" + h : h; }).join("");
+    }
+    function fromHex(h) { return [parseInt(h.substr(1, 2), 16) / 255, parseInt(h.substr(3, 2), 16) / 255, parseInt(h.substr(5, 2), 16) / 255]; }
+    function edition() {
+      var t = root.getAttribute("data-theme");
+      return t === "dark" || t === "light" ? (t === "dark" ? "night" : "day") : (darkMq.matches ? "night" : "day");
+    }
+    function tokens() {
       var cs = getComputedStyle(probe), rs = getComputedStyle(root);
-      var ground = rgb(cs.borderBottomColor);
       return {
-        body: rgb(cs.color), glass: rgb(cs.backgroundColor), shadow: rgb(cs.borderTopColor),
-        ground: ground, k: parseFloat(rs.getPropertyValue("--device-shadow-k")) || 1,
-        d: (0.2126 * ground[0] + 0.7152 * ground[1] + 0.0722 * ground[2]) < 0.5 ? 1 : 0
+        body: rgb(cs.color), bezel: rgb(cs.backgroundColor), shadow: rgb(cs.borderTopColor),
+        plate: rgb(cs.borderBottomColor), k: parseFloat(rs.getPropertyValue("--device-shadow-k")) || 1
       };
+    }
+    function readTheme() {
+      var t = tokens(), ed = edition(), o = CONFIG.colors[ed] || {};
+      ["plate", "body", "bezel"].forEach(function (k) { if (o[k]) t[k] = fromHex(o[k]); });
+      host.style.backgroundColor = o.plate || "";
+      t.d = ed === "night" ? 1 : 0;
+      return t;
     }
     function cssTime(name, fallback) {
       var v = getComputedStyle(root).getPropertyValue(name).trim();
@@ -501,37 +518,38 @@
     function mix(a, b, t) { return [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t]; }
     function applyTheme(th) {
       bodyMat.color.setRGB(th.body[0], th.body[1], th.body[2], T.SRGBColorSpace);
-      glassMat.color.setRGB(th.glass[0], th.glass[1], th.glass[2], T.SRGBColorSpace);
-      hemi.groundColor.setRGB(th.ground[0], th.ground[1], th.ground[2], T.SRGBColorSpace);
+      bezelMat.color.setRGB(th.bezel[0], th.bezel[1], th.bezel[2], T.SRGBColorSpace);
+      var hl = mix(th.bezel, th.shadow, CONFIG.hairline);
+      hairMat.color.setRGB(hl[0], hl[1], hl[2], T.SRGBColorSpace);
+      hemi.groundColor.setRGB(th.plate[0], th.plate[1], th.plate[2], T.SRGBColorSpace);
       shadowColor.set(th.shadow[0], th.shadow[1], th.shadow[2]);
       shadowK = th.k;
-      /* Night: a touch more key so the graphite bevels still read. */
-      /* Physically based units, hence the PI: a lit top face lands on the
-         token colour, the right-hand faces about 30% under it. */
+      /* Physically based units, hence the PI: a face turned to the key
+         lands on the token colour, the far edges about 30% under it. Night
+         gets a touch more key so the graphite edges still read. */
       var d = th.d, PI = Math.PI;
-      hemi.intensity = (0.4 + 0.1 * d) * PI;
-      key.intensity = (0.75 + 0.35 * d) * PI;
-      fill.intensity = (0.3 + 0.15 * d) * PI;
+      hemi.intensity = (0.42 + 0.1 * d) * PI;
+      key.intensity = (0.62 + 0.3 * d) * PI;
+      fill.intensity = (0.25 + 0.15 * d) * PI;
       bodyMat.roughness = 0.62 - 0.12 * d;
     }
     function themeAt(t) {
       var a = themeFrom, b = themeTo;
       if (!a || t >= 1) return b;
       var e = ease(t);
-      return { body: mix(a.body, b.body, e), glass: mix(a.glass, b.glass, e), shadow: mix(a.shadow, b.shadow, e),
-               ground: mix(a.ground, b.ground, e), k: a.k + (b.k - a.k) * e, d: a.d + (b.d - a.d) * e };
+      return { body: mix(a.body, b.body, e), bezel: mix(a.bezel, b.bezel, e), shadow: mix(a.shadow, b.shadow, e),
+               plate: mix(a.plate, b.plate, e), k: a.k + (b.k - a.k) * e, d: a.d + (b.d - a.d) * e };
     }
     var current = themeAt(1);
     applyTheme(current);
-    function onTheme() {
+    function onTheme(instant) {
       var next = readTheme();
-      if (JSON.stringify(next) === JSON.stringify(themeTo)) return;
-      themeFrom = current;   // from wherever a cross-fade has got to
+      if (JSON.stringify(next) === JSON.stringify(themeTo) && instant !== true) return;
+      themeFrom = current;
       themeTo = next;
-      if (reduceMq.matches || !visible) {
-        /* Nobody is watching (or motion is reduced): just be the new edition. */
+      if (instant === true || reduceMq.matches || !visible) {
         themeT = 1; current = themeTo; applyTheme(current);
-        if (ready && visible) draw(0);
+        if (ready) draw(0);
       } else {
         themeT = 0;
       }
@@ -541,21 +559,26 @@
     darkMq.addEventListener("change", onTheme);
 
     /* ================================================================
-       Scroll -> progress -> spring -> shaped e.
+       Scroll -> progress -> spring.
        ================================================================ */
+    var scrub = null;   // the panel can hold progress at a value
     function rawProgress() {
+      if (scrub !== null) return scrub;
       var r = host.getBoundingClientRect(), vh = window.innerHeight || 1;
-      var p = (vh - r.top) / (vh + r.height);
-      return Math.min(Math.max(p, 0), 1);
+      var y = window.scrollY || window.pageYOffset || 0;
+      /* 0 as the plate enters, 0.5 with it centred, 1 as it leaves (or
+         where the page runs out, if that comes first). */
+      var top = r.top + y, maxY = Math.max(root.scrollHeight - vh, 0);
+      var y0 = top - vh, yc = Math.min(top + r.height / 2 - vh / 2, maxY), y1 = Math.min(top + r.height, maxY);
+      if (y <= yc) return yc - y0 < 1 ? 0.5 : Math.max(0.5 * (y - y0) / (yc - y0), 0);
+      return y1 - yc < 1 ? 1 : Math.min(0.5 + 0.5 * (y - yc) / (y1 - yc), 1);
     }
-    /* Slower through the middle (slope 0.65 at centre), full range at the ends. */
-    function shape(p) { var u = 2 * p - 1; return u * (0.65 + 0.35 * u * u); }
-
-    var spring = { x: rawProgress(), v: 0 }, OMEGA = 7.5;
+    var spring = { x: 0.5, v: 0 };
     function stepSpring(target, dt) {
+      var w = Math.max(CONFIG.motion.damping, 0.5);
       var steps = Math.max(1, Math.ceil(dt / (1 / 120))), h = dt / steps;
       for (var i = 0; i < steps; i++) {
-        var a = OMEGA * OMEGA * (target - spring.x) - 2 * OMEGA * spring.v;
+        var a = w * w * (target - spring.x) - 2 * w * spring.v;
         spring.v += a * h;
         spring.x += spring.v * h;
       }
@@ -583,24 +606,24 @@
     /* ================================================================
        Size, loop, visibility
        ================================================================ */
-    var visible = false, raf = 0, last = 0, ready = false, boxFx = 1, boxFy = 1;
+    var visible = false, raf = 0, last = 0, ready = false;
 
     function resize() {
       var w = host.clientWidth, h = host.clientHeight;
-      var cw = canvas.clientWidth || w, ch = canvas.clientHeight || h;
       if (!w || !h) return;
-      boxFx = w / cw; boxFy = h / ch;
       renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
-      renderer.setSize(cw, ch, false);
-      camera.aspect = cw / ch;
-      mode = (w / h < 1.4 || w < 640) ? "narrow" : "wide";
-      frameScene();
+      renderer.setSize(w, h, false);
+      camera.aspect = w / h;
+      camera.updateProjectionMatrix();
+      var m = w / h < 1.2 ? "narrow" : "wide";
+      if (m !== mode) { mode = m; lidDeg = null; host.dispatchEvent(new CustomEvent("devices3d:mode")); }
     }
 
     function draw(dt) {
-      var still = reduceMq.matches;
+      var still = reduceMq.matches && scrub === null;
       var target = rawProgress(), moving = false;
       if (still) { spring.x = 0.5; spring.v = 0; }
+      else if (scrub !== null) { spring.x = scrub; spring.v = 0; }
       else {
         stepSpring(target, dt);
         moving = Math.abs(target - spring.x) > 1e-4 || Math.abs(spring.v) > 1e-4;
@@ -611,7 +634,7 @@
         current = themeAt(themeT);
         applyTheme(current);
       }
-      pose(still ? 0 : shape(spring.x));
+      pose(spring.x);
       renderer.render(scene, camera);
       return moving || themeT < 1;
     }
@@ -623,7 +646,7 @@
       if (draw(dt) && visible) raf = requestAnimationFrame(tick);
     }
     function kick() {
-      if (!ready || capture || raf || !visible) return;
+      if (!ready || CAPTURE || raf || !visible) return;
       last = performance.now();
       raf = requestAnimationFrame(tick);
     }
@@ -639,7 +662,7 @@
       draw(0);
       requestAnimationFrame(function () { host.classList.add("is-live"); });
 
-      new ResizeObserver(function () { resize(); if (capture || !visible) draw(0); else kick(); }).observe(host);
+      new ResizeObserver(function () { resize(); if (CAPTURE || !visible) draw(0); else kick(); }).observe(host);
       new IntersectionObserver(function (entries) {
         visible = entries.some(function (e) { return e.isIntersecting; });
         if (visible) kick(); else if (raf) { cancelAnimationFrame(raf); raf = 0; }
@@ -652,10 +675,24 @@
       });
       canvas.addEventListener("webglcontextrestored", function () { draw(0); });
 
-      if (capture) {
-        /* For recordings only (?capture): step the scene by an exact dt. */
-        host.__devices3d = { step: function (dt) { draw(dt); return spring.x; }, info: function () { return renderer.info.render; },
-                             settle: function () { spring.x = rawProgress(); spring.v = 0; themeT = 1; current = themeAt(1); applyTheme(current); draw(0); } };
+      if (TUNE || CAPTURE) {
+        host.__devices3d = {
+          config: CONFIG, defaults: DEFAULTS, store: STORE,
+          mode: function () { return mode; },
+          edition: edition,
+          tokens: function () { var t = tokens(); return { plate: hex(t.plate), body: hex(t.body), bezel: hex(t.bezel) }; },
+          update: function () { onTheme(true); draw(0); },
+          scrub: function (v) { scrub = (v === null || v === undefined) ? null : Math.min(Math.max(v, 0), 1); spring.x = rawProgress(); spring.v = 0; draw(0); kick(); },
+          progress: function () { return spring.x; },
+          step: function (dt) { draw(dt); return spring.x; },
+          settle: function () { spring.x = rawProgress(); spring.v = 0; themeT = 1; current = themeTo = readTheme(); applyTheme(current); draw(0); },
+          info: function () { return renderer.info.render; }
+        };
+      }
+      if (TUNE && SELF) {
+        var s = document.createElement("script");
+        s.src = SELF.replace(/devices-3d\.js(\?.*)?$/, "devices-3d-tune.js");
+        document.body.appendChild(s);
       }
     }).catch(fail);
   }
