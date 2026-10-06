@@ -54,21 +54,33 @@
       <figcaption>Home — the hero on scroll</figcaption>
     </figure>
 
-    <figure class="plate plate--device rise" style="--i:1">
-      <picture>
-        <source srcset="../content/projects/boulder-crest/pieces/desktop-laptop.webp" type="image/webp">
-        <img src="../content/projects/boulder-crest/pieces/desktop-laptop.png" width="2880" height="1800" alt="The Boulder Crest Foundation homepage on a laptop." loading="lazy" decoding="async">
-      </picture>
-      <figcaption>Desktop</figcaption>
+    <!-- Experiment: pieces 2 + 3 as one live 3D piece (assets/js/devices-3d.js).
+         The screens are the real captures from those two plates. With no JS
+         or no WebGL, the original plates below stand in. -->
+    <figure class="plate plate--3d rise" style="--i:1">
+      <div class="devices3d" data-devices3d
+           data-laptop="../content/projects/boulder-crest/pieces/screen-laptop.webp"
+           data-phone="../content/projects/boulder-crest/pieces/screen-phone-stats.webp"
+           role="img" aria-label="The Boulder Crest Foundation homepage on a laptop and on a phone."></div>
+      <figcaption>Desktop · Mobile</figcaption>
     </figure>
+    <div class="devices3d-fallback">
+      <figure class="plate plate--device rise" style="--i:1">
+        <picture>
+          <source srcset="../content/projects/boulder-crest/pieces/desktop-laptop.webp" type="image/webp">
+          <img src="../content/projects/boulder-crest/pieces/desktop-laptop.png" width="2880" height="1800" alt="The Boulder Crest Foundation homepage on a laptop." loading="lazy" decoding="async">
+        </picture>
+        <figcaption>Desktop</figcaption>
+      </figure>
 
-    <figure class="plate plate--device rise" style="--i:2">
-      <picture>
-        <source srcset="../content/projects/boulder-crest/pieces/mobile-phones.webp" type="image/webp">
-        <img src="../content/projects/boulder-crest/pieces/mobile-phones.png" width="2880" height="1800" alt="Three phones showing the Boulder Crest homepage on mobile: the hero, the program map, and Stories of Posttraumatic Growth." loading="lazy" decoding="async">
-      </picture>
-      <figcaption>Mobile</figcaption>
-    </figure>
+      <figure class="plate plate--device rise" style="--i:2">
+        <picture>
+          <source srcset="../content/projects/boulder-crest/pieces/mobile-phones.webp" type="image/webp">
+          <img src="../content/projects/boulder-crest/pieces/mobile-phones.png" width="2880" height="1800" alt="Three phones showing the Boulder Crest homepage on mobile: the hero, the program map, and Stories of Posttraumatic Growth." loading="lazy" decoding="async">
+        </picture>
+        <figcaption>Mobile</figcaption>
+      </figure>
+    </div>
   </section>
 
   <section class="wrap shelf rule-top">
@@ -86,5 +98,6 @@
 <script src="../assets/js/moonwalker.js"></script>
 <script src="../assets/js/edition.js"></script>
 <script src="../assets/js/name-scramble.js"></script>
+<script src="../assets/js/devices-3d.js"></script>
 </body>
 </html>

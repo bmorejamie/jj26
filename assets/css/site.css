@@ -20,6 +20,14 @@
   --signal:     #2C6B70;
   --curve:      #16171A;
   --plate-glow: rgba(22, 23, 26, 0.06);   /* pool of ground behind device plates; set to transparent to switch off */
+  /* Live 3D devices (assets/js/devices-3d.js): the square plate they float
+     over, their matte clay body, the slightly darker clay of the laptop's
+     bezel, and the soft shadow they cast on the plate. */
+  --device-plate:    #E8E9E6;
+  --device:          #FBFBFA;
+  --device-bezel:    #EAEAE7;
+  --device-shadow:   #16171A;
+  --device-shadow-k: 1;
 
   /* Type — the display face is the edition's voice and changes with it.
      Body and mono stay constant so it reads as one site changing clothes. */
@@ -69,6 +77,11 @@
     --signal:     #79A9AC;
     --curve:      #D8D6D0;
     --plate-glow: rgba(237, 236, 232, 0.055);
+    --device-plate:    #1C1C1F;
+    --device:          #2E2E32;
+    --device-bezel:    #262629;
+    --device-shadow:   #000000;
+    --device-shadow-k: 3;
 
     --display:      "Archivo", "Helvetica Neue", Arial, sans-serif;
     --display-wght: 800;
@@ -88,6 +101,11 @@
     --signal:     #79A9AC;
     --curve:      #D8D6D0;
     --plate-glow: rgba(237, 236, 232, 0.055);
+    --device-plate:    #1C1C1F;
+    --device:          #2E2E32;
+    --device-bezel:    #262629;
+    --device-shadow:   #000000;
+    --device-shadow-k: 3;
 
     --display:      "Archivo", "Helvetica Neue", Arial, sans-serif;
     --display-wght: 800;
@@ -1130,3 +1148,43 @@ body::after {
 /* Case pages, this release: pieces run full width in one column (the
    two-up layout returns with the long-form copy in the next version). */
 .case__header ~ section .plates-duo { grid-template-columns: 1fr !important; }
+
+/* ------------------------------------------------------- live 3D devices
+   Experiment (Boulder Crest): the laptop and phone are built in the page
+   with three.js (assets/js/devices-3d.js) and turn as you scroll. They float
+   over a square plate in the page column (--device-plate) and cast soft
+   shadows onto it; the plate crops them, so at the ends of the scroll a
+   device may run off its edges. Colours come from the --device tokens in the
+   edition blocks at the top of this file. Until the scene is ready the plate
+   holds its space empty; with no JS or no WebGL the original two image
+   plates stand in. ?tune adds a controls panel (assets/js/devices-3d-tune.js). */
+.devices3d {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  background-color: var(--device-plate);
+  transition: background-color var(--t-base) var(--ease);
+}
+@media (max-width: 46rem) { .devices3d { aspect-ratio: 4 / 5; } }
+.devices3d canvas {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  display: block;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity var(--t-slow) var(--ease);
+}
+.devices3d.is-live canvas { opacity: 1; }
+/* Theme probe: the script reads the --device tokens through these. */
+.devices3d__probe {
+  position: absolute; width: 0; height: 0; overflow: hidden; pointer-events: none;
+  color: var(--device);
+  background-color: var(--device-bezel);
+  border-top: 0 solid var(--device-shadow);
+  border-bottom: 0 solid var(--device-plate);
+}
+.devices3d-fallback { display: none; }
+.no-js .devices3d-fallback,
+.devices3d-failed .devices3d-fallback { display: block; }
+.no-js .plate--3d,
+.devices3d-failed .plate--3d { display: none; }
