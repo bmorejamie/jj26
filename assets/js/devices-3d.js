@@ -120,6 +120,14 @@
     "aah": {
       colors: { night: { plate: "#2f3132" } }
     },
+    /* ProLift Toyota: Boulder Crest's phone, tuned laptop and night plate
+       (2026-10-06). */
+    "prolift": {
+      wide: {
+        laptop: { start: { r: [12, -36, 5] }, end: { p: [-0.5, -4.5, 33], r: [4.5, 20.5, 7] } }
+      },
+      colors: { night: { plate: "#2a2a2d" } }
+    },
     /* Boulder Crest is the base set above. The others start from
        compositions of their own and get Jamie's tuned numbers baked in
        here (same shape as DEFAULTS; only the numbers that differ). */
