@@ -116,9 +116,27 @@
   (host.getAttribute("data-devices") || "laptop phone").split(/\s+/).forEach(function (n) { if (n) HAS[n] = true; });
   var PROJECT = host.getAttribute("data-project") || "";
   var PROJECTS = {
-    /* Action Against Hunger: Boulder Crest's poses, as tuned 2026-10-06;
-       only the night plate was changed. */
+    /* Action Against Hunger: Boulder Crest's wide poses; narrow and the
+       night plate tuned by Jamie 2026-10-06. */
     "aah": {
+      narrow: {
+        cam: { fov: 19.5 },
+        laptop: { end: { p: [1, 9, 26.5], r: [9.5, 12.5, -3] } },
+        phone: { start: { p: [4.5, -18.5, 44] }, end: { p: [5.5, -6.5, 46] } }
+      },
+      colors: { night: { plate: "#2f3132" } }
+    },
+    /* AAH, second piece (replaces the flat Sudan plate): one laptop, the
+       mirror of the first piece. Starting poses, not tuned yet. */
+    "aah-2": {
+      wide: {
+        cam: { fov: 22, dist: 108, x: 0, y: 0 },
+        laptop: { start: { p: [6, 6, 26], r: [12, 34, -8] }, end: { p: [1, -4, 28], r: [3, -12, 4] }, scale: 1.1, speed: 1 }
+      },
+      narrow: {
+        cam: { fov: 19.5, dist: 150, x: 0, y: 1 },
+        laptop: { start: { p: [3, 14, 26], r: [12, 26, -8] }, end: { p: [0, 8, 26.5], r: [8, -12, 3] }, scale: 1, speed: 1 }
+      },
       colors: { night: { plate: "#2f3132" } }
     },
     /* ProLift Toyota: Boulder Crest's phone, tuned laptop and night plate
