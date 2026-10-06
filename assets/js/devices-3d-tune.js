@@ -14,7 +14,10 @@
 --------------------------------------------------------------------------- */
 (function () {
   "use strict";
-  var host = document.querySelector("[data-devices3d]");
+  /* The panel edits one scene at a time: the first on the page that is ready
+     (a piece switcher for pages with several is still to come). */
+  var ready = (window.__devices3dHosts || []).slice().sort(function (a, b) { return a.compareDocumentPosition(b) & 4 ? -1 : 1; });
+  var host = ready[0];
   if (!host) return;
   var api = host.__devices3d;
   if (!api) return;

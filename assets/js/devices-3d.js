@@ -37,8 +37,9 @@
 (function () {
   "use strict";
 
-  var host = document.querySelector("[data-devices3d]");
-  if (!host) return;
+  /* Every [data-devices3d] on the page is its own scene (own device list,
+     own data-project values, own ?tune store). */
+  Array.prototype.forEach.call(document.querySelectorAll("[data-devices3d]"), function (host) {
 
   var SELF = (document.currentScript && document.currentScript.src) || "";
   var THREE_URL = "https://cdnjs.cloudflare.com/ajax/libs/three.js/0.186.1/three.module.min.js";
@@ -131,16 +132,30 @@
     /* Boulder Crest is the base set above. The others start from
        compositions of their own and get Jamie's tuned numbers baked in
        here (same shape as DEFAULTS; only the numbers that differ). */
+    /* ALPA, first piece (Saved Flights + FTDT limits): wide tuned by Jamie
+       2026-10-06; narrow is the starting composition. */
     "alpa": {
       wide: {
         cam: { fov: 22, dist: 108, x: 0, y: 0 },
-        phone:  { start: { p: [12, -15, 38], r: [16, 30, -18] }, end: { p: [9.5, 1, 42], r: [3, -16, -5] }, scale: 1.25, speed: 1.3 },
-        phone2: { start: { p: [-14, -13, 28], r: [16, -30, 16] }, end: { p: [-9.5, 0, 32], r: [4, 18, 5] }, scale: 1.25, speed: 1 }
+        phone:  { start: { p: [6, -14, 38], r: [16, 30, -18] }, end: { p: [9.5, 1, 42], r: [3, -16, -5] }, scale: 1.54, speed: 1.3 },
+        phone2: { start: { p: [-13, -10.5, 36], r: [9, -20, 10] }, end: { p: [-8.5, -1, 43], r: [10.5, 20, 11] }, scale: 1.54, speed: 1 }
       },
       narrow: {
         cam: { fov: 24, dist: 150, x: 0, y: 1 },
         phone:  { start: { p: [9, -24, 44], r: [14, 28, -16] }, end: { p: [7, 2, 48], r: [4, -16, -6] }, scale: 1.45, speed: 1.3 },
         phone2: { start: { p: [-11, -20, 34], r: [14, -26, 16] }, end: { p: [-7.5, 3, 38], r: [4, 18, 6] }, scale: 1.45, speed: 1 }
+      }
+    },
+    /* ALPA, second piece (replaces the flat FTDT plate): starting poses,
+       not tuned yet. */
+    "alpa-2": {
+      wide: {
+        cam: { fov: 22, dist: 108, x: 0, y: 0 },
+        phone: { start: { p: [4, -14, 40], r: [14, -24, 14] }, end: { p: [-3, 1, 44], r: [4, 22, 6] }, scale: 1.54, speed: 1.1 }
+      },
+      narrow: {
+        cam: { fov: 24, dist: 150, x: 0, y: 1 },
+        phone: { start: { p: [3, -22, 42], r: [14, -22, 12] }, end: { p: [-2, 2, 46], r: [4, 18, 6] }, scale: 1.45, speed: 1.1 }
       }
     }
   };
@@ -750,10 +765,19 @@
         };
       }
       if (TUNE && SELF) {
-        var s = document.createElement("script");
-        s.src = SELF.replace(/devices-3d\.js(\?.*)?$/, "devices-3d-tune.js");
-        document.body.appendChild(s);
+        /* One panel serves every scene on the page: scenes queue up, the
+           first to be ready loads the panel, the rest tell it they exist. */
+        var queue = window.__devices3dHosts = window.__devices3dHosts || [];
+        queue.push(host);
+        if (window.__devices3dTune) window.__devices3dTune.add();
+        else if (!window.__devices3dTuneLoading) {
+          window.__devices3dTuneLoading = true;
+          var s = document.createElement("script");
+          s.src = SELF.replace(/devices-3d\.js(\?.*)?$/, "devices-3d-tune.js");
+          document.body.appendChild(s);
+        }
       }
     }).catch(fail);
   }
+  });
 })();
