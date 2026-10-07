@@ -159,8 +159,8 @@
     /* The others start from
        compositions of their own and get Jamie's tuned numbers baked in
        here (same shape as DEFAULTS; only the numbers that differ). */
-    /* ALPA, first piece (Saved Flights + FTDT limits): wide tuned by Jamie
-       2026-10-06 (second pass); narrow is the starting composition. */
+    /* ALPA, first piece (Saved Flights + FTDT limits): wide and narrow tuned
+       by Jamie 2026-10-06 (second pass). */
     "alpa": {
       wide: {
         cam: { fov: 22, dist: 108, x: 0, y: 0 },
@@ -169,8 +169,8 @@
       },
       narrow: {
         cam: { fov: 24, dist: 150, x: 0, y: 1 },
-        phone:  { start: { p: [9, -24, 44], r: [14, 28, -16] }, end: { p: [7, 2, 48], r: [4, -16, -6] }, scale: 1.45, speed: 1.3 },
-        phone2: { start: { p: [-11, -20, 34], r: [14, -26, 16] }, end: { p: [-7.5, 3, 38], r: [4, 18, 6] }, scale: 1.45, speed: 1 }
+        phone:  { start: { p: [7.5, -19, 58], r: [15, 33.5, -16] }, end: { p: [4, -3.5, 90], r: [4, -16, -6] }, scale: 1.45, speed: 1.3 },
+        phone2: { start: { p: [-7, 21, 69], r: [14, -26, 16] }, end: { p: [-5.5, 3.5, 74.5], r: [2.5, 30, 6] }, scale: 1.45, speed: 1 }
       }
     },
     /* ALPA, second piece (replaces the flat FTDT plate): Flight Finder
