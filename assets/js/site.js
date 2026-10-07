@@ -200,11 +200,17 @@
     phase = "move"; clock = 0;
   }
 
+  /* Frames run only while the dots are moving. During a hold nothing
+     changes, so it waits on a timer instead of burning 60fps. */
+  var raf = 0, holdT = 0;
+  function run() { if (!raf) { prev = null; raf = requestAnimationFrame(tick); } }
+  function hold() { clearTimeout(holdT); holdT = setTimeout(function () { startMove(); run(); }, HOLD); }
+
   function tick(now) {
+    raf = 0;
     var dt = prev == null ? 0 : Math.min(now - prev, 100);   // no lurch after a background tab
     prev = now; clock += dt;
-    if (phase === "hold" && clock >= HOLD) startMove();
-    else if (phase === "move") {
+    if (phase === "move") {
       var scales = [];
       for (var i = 0; i < N; i++) {
         var t = Math.min(1, Math.max(0, (clock - delays[i]) / MOVE)), split = 0.32;
@@ -222,17 +228,21 @@
       if (clock >= MOVE + 160) {
         pos = to.map(function (p) { return p.slice(); });
         draw(); phase = "hold"; clock = 0;
+        hold();
+        return;
       }
     }
-    requestAnimationFrame(tick);
+    raf = requestAnimationFrame(tick);
   }
-  requestAnimationFrame(tick);
+  hold();
 
   /* Interrupt wherever the loop is (mid-hold or mid-move, from the dots'
      current positions) and head for a fresh shape. Afterwards the loop
      carries on as normal: hold, home, hold, shape... */
   window.JJMark.restart = function () {
     atHome = true;            // so nextTarget() picks a shape, not home
+    clearTimeout(holdT);
     startMove(true);
+    run();
   };
 })();
