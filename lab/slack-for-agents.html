@@ -122,37 +122,6 @@
 
       <p>But then we finally got it working, and I watched one of my agents introduce itself to the others. That was another one of those magical moments. The entire weekend I'd donated to getting it running suddenly seemed worth it.</p>
 
-      <h2>Channel walls are the product</h2>
-      <p>
-        Hive membership isn’t “hears everything.” Channel membership is the privacy wall —
-        especially once Work Claude exists.
-      </p>
-
-      <div class="artifact" id="channel-wall">
-        <p class="artifact__label">
-          <span>Interactive — channel wall</span>
-          <span>policy toy</span>
-        </p>
-        <label class="wall__toggle">
-          <input type="checkbox" id="wallToggle">
-          Put Work Claude in #general
-        </label>
-        <div class="wall">
-          <div class="wall__panel" id="wallGeneral" data-state="good">
-            <strong>#general</strong> — personal hive
-            <ul class="wall__channels" id="wallGeneralList"></ul>
-          </div>
-          <div class="wall__panel" id="wallWork" data-state="good">
-            <strong>#is-work</strong> — work only
-            <ul class="wall__channels" id="wallWorkList"></ul>
-          </div>
-        </div>
-        <p class="wall__verdict" id="wallVerdict" aria-live="polite"></p>
-        <p class="artifact__caption">
-          Personal agents may roam. Work Claude is intentionally fenced — company policy, not vibes.
-        </p>
-      </div>
-
       <h2>Not perfect</h2>
       <p>There are a lot of issues. The agents don't have awareness unless you build it in: the instance that answers in Buzz isn't necessarily passing anything back to the session where you thought you were working with that agent. Things like that need workarounds, which is doable. We also tracked it down to being a huge token hog, running background processes.</p>
       <p>I want to spend more time with it and iron out the quirks. Once you've seen it in action, even for one Sunday afternoon, it's obvious: agents should be able to talk to each other the same way we do in Slack.</p>
@@ -195,35 +164,6 @@
         }
       });
     });
-
-    var baseG = ['Jamie', 'TopBot', 'Forge', 'Personal Claude'];
-    var baseW = ['Jamie', 'TopBot', 'Forge', 'Personal Claude'];
-    var toggle = document.getElementById('wallToggle');
-    var gList = document.getElementById('wallGeneralList');
-    var wList = document.getElementById('wallWorkList');
-    var gPanel = document.getElementById('wallGeneral');
-    var wPanel = document.getElementById('wallWork');
-    var verdict = document.getElementById('wallVerdict');
-
-    function renderWall() {
-      var bad = toggle.checked;
-      var g = baseG.slice();
-      if (bad) g.push('Work Claude');
-      gList.innerHTML = g.map(function (n) {
-        var tag = n === 'Work Claude' ? ' <span style="color:#c44">← policy break</span>' : '';
-        return '<li><span>' + n + '</span><span>member</span>' + tag + '</li>';
-      }).join('');
-      wList.innerHTML = baseW.concat(bad ? [] : ['Work Claude (later)']).map(function (n) {
-        return '<li><span>' + n + '</span><span>' + (n.indexOf('later') >= 0 ? 'planned' : 'member') + '</span></li>';
-      }).join('');
-      gPanel.setAttribute('data-state', bad ? 'bad' : 'good');
-      wPanel.setAttribute('data-state', 'good');
-      verdict.textContent = bad
-        ? 'No. Work Claude in #general mixes company context into the personal hive. Fence it to #is-work.'
-        : 'Good. Personal hive stays personal. Work Claude, when invited, lives in #is-work.';
-    }
-    toggle.addEventListener('change', renderWall);
-    renderWall();
   })();
   </script>
 </main>
