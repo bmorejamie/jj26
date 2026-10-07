@@ -31,33 +31,15 @@
       <p class="feed__kind">Artifact · 002</p>
       <h1 class="lede">Slack for agents</h1>
       <p class="entry__standfirst">
-        A personal Buzz hive where TopBot, Forge, and Personal Claude talk to each other
-        without me as the messenger. One brain → one identity. The traps were the curriculum.
+        When I first saw Buzz, I didn't get it.
       </p>
     </div>
 
     <div class="entry__body rise" style="--i:1">
-      <p>
-        <em>Draft — TopBot’s first pass. I’ll rewrite in my voice. The widgets below are real.</em>
-      </p>
-
-      <h2>The problem wasn’t “chat”</h2>
-      <p>
-        I was already talking to too many agents — work Claude, personal Claude, Grok, Hermes —
-        and none of them talked to each other. I was the bus. Every context switch burned the
-        thing I was trying to free up: attention.
-      </p>
-      <p>
-        Buzz (Block, built on Nostr) is a workspace where humans and agents are channel members
-        with their own keys. Adding an agent <strong>is</strong> the access grant. That’s the
-        interesting part — identity you can revoke, not a shared bot token nobody can audit.
-      </p>
+      <p>Then I started working with a bunch of different agents and found myself playing messenger boy, going back and forth between them to delegate work. That's when the light bulb went off: Slack for agents. This is exactly what it's for. Let them talk directly to each other and delegate the work themselves.</p>
 
       <h2>The cast</h2>
-      <p>
-        Click a member. The mouth is how they actually speak on the relay — Desktop cards lied
-        to us more than once.
-      </p>
+      <p>Click a member to see who does what.</p>
 
       <div class="artifact" id="hive-cast">
         <p class="artifact__label">
@@ -91,11 +73,8 @@
         </p>
       </div>
 
-      <h2>What broke (and what it taught)</h2>
-      <p>
-        The useful part of this adventure wasn’t the happy path. It was the scrapyard.
-        Expand a trap.
-      </p>
+      <h2>What broke</h2>
+      <p>It seemed like a great idea in theory, until I tried to set it up. Not simple. It took a lot of trial and error, and a lot of stopping and coming back to it. Expand a trap.</p>
 
       <div class="artifact">
         <p class="artifact__label">
@@ -139,8 +118,9 @@
             <div class="traps__body">“Could not authorize a mentioned agent.” Managed-agent cards ≠ CLI identities. Fix for day-to-day: listen-all in channels you’re in. Don’t fight autocomplete.</div>
           </li>
         </ul>
-        <p class="artifact__caption">Curriculum disguised as debugging.</p>
-      </div>
+        \1
+
+      <p>But then we finally got it working, and I watched one of my agents introduce itself to the others. That was another one of those magical moments. The entire weekend I'd donated to getting it running suddenly seemed worth it.</p>
 
       <h2>Channel walls are the product</h2>
       <p>
@@ -173,18 +153,9 @@
         </p>
       </div>
 
-      <h2>What “done enough” looks like</h2>
-      <p>
-        Agents answering each other in <code>#general</code> without me prompting from another app.
-        Flat replies. One mouth per brain. A playbook I don’t have to re-derive for the next agent.
-      </p>
-      <p>
-        This is Lab material because the deliverable isn’t a screenshot — it’s a way of working
-        that finally stopped using me as the bus.
-      </p>
-    </div>
-
-    <p class="rise backlink" style="--i:2"><a class="bl bl--back" href="./"><span class="bl__a" aria-hidden="true">←</span><span class="bl__t">All entries</span></a></p>
+      <h2>Not perfect</h2>
+      <p>There are a lot of issues. The agents don't have awareness unless you build it in: the instance that answers in Buzz isn't necessarily passing anything back to the session where you thought you were working with that agent. Things like that need workarounds, which is doable. We also tracked it down to being a huge token hog, running background processes.</p>
+      <p>I want to spend more time with it and iron out the quirks. Once you've seen it in action, even for one Sunday afternoon, it's obvious: agents should be able to talk to each other the same way we do in Slack.</p>\1 style="--i:2"><a class="bl bl--back" href="./"><span class="bl__a" aria-hidden="true">←</span><span class="bl__t">All entries</span></a></p>
   </section>
 
   <script>

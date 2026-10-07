@@ -27,7 +27,7 @@ window.JJ_ITEMS = [
   { kind: "Work", title: "ProLift Toyota", url: "work/prolift-toyota.html",
     meta: "Website", tags: ["design-lead", "ux", "visual-design"] },
   { kind: "Lab", title: "Slack for agents", url: "lab/slack-for-agents.html",
-    meta: "Artifact · Draft", tags: ["agentic"] },
+    meta: "Artifact", tags: ["agentic"] },
   { kind: "Lab", title: "Building this site with agents", url: "lab/building-this-site-with-agents.html",
     meta: "Artifact", tags: ["agentic", "front-end"] }
 ];
