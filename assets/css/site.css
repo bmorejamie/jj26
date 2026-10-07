@@ -245,9 +245,16 @@ h1, h2, h3 {
   .masthead__inner { flex-wrap: wrap; row-gap: 0.55rem; padding-block: 0.85rem 0.6rem; }
   .wordmark { order: 1; }
   .masthead__inner { column-gap: 0.75rem; }
-  .masthead__end { order: 2; margin-left: auto; gap: 0.35rem; }
-  .mw-slot { width: 36px; }
-  .nav { order: 3; width: 100%; justify-content: space-between; gap: 0; }
+  .masthead__end { order: 2; margin-left: auto; gap: 0.35rem; position: relative; }
+  /* No room for the moonwalker beside the switch on a phone. His slot hangs
+     just under the switch, and the nav row slides down to make space only
+     while he dances, then slides back. */
+  .masthead .mw-slot { position: absolute; right: 0; top: calc(100% + 0.35rem); width: 36px; }
+  .nav { order: 3; width: 100%; justify-content: space-between; gap: 0;
+         transition: margin-top 420ms var(--ease); }
+  .masthead:has(.mw.is-on) .nav { margin-top: 2.6rem; }
+  .masthead .mw { opacity: 0; }
+  .masthead .mw.is-on { opacity: 1; transition: opacity 150ms 380ms; }  /* appears once the nav has made room */
   .nav a { letter-spacing: 0.04em; }
 }
 
@@ -442,6 +449,11 @@ main { position: relative; overflow-x: clip; }
 }
 @media (min-width: 52rem) {
   .duo { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); }
+}
+/* Stacked (phones/tablets): the heading sits close to its paragraph. */
+@media (max-width: 51.99rem) {
+  .duo { gap: 1.1rem; }
+  .duo > .lede { margin-bottom: 0; }
 }
 
 .lede {
