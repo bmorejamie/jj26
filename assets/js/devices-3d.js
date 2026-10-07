@@ -123,11 +123,10 @@
     phone: { start: { p: [4.5, -18.5, 44] }, end: { p: [5.5, -6.5, 46] } }
   };
   var PROJECTS = {
-    /* Action Against Hunger: Boulder Crest's wide poses; narrow and the
-       night plate tuned by Jamie 2026-10-06. */
+    /* Action Against Hunger: Boulder Crest's wide poses; narrow tuned by
+       Jamie 2026-10-06. */
     "aah": {
-      narrow: LAPTOP_PHONE_NARROW,
-      colors: { night: { plate: "#2f3132" } }
+      narrow: LAPTOP_PHONE_NARROW
     },
     /* AAH, second piece (replaces the flat Sudan plate): one laptop, the
        mirror of the first piece. Narrow tuned by Jamie 2026-10-06; wide is
@@ -140,17 +139,15 @@
       narrow: {
         cam: { fov: 19.5, dist: 150, x: 0, y: 1 },
         laptop: { start: { p: [4.5, -13, 23], r: [12, 26, -8] }, end: { p: [-3, 1.5, 42], r: [8, -12, 3] }, scale: 1, speed: 1 }
-      },
-      colors: { night: { plate: "#2f3132" } }
+      }
     },
-    /* ProLift Toyota: Boulder Crest's phone, tuned laptop and night plate
+    /* ProLift Toyota: Boulder Crest's phone, laptop tuned by Jamie
        (2026-10-06); narrow copied from AAH. */
     "prolift": {
       wide: {
         laptop: { start: { r: [12, -36, 5] }, end: { p: [-0.5, -4.5, 33], r: [4.5, 20.5, 7] } }
       },
-      narrow: LAPTOP_PHONE_NARROW,
-      colors: { night: { plate: "#2a2a2d" } }
+      narrow: LAPTOP_PHONE_NARROW
     },
     /* Boulder Crest: the base set above for wide; narrow shared with AAH. */
     "bc": {

@@ -77,7 +77,7 @@
     --signal:     #79A9AC;
     --curve:      #D8D6D0;
     --plate-glow: rgba(237, 236, 232, 0.055);
-    --device-plate:    #1C1C1F;
+    --device-plate:    #2D2E30;   /* one night plate for every case page (AAH #2f3132 and ProLift #2a2a2d, merged) */
     --device:          #2E2E32;
     --device-bezel:    #262629;
     --device-shadow:   #000000;
@@ -101,7 +101,7 @@
     --signal:     #79A9AC;
     --curve:      #D8D6D0;
     --plate-glow: rgba(237, 236, 232, 0.055);
-    --device-plate:    #1C1C1F;
+    --device-plate:    #2D2E30;   /* one night plate for every case page (AAH #2f3132 and ProLift #2a2a2d, merged) */
     --device:          #2E2E32;
     --device-bezel:    #262629;
     --device-shadow:   #000000;

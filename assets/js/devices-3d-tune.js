@@ -25,7 +25,7 @@
      live). Keep in step with the --device tokens in site.css. */
   var TOKENS = {
     day:   { plate: "#e8e9e6", body: "#fbfbfa", bezel: "#eaeae7" },
-    night: { plate: "#1c1c1f", body: "#2e2e32", bezel: "#262629" }
+    night: { plate: "#2d2e30", body: "#2e2e32", bezel: "#262629" }
   };
 
   /* --- styles: square, minimal, the site's own type and tokens -------- */
