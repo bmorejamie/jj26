@@ -7,11 +7,6 @@
 
   var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  /* Preview: ?tags=eyebrow floats the case-study tag row above the title. */
-  if (/(?:\?|&)tags=eyebrow(?:&|$)/.test(window.location.search)) {
-    document.documentElement.classList.add("tags-eyebrow");
-  }
-
   /* --- entrances ------------------------------------------------------- */
   var risers = document.querySelectorAll(".rise");
 

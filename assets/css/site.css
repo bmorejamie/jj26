@@ -516,12 +516,10 @@ main { position: relative; overflow-x: clip; }
   .case__header .prose { max-width: 50%; }
 }
 
-/* Preview (?tags=eyebrow): the tag row rides above the title as an eyebrow.
-   The tags already sit under the paragraph in the markup, so flex order
-   lifts them to the top without duplicating anything. Spacing stays tight
-   so they read as part of the title block. */
-.tags-eyebrow .case__header { display: flex; flex-direction: column; }
-.tags-eyebrow .case__header .case__tags { order: -1; margin: 0 0 1rem; }
+/* The tag row rides above the title as an eyebrow. The tags sit under the
+   paragraph in the markup, so flex order lifts them to the top. */
+.case__header { display: flex; flex-direction: column; }
+.case__header .case__tags { order: -1; margin: 0 0 1rem; }
 
 .factbar {
   display: grid;
