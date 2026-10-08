@@ -510,6 +510,17 @@ main { position: relative; overflow-x: clip; }
 .case__header { padding-block: clamp(3rem, 1.5rem + 6vw, 6.5rem) 0; }
 .case__title { font-size: var(--step-3); max-width: 18ch; margin-bottom: 1.5rem; }
 
+/* The client paragraph runs at half the column on desktop so the header
+   breathes; mobile stays full width. */
+@media (min-width: 900px) {
+  .case__header .prose { max-width: 50%; }
+}
+
+/* The tag row rides above the title as an eyebrow. The tags sit under the
+   paragraph in the markup, so flex order lifts them to the top. */
+.case__header { display: flex; flex-direction: column; }
+.case__header .case__tags { order: -1; margin: 0 0 1rem; }
+
 .factbar {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));

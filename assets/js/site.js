@@ -63,11 +63,39 @@
 
 /* The edition switch lives in edition.js (with moonwalker.js). */
 
+/* --- card videos: play near the viewport, pause away ----------------------
+   Card loops (video.cover) carry preload="none" and no autoplay, so nothing
+   downloads until they're close: an IntersectionObserver starts each one a
+   little before it scrolls into view and pauses it when it leaves. Posters
+   only for reduced motion, data savers, or no observer support. */
+(function () {
+  "use strict";
+  var videos = document.querySelectorAll("video.cover");
+  if (!videos.length) return;
+  var reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var saveData = !!(navigator.connection && navigator.connection.saveData);
+  if (reducedMotion || saveData || !("IntersectionObserver" in window)) return;
+
+  function play(v) {
+    var p = v.play();
+    if (p && typeof p.catch === "function") p.catch(function () {});
+  }
+
+  var watcher = new IntersectionObserver(function (entries) {
+    entries.forEach(function (entry) {
+      if (entry.isIntersecting) play(entry.target);
+      else entry.target.pause();
+    });
+  }, { rootMargin: "200px 0px" });
+
+  Array.prototype.forEach.call(videos, function (v) { watcher.observe(v); });
+})();
+
 /* Looping video cards hold still for people who've asked for less motion. */
 (function () {
   "use strict";
   if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-  Array.prototype.forEach.call(document.querySelectorAll("video[autoplay]"), function (v) {
+  Array.prototype.forEach.call(document.querySelectorAll("video.cover"), function (v) {
     v.removeAttribute("autoplay");
     v.pause();
   });
