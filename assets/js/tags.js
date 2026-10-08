@@ -24,6 +24,8 @@ window.JJ_ITEMS = [
     meta: "Mobile app", tags: ["design-lead", "ux", "ui", "mobile"] },
   { kind: "Work", title: "Moments Match", url: "work/ala-moments-match.html",
     meta: "American Lung Association · 30s spot", tags: ["design-lead", "motion"] },
+  { kind: "Work", title: "Special Olympics", url: "work/so-ctv.html",
+    meta: "Monthly giving · 15s & 30s spots", tags: ["design-lead", "motion"] },
   { kind: "Work", title: "ProLift Toyota", url: "work/prolift-toyota.html",
     meta: "Website", tags: ["design-lead", "ux", "visual-design"] },
   { kind: "Lab", title: "Slack for agents", url: "lab/slack-for-agents.html",
