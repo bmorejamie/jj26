@@ -87,13 +87,14 @@
 
       <article class="piece piece--wide rise" style="--i:2">
         <a href="work/alpa-mobile-app.html">
-          <div class="piece__frame piece__frame--device ratio-3x4">
-            <picture>
-              <source srcset="content/projects/alpa-mobile-app/pieces/ftdt-detail.webp" type="image/webp">
-              <img src="content/projects/alpa-mobile-app/pieces/ftdt-detail.png"
-                   alt="ALPA app on a phone: the duty-time limits screen, flight hours against their caps."
-                   width="2880" height="1800" loading="lazy" decoding="async">
-            </picture>
+          <div class="piece__frame ratio-16x9">
+            <video class="cover" muted loop playsinline preload="none"
+                   poster="assets/img/work/alpa-card-day.jpg"
+                   data-day="assets/img/work/alpa-card-day.mp4" data-night="assets/img/work/alpa-card-night.mp4"
+                   data-day-poster="assets/img/work/alpa-card-day.jpg" data-night-poster="assets/img/work/alpa-card-night.jpg"
+                   aria-label="The ALPA app on a phone: scrolling the member home, then opening Saved Flights and FTDT limits.">
+              <source src="assets/img/work/alpa-card-day.mp4" type="video/mp4">
+            </video>
           </div>
           <h2 class="piece__title">ALPA</h2>
           <p class="piece__meta">Mobile app</p>
@@ -254,6 +255,7 @@
 <script src="assets/js/mark-shapes.js"></script>
 <script src="assets/js/tags.js"></script>
 <script src="assets/js/site.js"></script>
+<script src="assets/js/plate-video.js"></script>
 <script src="assets/js/moonwalker.js"></script>
 <script src="assets/js/edition.js"></script>
 <script src="assets/js/details.js"></script>

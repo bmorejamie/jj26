@@ -23,7 +23,9 @@
       var poster = new URL(night ? v.getAttribute("data-night-poster") : v.getAttribute("data-day-poster"), location.href).href;
       if (v.poster !== poster) v.poster = poster;
       if (v.currentSrc === want) return;
+      var idle = v.paused && v.preload === "none";   // a lazy card video nobody has started yet
       v.setAttribute("src", want);   // the src attribute outranks the <source> list
+      if (idle) return;              // leave the download to the card observer in site.js
       v.load();
       var p = v.play();
       if (p && p.catch) p.catch(function () {});
