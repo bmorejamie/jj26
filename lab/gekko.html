@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The trading signal I never used — Jamie Jones</title>
+<meta property="og:title" content="The trading signal I never used — Jamie Jones">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://jjux.dev/assets/img/og-jjux.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="description" content="I was paying for a trading indicator and barely using it. So I put a small team of agents on it and designed the dashboard from my couch.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%23171612'/%3E%3Crect x='18' y='18' width='14' height='14' rx='5' fill='%23FBFAF7'/%3E%3Crect x='36' y='18' width='14' height='14' rx='5' fill='%23FBFAF7'/%3E%3Crect x='54' y='18' width='14' height='14' rx='5' fill='%23FBFAF7'/%3E%3Crect x='72' y='18' width='14' height='14' rx='5' fill='%23FBFAF7'/%3E%3Crect x='18' y='36' width='14' height='14' rx='5' fill='%23FBFAF7'/%3E%3Crect x='36' y='36' width='14' height='14' rx='5' fill='%23FBFAF7'/%3E%3Crect x='54' y='36' width='14' height='14' rx='5' fill='%23FBFAF7'/%3E%3Crect x='72' y='36' width='14' height='14' rx='5' fill='%23FBFAF7'/%3E%3Crect x='18' y='54' width='14' height='14' rx='5' fill='%23FBFAF7'/%3E%3Crect x='36' y='54' width='14' height='14' rx='5' fill='%23FBFAF7'/%3E%3Crect x='54' y='54' width='14' height='14' rx='5' fill='%23FBFAF7'/%3E%3Crect x='72' y='54' width='14' height='14' rx='5' fill='%23FBFAF7'/%3E%3Crect x='18' y='72' width='14' height='14' rx='5' fill='%23FBFAF7'/%3E%3Crect x='36' y='72' width='14' height='14' rx='5' fill='%23FBFAF7'/%3E%3Crect x='54' y='72' width='14' height='14' rx='5' fill='%23FBFAF7'/%3E%3Crect x='72' y='72' width='14' height='14' rx='5' fill='%23FBFAF7'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..700&family=Instrument+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=JetBrains+Mono:wght@600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/site.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="masthead">
+  <div class="wrap masthead__inner">
+    <a class="wordmark" href="../" data-scramble><svg class="mark" viewBox="-0.5 -0.5 7 7" aria-hidden="true"><rect x="1.08" y="1.08" width="0.84" height="0.84" rx="0.3"/><rect x="2.08" y="1.08" width="0.84" height="0.84" rx="0.3"/><rect x="3.08" y="1.08" width="0.84" height="0.84" rx="0.3"/><rect x="4.08" y="1.08" width="0.84" height="0.84" rx="0.3"/><rect x="1.08" y="2.08" width="0.84" height="0.84" rx="0.3"/><rect x="2.08" y="2.08" width="0.84" height="0.84" rx="0.3"/><rect x="3.08" y="2.08" width="0.84" height="0.84" rx="0.3"/><rect x="4.08" y="2.08" width="0.84" height="0.84" rx="0.3"/><rect x="1.08" y="3.08" width="0.84" height="0.84" rx="0.3"/><rect x="2.08" y="3.08" width="0.84" height="0.84" rx="0.3"/><rect x="3.08" y="3.08" width="0.84" height="0.84" rx="0.3"/><rect x="4.08" y="3.08" width="0.84" height="0.84" rx="0.3"/><rect x="1.08" y="4.08" width="0.84" height="0.84" rx="0.3"/><rect x="2.08" y="4.08" width="0.84" height="0.84" rx="0.3"/><rect x="3.08" y="4.08" width="0.84" height="0.84" rx="0.3"/><rect x="4.08" y="4.08" width="0.84" height="0.84" rx="0.3"/></svg><span data-scramble-text>Jamie Jones</span></a>
+    <nav class="nav" aria-label="Primary">
+      <a href="../#work">Work</a>
+      <a href="../#lab">Lab</a>
+      <a href="../#about">Info</a>
+      <a href="../#contact">Contact</a>
+    </nav>
+    <div class="masthead__end"><div class="wdn" data-edition role="group" aria-label="Workin’ Day &amp; Night"><span class="wdn__frame" aria-hidden="true"></span><span class="wdn__w">Workin’</span><button class="wdn__b" type="button" data-set="light" aria-pressed="false">Day</button><span class="wdn__w">&amp;</span><button class="wdn__b" type="button" data-set="dark" aria-pressed="false">Night</button></div><span class="mw-slot" aria-hidden="true"></span></div>
+  </div>
+</header>
+<main id="main">
+  <section class="wrap shelf">
+    <div class="entry__head rise" style="--i:0">
+      <p class="feed__kind">Artifact · 005</p>
+      <h1 class="lede">The trading signal I never used</h1>
+      <p class="entry__standfirst">
+        I was paying for a trading indicator every month and barely using it.
+      </p>
+    </div>
+
+    <div class="entry__body rise" style="--i:1">
+      <p>Not because it's bad. It's great. But using it means sitting in TradingView, opening a tab for every stock, switching timeframes, waiting on it. So my mornings went like this: listen to a crypto show while getting ready, sit down to "just check," poke around for half an hour, act on nothing. My workout was the first thing to go.</p>
+      <p>I don't have time for all that. That's the whole point of this project.</p>
+
+      <h2>The team</h2>
+      <p>Gekko is a dashboard for my own money, built by the same little team of agents from the last couple of entries. Each one has a lane.</p>
+
+      <div class="artifact" id="hive-cast">
+        <p class="artifact__label">
+          <span>Live — Gekko team</span>
+          <span>jjux · Oct 2026</span>
+        </p>
+        <div class="hive" role="group" aria-label="Team members">
+          <button type="button" class="hive__node" data-id="jamie" aria-pressed="false"><span class="hive__name">Jamie</span><span class="hive__role">Owner</span></button>
+          <button type="button" class="hive__node" data-id="claude" aria-pressed="false"><span class="hive__name">Claude</span><span class="hive__role">Plan · Design · Review</span></button>
+          <button type="button" class="hive__node" data-id="topbot" aria-pressed="false"><span class="hive__name">TopBot</span><span class="hive__role">Builder</span></button>
+          <button type="button" class="hive__node" data-id="forge" aria-pressed="false"><span class="hive__name">Forge</span><span class="hive__role">Research</span></button>
+          <button type="button" class="hive__node" data-id="muse" aria-pressed="false"><span class="hive__name">Muse</span><span class="hive__role">Research</span></button>
+        </div>
+        <p class="hive__detail" id="hiveDetail" aria-live="polite">
+          Pick one. They hand work to each other through a shared vault, not through me.
+        </p>
+        <p class="artifact__caption">The expensive model does the thinking. The cheap ones do the reading.</p>
+      </div>
+
+      <h2>Designing it from the couch</h2>
+      <p>Most of the design happened on my iPad, on the couch, on a Sunday morning after a late night. Claude would put up a version, I'd poke at it, and we'd go again. Plenty didn't land. I tapped a dial that was supposed to do something and nothing happened. The background was too blue. Ditch the serif. Real feedback, real fast.</p>
+      <p>UX first, always. The pretty stuff can come later.</p>
+
+      <h2>Mock data lies</h2>
+      <p>My favorite moment so far was a pair trade view: hold one of two stocks, and switch when one runs way ahead of the other. The first version ran on made-up numbers, and the made-up numbers said it wasn't worth the trouble. I half-joked that maybe we should drop the whole idea.</p>
+      <p>Then Claude read the real signals straight off my own chart, and the real numbers said the opposite. Mocks are for layout. Get to real data as fast as you can.</p>
+      <p>Same night, I didn't fully understand what I was looking at, and I'm the one it's for. I'm just a simple human meat brain. That's a design bug, not a me bug. The next version was built on what I already read every day, the chart and the indicator's buy and sell arrows, with the answer right on top: hold this one, nothing to do.</p>
+
+      <h2>The rules</h2>
+      <p>It's my money, so the guardrails came before the features.</p>
+
+      <div class="artifact">
+        <p class="artifact__label">
+          <span>Interactive — guardrails</span>
+          <span>rule → why</span>
+        </p>
+        <ul class="traps" id="traps">
+          <li><button type="button" class="traps__btn" aria-expanded="false"><span class="traps__n">01</span><span class="traps__title">Agents never trade</span></button>
+            <div class="traps__body">They watch, alert and explain. I make every trade myself. Maybe someday a small test account, but only after paper trading wins for weeks.</div></li>
+          <li><button type="button" class="traps__btn" aria-expanded="false"><span class="traps__n">02</span><span class="traps__title">The numbers stay home</span></button>
+            <div class="traps__body">Balances and holdings live on my machine only. The shared vault gets ideas and decisions, never figures. This page gets none of either.</div></li>
+          <li><button type="button" class="traps__btn" aria-expanded="false"><span class="traps__n">03</span><span class="traps__title">Look, don't touch</span></button>
+            <div class="traps__body">Every key the agents hold is read-only. They can see data. They can't move anything.</div></li>
+          <li><button type="button" class="traps__btn" aria-expanded="false"><span class="traps__n">04</span><span class="traps__title">The real indicator is the truth</span></button>
+            <div class="traps__body">TopBot built a clone so we could scan more stocks at once. It doesn't count until it matches the real thing on my real charts.</div></li>
+          <li><button type="button" class="traps__btn" aria-expanded="false"><span class="traps__n">05</span><span class="traps__title">Everybody gets reviewed</span></button>
+            <div class="traps__body">The agents review each other's code. I review the designs. Nobody grades their own homework.</div></li>
+        </ul>
+        <p class="artifact__caption">Speed is easy. Trust is the product.</p>
+      </div>
+
+      <h2>The human catches the bug</h2>
+      <p>One night it hit me: TopBot runs in one endless session. It never starts fresh, so it never gets that moment where it catches up on its memory, the way Claude does. That's why it kept making things up. None of the agents caught that. Now the vault has an index, and they check it before they claim something.</p>
+      <p>Even our crude little homebrew setup is working.</p>
+
+      <h2>What's next</h2>
+      <p>The real goal is my mornings. The top of the dashboard should be anything I need to act on today, a setup that's starting to form, or "nothing today, go work out." Once I trust it, I stop flipping through tabs. And I get my workout back.</p>
+    </div>
+
+    <p class="rise backlink" style="--i:2"><a class="bl bl--back" href="./"><span class="bl__a" aria-hidden="true">←</span><span class="bl__t">All entries</span></a></p>
+  </section>
+
+  <script>
+  (function () {
+    var cast = {
+      jamie: { title: 'Jamie', body: '<strong>Owner.</strong> Has the trade ideas, makes every trade, decides what good looks like.' },
+      claude: { title: 'Claude', body: '<strong>Planner, designer, reviewer.</strong> Designs the views, reviews everyone\'s work, and reads the indicator straight off my charts.' },
+      topbot: { title: 'TopBot', body: '<strong>Builder.</strong> Writes the code, runs the data jobs, keeps the alerts flowing to my phone.' },
+      forge: { title: 'Forge', body: '<strong>Cheap research.</strong> Turns hours of videos and posts into rules we can actually check.' },
+      muse: { title: 'Muse', body: '<strong>Research.</strong> Tax rules and fine print. Surprisingly good.' }
+    };
+    var detail = document.getElementById('hiveDetail');
+    var nodes = document.querySelectorAll('.hive__node');
+    nodes.forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        nodes.forEach(function (n) { n.setAttribute('aria-pressed', 'false'); });
+        btn.setAttribute('aria-pressed', 'true');
+        var d = cast[btn.getAttribute('data-id')];
+        detail.innerHTML = '<strong>' + d.title + '</strong> — ' + d.body;
+      });
+    });
+
+    var traps = document.querySelectorAll('#traps > li');
+    traps.forEach(function (li) {
+      var btn = li.querySelector('.traps__btn');
+      btn.addEventListener('click', function () {
+        var open = li.getAttribute('data-open') === 'true';
+        traps.forEach(function (o) {
+          o.setAttribute('data-open', 'false');
+          o.querySelector('.traps__btn').setAttribute('aria-expanded', 'false');
+        });
+        if (!open) {
+          li.setAttribute('data-open', 'true');
+          btn.setAttribute('aria-expanded', 'true');
+        }
+      });
+    });
+  })();
+  </script>
+</main>
+<footer class="footer">
+  <div class="wrap footer__inner">
+    <span>© 2026 Jamie Jones</span>
+    <span>Built in the open — <a href="https://github.com/bmorejamie/jj26">source</a></span>
+  </div>
+</footer>
+<script src="../assets/js/mark-shapes.js"></script>
+<script src="../assets/js/site.js"></script>
+<script src="../assets/js/moonwalker.js"></script>
+<script src="../assets/js/edition.js"></script>
+<script src="../assets/js/name-scramble.js"></script>
+</body>
+</html>
