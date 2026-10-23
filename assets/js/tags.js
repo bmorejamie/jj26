@@ -14,7 +14,8 @@ window.JJ_TAGS = {
   "mobile":         "Mobile",
   "design-systems": "Design Systems",
   "agentic":        "Agentic Workflows",
-  "front-end":      "Front-End"
+  "front-end":      "Front-End",
+  "data-viz":       "Data Viz"
 };
 
 window.JJ_ITEMS = [
@@ -30,6 +31,8 @@ window.JJ_ITEMS = [
     meta: "Monthly giving · 15s & 30s spots", tags: ["motion", "editing", "compositing"] },
   { kind: "Work", title: "ProLift Toyota", url: "work/prolift-toyota.html",
     meta: "Website", tags: ["ux", "ui", "visual-design"] },
+  { kind: "Lab", title: "The trading signal I never used", url: "lab/gekko.html",
+    meta: "Artifact", tags: ["agentic", "data-viz"] },
   { kind: "Lab", title: "Slack for agents", url: "lab/slack-for-agents.html",
     meta: "Artifact", tags: ["agentic"] },
   { kind: "Lab", title: "Building this site with agents", url: "lab/building-this-site-with-agents.html",
