@@ -141,6 +141,21 @@
         laptop: { start: { p: [4.5, -13, 23], r: [12, 26, -8] }, end: { p: [-3, 1.5, 42], r: [8, -12, 3] }, scale: 1, speed: 1 }
       }
     },
+    /* Manufacturers Alliance (2026-10-28): starts from AAH's poses (same
+       layout) under its own keys, so a ?tune pass here has its own store. */
+    "ma": {
+      narrow: LAPTOP_PHONE_NARROW
+    },
+    "ma-2": {
+      wide: {
+        cam: { fov: 22, dist: 108, x: 0, y: 0 },
+        laptop: { start: { p: [6, 6, 26], r: [12, 34, -8] }, end: { p: [1, -4, 28], r: [3, -12, 4] }, scale: 1.1, speed: 1 }
+      },
+      narrow: {
+        cam: { fov: 19.5, dist: 150, x: 0, y: 1 },
+        laptop: { start: { p: [4.5, -13, 23], r: [12, 26, -8] }, end: { p: [-3, 1.5, 42], r: [8, -12, 3] }, scale: 1, speed: 1 }
+      }
+    },
     /* ProLift Toyota: Boulder Crest's phone, laptop tuned by Jamie
        (2026-10-06); narrow copied from AAH. */
     "prolift": {
