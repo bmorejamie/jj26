@@ -30,6 +30,8 @@ window.JJ_ITEMS = [
     meta: "Monthly giving · 15s & 30s spots", tags: ["motion", "editing", "compositing"] },
   { kind: "Work", title: "ProLift Toyota", url: "work/prolift-toyota.html",
     meta: "Website", tags: ["ux", "ui", "visual-design"] },
+  { kind: "Work", title: "Manufacturers Alliance", url: "work/manufacturers-alliance.html",
+    meta: "Website", tags: ["ux", "ui", "visual-design"] },
   { kind: "Lab", title: "Slack for agents", url: "lab/slack-for-agents.html",
     meta: "Artifact", tags: ["agentic"] },
   { kind: "Lab", title: "Building this site with agents", url: "lab/building-this-site-with-agents.html",
