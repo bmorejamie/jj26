@@ -146,6 +146,11 @@
     "ma": {
       narrow: LAPTOP_PHONE_NARROW
     },
+    /* National Park Foundation 2025 Annual Report (2026-10-29): AAH's
+       narrow poses under its own key. */
+    "npf": {
+      narrow: LAPTOP_PHONE_NARROW
+    },
     "ma-2": {
       wide: {
         cam: { fov: 22, dist: 108, x: 0, y: 0 },
