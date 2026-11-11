@@ -14,7 +14,8 @@ window.JJ_TAGS = {
   "mobile":         "Mobile",
   "design-systems": "Design Systems",
   "agentic":        "Agentic Workflows",
-  "front-end":      "Front-End"
+  "front-end":      "Front-End",
+  "data-viz":       "Data Viz"
 };
 
 window.JJ_ITEMS = [
@@ -34,6 +35,8 @@ window.JJ_ITEMS = [
     meta: "Website", tags: ["ux", "ui", "visual-design"] },
   { kind: "Work", title: "Manufacturers Alliance", url: "work/manufacturers-alliance.html",
     meta: "Website", tags: ["ux", "ui", "visual-design"] },
+  { kind: "Lab", title: "Building Gekko", url: "lab/gekko.html",
+    meta: "Artifact", tags: ["agentic", "data-viz"] },
   { kind: "Lab", title: "Slack for agents", url: "lab/slack-for-agents.html",
     meta: "Artifact", tags: ["agentic"] },
   { kind: "Lab", title: "Building this site with agents", url: "lab/building-this-site-with-agents.html",
