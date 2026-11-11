@@ -32,7 +32,7 @@
      doesn't answer. */
   var up = document.querySelector("[data-updated]");
   if (up && window.fetch) {
-    fetch("https://api.github.com/repos/bmorejamie/jj26/commits?sha=dev&per_page=1")
+    fetch("https://api.github.com/repos/bmorejamie/jj26/commits?sha=main&per_page=1")
       .then(function (r) { return r.ok ? r.json() : null; })
       .then(function (d) {
         if (!d || !d[0]) return;

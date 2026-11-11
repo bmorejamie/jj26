@@ -67,10 +67,11 @@
    Card loops (video.cover) carry preload="none" and no autoplay, so nothing
    downloads until they're close: an IntersectionObserver starts each one a
    little before it scrolls into view and pauses it when it leaves. Posters
-   only for reduced motion, data savers, or no observer support. */
+   only for reduced motion, data savers, or no observer support. Case-page
+   plates below the fold opt in with data-inview. */
 (function () {
   "use strict";
-  var videos = document.querySelectorAll("video.cover");
+  var videos = document.querySelectorAll("video.cover, video[data-inview]");
   if (!videos.length) return;
   var reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   var saveData = !!(navigator.connection && navigator.connection.saveData);
@@ -95,7 +96,7 @@
 (function () {
   "use strict";
   if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-  Array.prototype.forEach.call(document.querySelectorAll("video.cover"), function (v) {
+  Array.prototype.forEach.call(document.querySelectorAll("video.cover, video[data-inview]"), function (v) {
     v.removeAttribute("autoplay");
     v.pause();
   });

@@ -18,6 +18,8 @@ window.JJ_TAGS = {
 };
 
 window.JJ_ITEMS = [
+  { kind: "Work", title: "National Park Foundation", url: "work/npf-annual-report.html",
+    meta: "2025 Annual Report · Website", tags: ["ux", "ui", "visual-design", "motion"] },
   { kind: "Work", title: "Boulder Crest Foundation", url: "work/boulder-crest.html",
     meta: "Website · Webby Honoree 2024", tags: ["ux", "ui", "visual-design"] },
   { kind: "Work", title: "Action Against Hunger", url: "work/action-against-hunger.html",
@@ -29,6 +31,8 @@ window.JJ_ITEMS = [
   { kind: "Work", title: "Special Olympics", url: "work/so-ctv.html",
     meta: "Monthly giving · 15s & 30s spots", tags: ["motion", "editing", "compositing"] },
   { kind: "Work", title: "ProLift Toyota", url: "work/prolift-toyota.html",
+    meta: "Website", tags: ["ux", "ui", "visual-design"] },
+  { kind: "Work", title: "Manufacturers Alliance", url: "work/manufacturers-alliance.html",
     meta: "Website", tags: ["ux", "ui", "visual-design"] },
   { kind: "Lab", title: "Slack for agents", url: "lab/slack-for-agents.html",
     meta: "Artifact", tags: ["agentic"] },
