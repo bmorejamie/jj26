@@ -3,14 +3,14 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>The trading signal I never used — Jamie Jones</title>
-<meta property="og:title" content="The trading signal I never used — Jamie Jones">
+<title>Building Gekko — Jamie Jones</title>
+<meta property="og:title" content="Building Gekko — Jamie Jones">
 <meta property="og:type" content="website">
 <meta property="og:image" content="https://jjux.dev/assets/img/og-jjux.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="description" content="I was paying for a trading indicator and barely using it. So I put a small team of agents on it and designed the dashboard from my couch.">
+<meta name="description" content="I don't have time to watch the charts. So a small team of agents watches them, and I designed the dashboard they report to.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%23171612'/%3E%3Crect x='18' y='18' width='14' height='14' rx='5' fill='%23FBFAF7'/%3E%3Crect x='36' y='18' width='14' height='14' rx='5' fill='%23FBFAF7'/%3E%3Crect x='54' y='18' width='14' height='14' rx='5' fill='%23FBFAF7'/%3E%3Crect x='72' y='18' width='14' height='14' rx='5' fill='%23FBFAF7'/%3E%3Crect x='18' y='36' width='14' height='14' rx='5' fill='%23FBFAF7'/%3E%3Crect x='36' y='36' width='14' height='14' rx='5' fill='%23FBFAF7'/%3E%3Crect x='54' y='36' width='14' height='14' rx='5' fill='%23FBFAF7'/%3E%3Crect x='72' y='36' width='14' height='14' rx='5' fill='%23FBFAF7'/%3E%3Crect x='18' y='54' width='14' height='14' rx='5' fill='%23FBFAF7'/%3E%3Crect x='36' y='54' width='14' height='14' rx='5' fill='%23FBFAF7'/%3E%3Crect x='54' y='54' width='14' height='14' rx='5' fill='%23FBFAF7'/%3E%3Crect x='72' y='54' width='14' height='14' rx='5' fill='%23FBFAF7'/%3E%3Crect x='18' y='72' width='14' height='14' rx='5' fill='%23FBFAF7'/%3E%3Crect x='36' y='72' width='14' height='14' rx='5' fill='%23FBFAF7'/%3E%3Crect x='54' y='72' width='14' height='14' rx='5' fill='%23FBFAF7'/%3E%3Crect x='72' y='72' width='14' height='14' rx='5' fill='%23FBFAF7'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -35,14 +35,14 @@
   <section class="wrap shelf">
     <div class="entry__head rise" style="--i:0">
       <p class="feed__kind">Artifact · 005</p>
-      <h1 class="lede">The trading signal I never used</h1>
+      <h1 class="lede">Building Gekko</h1>
       <p class="entry__standfirst">
-        I was paying for a trading indicator every month and barely using it.
+        I just don't have time to watch these charts and do anything about it.
       </p>
     </div>
 
     <div class="entry__body rise" style="--i:1">
-      <p>Not because it's bad. It's great. But using it means sitting in TradingView, opening a tab for every stock, switching timeframes, waiting on it. So my mornings went like this: listen to a crypto show while getting ready, sit down to "just check," poke around for half an hour, act on nothing. My workout was the first thing to go.</p>
+      <p>I was paying for a trading indicator every month and barely using it. It's great. But using it means sitting in TradingView, opening a tab for every stock, switching timeframes, waiting on it. So my mornings went like this: listen to a crypto show while getting ready, sit down to "just check," poke around for half an hour, act on nothing. My workout was the first thing to go.</p>
       <p>I don't have time for all that. That's the whole point of this project.</p>
 
       <h2>The team</h2>
@@ -102,8 +102,24 @@
       <p>One night it hit me: TopBot runs in one endless session. It never starts fresh, so it never gets that moment where it catches up on its memory, the way Claude does. That's why it kept making things up. None of the agents caught that. Now the vault has an index, and they check it before they claim something.</p>
       <p>Even our crude little homebrew setup is working.</p>
 
+      <h2>Tax night</h2>
+      <p>Normally even thinking about tax forms gives me about 14 aneurysms. My crypto is a mess: a few exchanges, a brokerage, and a pile of old wallets I'd forgotten about. The wallets of shame. On top of that, the rules changed this year.</p>
+      <p>So I gave it to the team on a Friday night. I logged in where I had to and uploaded what I already had. TopBot pulled the history from the exchanges with read-only keys. Muse read the fine print on the new rules. Claude reconciled it all.</p>
+      <p>My favorite part was the detective work. Claude was sure some coins had moved from one exchange to another. TopBot's data said there were no withdrawals in that window at all. They came from a different place. And one "loss" on my old report wasn't a loss. It was just me moving coins between my own accounts.</p>
+      <p>I asked, "Can we actually call this done?" Yes. Huge win for a Friday night.</p>
+
+      <h2>The week I missed it</h2>
+      <p>Then the market fell apart the week after the election. The day after was just a mild sell-off, and I thought, well, I guess we're not dropping. Then boom. The sell signals popped up right on schedule. That would have been a perfect exit.</p>
+      <p>I saw none of it in time. I was working from sunup to bedtime that week.</p>
+      <p>That's when it clicked. Gekko could already see the signals. What it couldn't do was get me to act on them. I just can't watch all this stuff and work. I need the extra help, and a plan, and to stick to it.</p>
+
+      <h2>Designing for when I'm not there</h2>
+      <p>So the plan got simple. Watch the daily chart on the stocks I believe in. On a sell signal, trim a small slice. On a buy signal, buy it back. Keep most of each position no matter what. We started small on purpose, because we're jumping straight in with real money.</p>
+      <p>My first worry: I can't miss trades, or we'll get out of balance. But what if I'm unavailable? I still have to make every trade myself.</p>
+      <p>The fix was to stop tracking trades and track where each position <em>should</em> be. Every check compares that with what I actually hold, and only tells me the difference. If I miss a trade, I've just stayed where I was. The next signal sorts it out. Nothing falls out of sync because I had a busy day.</p>
+
       <h2>What's next</h2>
-      <p>The real goal is my mornings. The top of the dashboard should be anything I need to act on today, a setup that's starting to form, or "nothing today, go work out." Once I trust it, I stop flipping through tabs. And I get my workout back.</p>
+      <p>A ping on my phone at 8 in the morning with the trade already written out, so I can do it before work. A reminder if I haven't. Every alert gets logged, so in a month we'll see if I'm getting the results the indicator promises. And on most days, "nothing today, go work out."</p>
     </div>
 
     <p class="rise backlink" style="--i:2"><a class="bl bl--back" href="./"><span class="bl__a" aria-hidden="true">←</span><span class="bl__t">All entries</span></a></p>
