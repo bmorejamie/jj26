@@ -81,7 +81,7 @@
       source.textContent = '';
     }
 
-    fetch('https://api.github.com/repos/' + REPO + '/commits?sha=dev&per_page=8')
+    fetch('https://api.github.com/repos/' + REPO + '/commits?sha=main&per_page=8')
       .then(function (r) {
         if (!r.ok) throw new Error(r.status === 403 ? 'rate limit' : 'HTTP ' + r.status);
         return r.json();
