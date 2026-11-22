@@ -744,7 +744,7 @@ main { position: relative; overflow-x: clip; }
   font-size: var(--step-1);
   line-height: 1.5;
   color: var(--ink-soft);
-  max-width: 54ch;
+  max-width: 49ch; /* never wider than the 66ch body column */
 }
 .entry__body { padding-block: clamp(2rem, 5vw, 3.2rem); }
 .entry__body h2 {
