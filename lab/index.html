@@ -47,6 +47,11 @@
   </section>
 
   <section class="wrap shelf rule-top">
+    <div class="lab-switch" role="group" aria-label="View">
+      <button class="lab-switch__b" type="button" data-view="timeline" aria-pressed="true">Timeline</button>
+      <button class="lab-switch__b" type="button" data-view="graph" aria-pressed="false">Graph</button>
+    </div>
+    <div class="lab-pane" id="lab-timeline">
     <ul class="feed rise" style="--i:0">
 
       <li>
@@ -98,6 +103,11 @@
       </li>
 
     </ul>
+    </div>
+    <figure class="lab-pane lab-graph" id="lab-graph" hidden>
+      <div class="lab-graph__stage"><canvas role="img" aria-label="An interactive graph of the Lab entries and their tags. The same entries are listed in the timeline view."></canvas></div>
+      <figcaption class="lab-graph__cap">Drag to turn it. Click an entry to open it.</figcaption>
+    </figure>
   </section>
 </main>
 <footer class="footer">
@@ -111,5 +121,6 @@
 <script src="../assets/js/moonwalker.js"></script>
 <script src="../assets/js/edition.js"></script>
 <script src="../assets/js/name-scramble.js"></script>
+<script src="../assets/js/lab-graph.js"></script>
 </body>
 </html>
