@@ -185,6 +185,8 @@
   var dragging = false, moved = 0, lastX = 0, lastY = 0, lastT = 0;
   var active = false, onscreen = true, running = false, dirty = true, last = 0;
   var fadeIn = 1;
+  /* depth of field: the focal plane sits near the front, and racks to whatever you hover */
+  var NEAR_FOCUS = 0.12, focal = NEAR_FOCUS, MAX_BLUR = 4.5;
   var proj = [];
 
   function project() {
@@ -239,6 +241,8 @@
     order.forEach(function (n) {
       var a = nodeA(n);
       cx.globalAlpha = a;
+      var blur = reduced ? 0 : Math.max(0, Math.abs(n.depth - focal) - 0.1) * MAX_BLUR * 1.6;
+      cx.filter = blur > 0.3 ? "blur(" + Math.min(MAX_BLUR, blur).toFixed(2) + "px)" : "none";
       if (n.type === "entry") {
         var sz = 15 * n.s;
         cx.fillStyle = C.ink;
@@ -254,6 +258,7 @@
         label(n, n.label.toUpperCase(), "400 " + Math.round(10 * Math.max(0.85, n.s)) + "px " + C.mono, C.soft, r + 7, a, true);
       }
     });
+    cx.filter = "none";
     cx.globalAlpha = 1;
     if (any) placeTip(any);
   }
@@ -442,6 +447,11 @@
       if (Math.abs(want - idle) < 0.001) idle = want;
       yaw += (Math.PI * 2 / 90) * idle * dt;
       busy = true;   /* the orbit never settles */
+
+      /* rack focus: ease the focal plane to the hovered node's depth (~180ms, like a focus pull) */
+      var fn = hover || selected;
+      var ft = fn ? fn.depth : NEAR_FOCUS;
+      focal += (ft - focal) * (1 - Math.exp(-dt / 0.18));
     }
 
     k = 1 - Math.exp(-dt / 0.09);
