@@ -4,14 +4,14 @@
 <meta charset="utf-8">
 <meta name="robots" content="noindex">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Design engineering workflow — Jamie Jones</title>
-<meta property="og:title" content="Design engineering workflow — Jamie Jones">
+<title>Design to code, part 1 — Jamie Jones</title>
+<meta property="og:title" content="Design to code, part 1 — Jamie Jones">
 <meta property="og:type" content="website">
 <meta property="og:image" content="https://jjux.dev/assets/img/og-jjux.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="description" content="Collapse design / FE / requirements sprawl into one living, code-based artifact — designers as art directors of a shared system.">
+<meta name="description" content="We no longer present static designs. Everything goes straight to code, and that is our source of truth. Part 1 of a running series.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%23171612'/%3E%3Crect x='18' y='18' width='14' height='14' rx='5' fill='%23FBFAF7'/%3E%3Crect x='36' y='18' width='14' height='14' rx='5' fill='%23FBFAF7'/%3E%3Crect x='54' y='18' width='14' height='14' rx='5' fill='%23FBFAF7'/%3E%3Crect x='72' y='18' width='14' height='14' rx='5' fill='%23FBFAF7'/%3E%3Crect x='18' y='36' width='14' height='14' rx='5' fill='%23FBFAF7'/%3E%3Crect x='36' y='36' width='14' height='14' rx='5' fill='%23FBFAF7'/%3E%3Crect x='54' y='36' width='14' height='14' rx='5' fill='%23FBFAF7'/%3E%3Crect x='72' y='36' width='14' height='14' rx='5' fill='%23FBFAF7'/%3E%3Crect x='18' y='54' width='14' height='14' rx='5' fill='%23FBFAF7'/%3E%3Crect x='36' y='54' width='14' height='14' rx='5' fill='%23FBFAF7'/%3E%3Crect x='54' y='54' width='14' height='14' rx='5' fill='%23FBFAF7'/%3E%3Crect x='72' y='54' width='14' height='14' rx='5' fill='%23FBFAF7'/%3E%3Crect x='18' y='72' width='14' height='14' rx='5' fill='%23FBFAF7'/%3E%3Crect x='36' y='72' width='14' height='14' rx='5' fill='%23FBFAF7'/%3E%3Crect x='54' y='72' width='14' height='14' rx='5' fill='%23FBFAF7'/%3E%3Crect x='72' y='72' width='14' height='14' rx='5' fill='%23FBFAF7'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -34,50 +34,58 @@
 </header>
 <main id="main">
   <section class="wrap shelf">
-    <div class="entry__head rise" style="--i:0" data-rail="Sep 2026">
-      <p class="feed__kind">Artifact · 004</p>
-      <h1 class="lede">Design engineering workflow</h1>
+    <div class="entry__head rise" style="--i:0" data-rail="Nov 2026">
+      <p class="feed__kind">Artifact · 004 · Part 1</p>
+      <h1 class="lede">Design to code</h1>
       <p class="entry__standfirst">
-        Collapse design / FE / requirements sprawl into one living, code-based artifact.
-        Storybook (or the equivalent) as source of truth; designers as art directors of a
-        shared system — not exporters of static piles.
+        We no longer present static designs. Everything goes straight to code, and that’s what
+        we use as our source of truth. This is part one of a running series. The pilot is still
+        going.
       </p>
     </div>
 
     <div class="entry__body rise" style="--i:1">
+      <h2>The old way</h2>
       <p>
-        <em>Stub — outline only. Voice rewrite later.</em>
+        A web project makes the same work over and over: a whiteboard, wireframes, a
+        presentation file, a design file, a components page, a handoff. Each copy drifts a
+        little from the last. Each discipline names the same thing differently. It’s insane.
+      </p>
+      <!-- JAMIE: one line, what that felt like day to day. Do not merge with this placeholder. -->
+      <p style="outline:2px dashed #E4572E;padding:6px 10px">[Jamie: one line on what that felt like day to day]</p>
+
+      <h2>Impossible to cool</h2>
+      <p>
+        The presentation tool we’d used for years shut down. We were really distraught. Nothing
+        anyone tried after that was liked, and nobody liked presenting from the design tool. An
+        earlier attempt to build our own hadn’t worked.
+      </p>
+      <p>
+        Then one evening, my agent and I built a working review layer: comments pinned to
+        elements on a live page, threads, resolving, export. A prototype, no server. But what
+        was just impossible became cool, and impossible to cool beats cool to cooler.
       </p>
 
-      <h2>The sprawl tax</h2>
+      <h2>How it works now</h2>
       <p>
-        Specs, mocks, tickets, and threads each hold a partial truth. Translation between them
-        is where quality leaks — and where nobody owns the whole picture.
+        We start with a design system I built with my agent, matched to the framework our
+        developers already use. That became the starter file for our design tools. Instead of
+        presenting static mockups, we build our designs into real code, with Storybook for the
+        components, and that’s the source of truth for requirements.
+      </p>
+      <p>
+        I designed the dashboard we present work from, with commenting built in. It’s in
+        development now. The demo convinced people more than the slides did. As soon as we got
+        to the demo, it was question, question, question.
       </p>
 
-      <h2>One living artifact</h2>
+      <h2>What I’m still finding out</h2>
       <p>
-        Put the contract in something that runs: states, tokens, acceptance criteria beside the
-        component. The room everyone shares is the system, not a folder of exports.
+        Whether the setup pays back on every project or only some. The pilot measures that.
+        Next, content and strategy move into the same artifact.
       </p>
-
-      <h2>Designers as art directors</h2>
-      <p>
-        Direction and judgment over pixel farming. Front-end as co-author of the same object.
-        The craft shift is role clarity, not a new tool fad.
-      </p>
-
-      <h2>What changes in the handoff</h2>
-      <p>
-        Requirements ride with the component. Less “did you see the latest file?” — more
-        “does this state match the living Spec?” Placeholder until the voice pass.
-      </p>
-
-      <h2>What this isn’t</h2>
-      <p>
-        Not a vendor pitch. Not a confidential company playbook. A craft thesis you can steal
-        the shape of — method without the private details.
-      </p>
+      <!-- JAMIE: your closing line. Do not merge with this placeholder. -->
+      <p style="outline:2px dashed #E4572E;padding:6px 10px">[Jamie: your own line to close the chapter]</p>
     </div>
 
     <p class="rise backlink" style="--i:2"><a class="bl bl--back" href="./"><span class="bl__a" aria-hidden="true">←</span><span class="bl__t">All entries</span></a></p>
