@@ -1262,7 +1262,7 @@ body::after {
 .lab-switch { display: none; }
 html:not(.no-js) .lab-switch {
   display: flex; gap: 0.95em; margin: 0 0 1.75rem;
-  font-family: var(--mono); font-size: 10px; line-height: 1;
+  font-family: var(--mono); font-size: 11.5px; line-height: 1;
   letter-spacing: 0.1em; text-transform: uppercase;
 }
 .lab-switch__b {

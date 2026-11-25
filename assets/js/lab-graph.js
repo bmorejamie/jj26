@@ -179,6 +179,7 @@
   var yaw = 0.5, pitch = 0.28, vyaw = 0, vpitch = 0;
   var idle = 1;                 /* 0..1, how much of the slow orbit is on */
   var lastInput = -1e9;
+  var inside = false;            /* mouse over the stage: hold the orbit so targets sit still */
   var bloomStart = null, bloom = reduced ? 1 : 0;
   var hover = null, selected = null;
   var dragging = false, moved = 0, lastX = 0, lastY = 0, lastT = 0;
@@ -189,7 +190,7 @@
   function project() {
     var cy = Math.cos(yaw), sy = Math.sin(yaw), cp = Math.cos(pitch), sp = Math.sin(pitch);
     var fov = radius * 3.2;
-    var fit = Math.min(W * 0.4, H * 0.42) / radius;
+    var fit = Math.min(W * 0.3, H * 0.6) / radius;
     var b = reduced ? 1 : ease(bloom);
     proj.length = 0;
     nodes.forEach(function (n) {
@@ -361,6 +362,7 @@
   });
 
   canvas.addEventListener("pointermove", function (e) {
+    if (e.pointerType === "mouse") inside = true;
     var p = pos(e);
     if (dragging) {
       var dx = e.clientX - lastX, dy = e.clientY - lastY;
@@ -399,7 +401,9 @@
   canvas.addEventListener("pointerup", end);
   canvas.addEventListener("pointercancel", end);
   canvas.addEventListener("pointerleave", function (e) {
+    if (e.pointerType === "mouse") inside = false;
     if (e.pointerType === "mouse" && !dragging) { canvas.classList.remove("is-hit"); setFocus(null); }
+    kick();
   });
 
   /* --- loop --------------------------------------------------------------------- */
@@ -433,7 +437,7 @@
         if (vyaw || vpitch) busy = true;
       }
       /* idle orbit: eases off while you touch or hover, back in after a beat */
-      var want = (dragging || hover || selected || now - lastInput < 1600) ? 0 : 1;
+      var want = (dragging || hover || selected || inside || now - lastInput < 1600) ? 0 : 1;
       idle += (want - idle) * (1 - Math.exp(-dt / (want ? 0.9 : 0.25)));
       if (Math.abs(want - idle) < 0.001) idle = want;
       yaw += (Math.PI * 2 / 90) * idle * dt;
