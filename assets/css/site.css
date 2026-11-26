@@ -1211,3 +1211,113 @@ body::after {
 .devices3d-failed .devices3d-fallback { display: block; }
 .no-js .plate--3d,
 .devices3d-failed .plate--3d { display: none; }
+
+/* ------------------------------------------------- lab rail (11-23)
+   Quiet framing in the empty right side of an entry: a calendar icon + vertical
+   publish date top-right, and a numbered marker beside each subhead. Desktop only. */
+@media (min-width: 1000px) {
+  .entry__head[data-rail] { position: relative; }
+  .entry__head[data-rail]::before {          /* small calendar icon above the date */
+    content: ""; position: absolute; top: 0.1rem; right: 0;
+    width: 0.9rem; height: 0.9rem;
+    background: var(--ink-faint);
+    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.2' stroke-linecap='round'%3E%3Crect x='2' y='3.2' width='12' height='10.8' rx='1.6'/%3E%3Cpath d='M2 6.6h12M5.3 1.6v3M10.7 1.6v3'/%3E%3C/svg%3E") center / contain no-repeat;
+            mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.2' stroke-linecap='round'%3E%3Crect x='2' y='3.2' width='12' height='10.8' rx='1.6'/%3E%3Cpath d='M2 6.6h12M5.3 1.6v3M10.7 1.6v3'/%3E%3C/svg%3E") center / contain no-repeat;
+  }
+  .entry__head[data-rail]::after {           /* vertical date, flush right */
+    content: attr(data-rail);
+    position: absolute; top: 1.45rem; right: 0;
+    width: 0.9rem;
+    display: flex; justify-content: center;
+    writing-mode: vertical-rl;
+    white-space: nowrap;
+    font-family: var(--mono);
+    font-size: var(--step--1);
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    line-height: 1;
+  }
+
+  .entry__body { position: relative; counter-reset: railsec; }
+  .entry__body h2 { counter-increment: railsec; }
+  .entry__body h2::after {                   /* subhead marker in the rail */
+    content: "§ " counter(railsec, decimal-leading-zero);
+    position: absolute; right: 0;
+    margin-top: 0.35rem;
+    font-family: var(--mono);
+    font-size: var(--step--1);
+    font-weight: 400;
+    letter-spacing: 0.18em;
+    color: var(--ink-faint);
+    padding-left: 2.5rem;
+    background: linear-gradient(var(--rule), var(--rule)) left center / 1.8rem 1px no-repeat;
+  }
+}
+
+/* ------------------------------------------------------------ lab views
+   Timeline and Graph are two views of the same list. The graph is built
+   from the feed markup by assets/js/lab-graph.js; nothing is duplicated.
+   The switch only exists once JS is running. */
+.lab-switch { display: none; }
+html:not(.no-js) .lab-switch {
+  display: flex; gap: 0.95em; margin: 0 0 1.75rem;
+  font-family: var(--mono); font-size: 11.5px; line-height: 1;
+  letter-spacing: 0.1em; text-transform: uppercase;
+}
+.lab-switch__b {
+  position: relative; font: inherit; letter-spacing: inherit; text-transform: inherit;
+  color: var(--ink-faint); background: none; border: 0; margin: 0;
+  padding: 0.5em 0; cursor: pointer;
+  transition: color var(--t-quick) var(--ease);
+}
+.lab-switch__b:hover { color: var(--ink-soft); }
+.lab-switch__b[aria-pressed="true"] { color: var(--ink); cursor: default; }
+.lab-switch__b::after {
+  content: ""; position: absolute; inset: 0 -0.45em;
+  border: 1px solid var(--rule); opacity: 0;
+  transition: opacity var(--t-base) var(--ease), border-color var(--t-quick) var(--ease);
+}
+.lab-switch__b[aria-pressed="true"]::after { opacity: 1; }
+.lab-switch__b:focus-visible { outline: 1px solid var(--signal); outline-offset: 0.4em; }
+
+.lab-pane { margin: 0; transition: opacity 300ms var(--ease); }
+.lab-pane.is-out { opacity: 0; }
+.lab-pane[hidden] { display: none; }
+
+.lab-graph__stage {
+  position: relative;
+  height: min(70vh, 640px);
+  border-block: 1px solid var(--rule);
+}
+.lab-graph canvas {
+  display: block; width: 100%; height: 100%;
+  cursor: grab; touch-action: pan-y; user-select: none; -webkit-user-select: none;
+}
+.lab-graph canvas.is-drag { cursor: grabbing; }
+.lab-graph canvas.is-hit { cursor: pointer; }
+.lab-graph__cap {
+  margin: 0.9rem 0 0;
+  font-family: var(--mono); font-size: var(--step--1);
+  letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-faint);
+}
+.lab-tip {
+  position: absolute; left: 0; top: 0; z-index: 2;
+  width: min(19rem, calc(100% - 1.5rem));
+  padding: 0.9rem 1rem 1rem;
+  background: var(--paper); border: 1px solid var(--rule);
+  pointer-events: none; opacity: 0;
+  transition: opacity var(--t-quick) var(--ease);
+}
+.lab-tip.is-on { opacity: 1; }
+.lab-tip__k {
+  display: flex; justify-content: space-between; gap: 1rem; margin: 0 0 0.5rem;
+  font-family: var(--mono); font-size: var(--step--1);
+  letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-faint);
+}
+.lab-tip__t {
+  margin: 0; font-family: var(--display); font-weight: var(--display-wght);
+  font-variation-settings: var(--display-vf); text-transform: var(--display-case);
+  letter-spacing: var(--display-trk); font-size: var(--step-0); line-height: 1.2;
+}
+.lab-tip__n { margin: 0.5rem 0 0; color: var(--ink-soft); font-size: var(--step--1); line-height: 1.45; }

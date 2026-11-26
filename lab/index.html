@@ -47,8 +47,43 @@
   </section>
 
   <section class="wrap shelf rule-top">
-    <ul class="feed rise" style="--i:0"><li><a href="../tags.html?t=design-systems">Design Systems</a></li></ul>
-      </li></ul>
+    <div class="lab-switch" role="group" aria-label="View">
+      <button class="lab-switch__b" type="button" data-view="timeline" aria-pressed="true">Timeline</button>
+      <button class="lab-switch__b" type="button" data-view="graph" aria-pressed="false">Graph</button>
+    </div>
+    <div class="lab-pane" id="lab-timeline">
+    <ul class="feed rise" style="--i:0">
+
+      <li>
+        <a href="the-lab-as-a-lab.html">
+          <span class="feed__no">006</span>
+          <span>
+            <span class="feed__kind">Artifact</span>
+            <h2 class="feed__title">The Lab, as a lab</h2>
+            <p class="feed__note">
+              The same entries, floating in a graph. A second way into the Lab, and some thoughts
+              on unthinking UI patterns now that agents can build anything.
+            </p>
+            <p class="feed__kind feed__date">Nov 2026</p>
+          </span>
+        </a>
+        <ul class="tags" aria-label="Tags"><li><a href="../tags.html?t=agentic">Agentic Workflows</a></li><li><a href="../tags.html?t=front-end">Front-End</a></li></ul>
+      </li>
+
+      <li>
+        <a href="building-forge.html">
+          <span class="feed__no">003</span>
+          <span>
+            <span class="feed__kind">Artifact</span>
+            <h2 class="feed__title">Building Forge</h2>
+            <p class="feed__note">
+              My first agent, where it all began. A Hermes setup after a decade away from the
+              command line, and an Obsidian vault for memory.
+            </p>
+            <p class="feed__kind feed__date">Nov 2026</p>
+          </span>
+        </a>
+        <ul class="tags" aria-label="Tags"><li><a href="../tags.html?t=agentic">Agentic Workflows</a></li></ul>
       </li>
 
       <li>
@@ -84,6 +119,11 @@
       </li>
 
     </ul>
+    </div>
+    <figure class="lab-pane lab-graph" id="lab-graph" hidden>
+      <div class="lab-graph__stage"><canvas role="img" aria-label="An interactive graph of the Lab entries and their tags. The same entries are listed in the timeline view."></canvas></div>
+      <figcaption class="lab-graph__cap">Drag to turn it. Click an entry to open it.</figcaption>
+    </figure>
   </section>
 </main>
 <footer class="footer">
@@ -97,5 +137,6 @@
 <script src="../assets/js/moonwalker.js"></script>
 <script src="../assets/js/edition.js"></script>
 <script src="../assets/js/name-scramble.js"></script>
+<script src="../assets/js/lab-graph.js"></script>
 </body>
 </html>
